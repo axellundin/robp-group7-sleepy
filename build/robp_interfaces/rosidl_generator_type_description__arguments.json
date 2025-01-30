@@ -1,9 +1,9 @@
 {
   "package_name": "robp_interfaces",
-  "output_dir": "/home/group-7/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces",
+  "output_dir": "/home/sleepy/robp-group7-sleepy/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces",
   "idl_tuples": [
-    "/home/group-7/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
-    "/home/group-7/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
+    "/home/sleepy/robp-group7-sleepy/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
+    "/home/sleepy/robp-group7-sleepy/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
   ],
   "include_paths": [
     "std_msgs:/opt/ros/jazzy/share/std_msgs",

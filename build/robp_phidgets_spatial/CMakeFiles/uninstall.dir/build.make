@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial
+CMAKE_SOURCE_DIR = /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_spatial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group-7/dd2419_ws/build/robp_phidgets_spatial
+CMAKE_BINARY_DIR = /home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/group-7/dd2419_ws/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group-7/dd2419_ws/build/robp_phidgets_spatial /home/group-7/dd2419_ws/build/robp_phidgets_spatial /home/group-7/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial /home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial /home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/uninstall.dir/depend
 

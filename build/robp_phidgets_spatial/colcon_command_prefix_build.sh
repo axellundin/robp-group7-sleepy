@@ -1,2 +1,2 @@
 # generated from colcon_core/shell/template/command_prefix.sh.em
-. "/home/group-7/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.sh"
+. "/home/sleepy/robp-group7-sleepy/install/robp_interfaces/share/robp_interfaces/package.sh"

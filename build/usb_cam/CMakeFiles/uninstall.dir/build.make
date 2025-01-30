@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group-7/dd2419_ws/src/robp_robot/usb_cam
+CMAKE_SOURCE_DIR = /home/sleepy/robp-group7-sleepy/src/robp_robot/usb_cam
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group-7/dd2419_ws/build/usb_cam
+CMAKE_BINARY_DIR = /home/sleepy/robp-group7-sleepy/build/usb_cam
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/group-7/dd2419_ws/build/usb_cam && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group-7/dd2419_ws/src/robp_robot/usb_cam /home/group-7/dd2419_ws/src/robp_robot/usb_cam /home/group-7/dd2419_ws/build/usb_cam /home/group-7/dd2419_ws/build/usb_cam /home/group-7/dd2419_ws/build/usb_cam/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sleepy/robp-group7-sleepy/build/usb_cam && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sleepy/robp-group7-sleepy/src/robp_robot/usb_cam /home/sleepy/robp-group7-sleepy/src/robp_robot/usb_cam /home/sleepy/robp-group7-sleepy/build/usb_cam /home/sleepy/robp-group7-sleepy/build/usb_cam /home/sleepy/robp-group7-sleepy/build/usb_cam/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/uninstall.dir/depend
 

@@ -1,1 +1,1 @@
-/home/group-7/dd2419_ws/src/robp_robot/usb_cam/scripts/show_image.py
+/home/sleepy/robp-group7-sleepy/src/robp_robot/usb_cam/scripts/show_image.py

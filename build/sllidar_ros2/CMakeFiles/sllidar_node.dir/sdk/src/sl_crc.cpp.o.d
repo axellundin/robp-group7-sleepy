@@ -1,10 +1,10 @@
 CMakeFiles/sllidar_node.dir/sdk/src/sl_crc.cpp.o: \
- /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_crc.cpp \
+ /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/sdk/src/sl_crc.cpp \
  /usr/include/stdc-predef.h \
- /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_crc.h \
- /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h \
- /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h \
- /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_types.h \
+ /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/./sdk/include/sl_crc.h \
+ /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h \
+ /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h \
+ /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/./sdk/include/sl_types.h \
  /usr/include/c++/13/cstdint \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \

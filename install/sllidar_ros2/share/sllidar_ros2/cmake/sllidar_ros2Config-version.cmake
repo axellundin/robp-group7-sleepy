@@ -1,1 +1,1 @@
-/home/group-7/dd2419_ws/build/sllidar_ros2/ament_cmake_core/sllidar_ros2Config-version.cmake
+/home/sleepy/robp-group7-sleepy/build/sllidar_ros2/ament_cmake_core/sllidar_ros2Config-version.cmake

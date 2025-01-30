@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -Dusb_cam_EXPORTS
 
-CXX_INCLUDES = -I/home/group-7/dd2419_ws/src/robp_robot/usb_cam/include -isystem /usr/include/opencv4
+CXX_INCLUDES = -I/home/sleepy/robp-group7-sleepy/src/robp_robot/usb_cam/include -isystem /usr/include/opencv4
 
 CXX_FLAGS = -std=gnu++17 -fPIC -Wall -Wextra -Wpedantic -Werror
 

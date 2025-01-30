@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2
+CMAKE_SOURCE_DIR = /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group-7/dd2419_ws/build/sllidar_ros2
+CMAKE_BINARY_DIR = /home/sleepy/robp-group7-sleepy/build/sllidar_ros2
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/group-7/dd2419_ws/build/sllidar_ros2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2 /home/group-7/dd2419_ws/src/robp_robot/sllidar_ros2 /home/group-7/dd2419_ws/build/sllidar_ros2 /home/group-7/dd2419_ws/build/sllidar_ros2 /home/group-7/dd2419_ws/build/sllidar_ros2/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sleepy/robp-group7-sleepy/build/sllidar_ros2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2 /home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2 /home/sleepy/robp-group7-sleepy/build/sllidar_ros2 /home/sleepy/robp-group7-sleepy/build/sllidar_ros2 /home/sleepy/robp-group7-sleepy/build/sllidar_ros2/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/uninstall.dir/depend
 

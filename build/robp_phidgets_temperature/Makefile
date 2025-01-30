@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature
+CMAKE_SOURCE_DIR = /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_temperature
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group-7/dd2419_ws/build/robp_phidgets_temperature
+CMAKE_BINARY_DIR = /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,9 +142,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles /home/group-7/dd2419_ws/build/robp_phidgets_temperature//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature/CMakeFiles /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

@@ -1,1 +1,1 @@
-/home/group-7/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake
+/home/sleepy/robp-group7-sleepy/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake
