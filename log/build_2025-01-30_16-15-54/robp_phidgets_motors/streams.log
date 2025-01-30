@@ -1,0 +1,66 @@
+[0.012s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/group-7/dd2419_ws/install/robp_phidgets_motors
+[0.021s] -- robp_phidgets_motors: You did not request a specific build type: Choosing 'Release' for maximum performance
+[0.092s] -- The C compiler identification is GNU 13.3.0
+[0.184s] -- The CXX compiler identification is GNU 13.3.0
+[0.207s] -- Detecting C compiler ABI info
+[0.313s] -- Detecting C compiler ABI info - done
+[0.321s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.322s] -- Detecting C compile features
+[0.322s] -- Detecting C compile features - done
+[0.333s] -- Detecting CXX compiler ABI info
+[0.438s] -- Detecting CXX compiler ABI info - done
+[0.446s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.446s] -- Detecting CXX compile features
+[0.446s] -- Detecting CXX compile features - done
+[0.448s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.597s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.668s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.695s] -- Found libphidget22: 2.3.3 (/opt/ros/jazzy/share/libphidget22/cmake)
+[0.697s] -- Found phidgets_api: 2.3.3 (/opt/ros/jazzy/share/phidgets_api/cmake)
+[0.700s] -- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.734s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.746s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.759s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.775s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.842s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.845s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.919s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[0.936s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[0.957s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.023s] -- Found rclcpp_components: 28.1.6 (/opt/ros/jazzy/share/rclcpp_components/cmake)
+[1.055s] -- Found robp_interfaces: 1.0.0 (/home/group-7/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake)
+[1.084s] -- Found std_srvs: 5.3.5 (/opt/ros/jazzy/share/std_srvs/cmake)
+[1.182s] -- Configuring done (1.2s)
+[1.194s] -- Generating done (0.0s)
+[1.198s] -- Build files have been written to: /home/group-7/dd2419_ws/build/robp_phidgets_motors
+[1.207s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/group-7/dd2419_ws/install/robp_phidgets_motors
+[1.209s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/group-7/dd2419_ws/build/robp_phidgets_motors -- -j16 -l16
+[1.256s] [ 66%] [32mBuilding CXX object CMakeFiles/robp_phidgets_motors.dir/src/motor.cpp.o[0m
+[1.256s] [ 66%] [32mBuilding CXX object CMakeFiles/robp_phidgets_motors.dir/src/motors.cpp.o[0m
+[9.594s] [100%] [32m[1mLinking CXX shared library librobp_phidgets_motors.so[0m
+[9.727s] [100%] Built target robp_phidgets_motors
+[9.739s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/group-7/dd2419_ws/build/robp_phidgets_motors -- -j16 -l16
+[9.740s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/group-7/dd2419_ws/build/robp_phidgets_motors
+[9.746s] -- Install configuration: "Release"
+[9.747s] -- Execute custom install script
+[9.747s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/lib/librobp_phidgets_motors.so
+[9.755s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/include/robp_phidgets_motors/motor.hpp
+[9.762s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/include/robp_phidgets_motors/motors.hpp
+[9.769s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/launch/motors_launch.py
+[9.776s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_motors
+[9.783s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_motors
+[9.790s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/environment/ament_prefix_path.sh
+[9.797s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/environment/ament_prefix_path.dsv
+[9.804s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/environment/path.sh
+[9.811s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/environment/path.dsv
+[9.819s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/local_setup.bash
+[9.826s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/local_setup.sh
+[9.833s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/local_setup.zsh
+[9.840s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/local_setup.dsv
+[9.847s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/package.dsv
+[9.854s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/ament_index/resource_index/packages/robp_phidgets_motors
+[9.861s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/ament_index/resource_index/rclcpp_components/robp_phidgets_motors
+[9.868s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/cmake/robp_phidgets_motorsConfig.cmake
+[9.875s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/cmake/robp_phidgets_motorsConfig-version.cmake
+[9.882s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_motors/share/robp_phidgets_motors/package.xml
+[9.891s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_motors' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/group-7/dd2419_ws/build/robp_phidgets_motors

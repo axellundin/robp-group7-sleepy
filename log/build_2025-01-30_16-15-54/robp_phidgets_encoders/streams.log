@@ -1,0 +1,64 @@
+[0.013s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/group-7/dd2419_ws/install/robp_phidgets_encoders
+[0.069s] -- The C compiler identification is GNU 13.3.0
+[0.138s] -- The CXX compiler identification is GNU 13.3.0
+[0.156s] -- Detecting C compiler ABI info
+[0.268s] -- Detecting C compiler ABI info - done
+[0.277s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.277s] -- Detecting C compile features
+[0.277s] -- Detecting C compile features - done
+[0.289s] -- Detecting CXX compiler ABI info
+[0.395s] -- Detecting CXX compiler ABI info - done
+[0.403s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.403s] -- Detecting CXX compile features
+[0.404s] -- Detecting CXX compile features - done
+[0.406s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.559s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.642s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.670s] -- Found libphidget22: 2.3.3 (/opt/ros/jazzy/share/libphidget22/cmake)
+[0.671s] -- Found phidgets_api: 2.3.3 (/opt/ros/jazzy/share/phidgets_api/cmake)
+[0.674s] -- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.709s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.721s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.734s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.750s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.818s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.820s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.892s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[0.910s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[0.931s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.997s] -- Found rclcpp_components: 28.1.6 (/opt/ros/jazzy/share/rclcpp_components/cmake)
+[1.029s] -- Found robp_interfaces: 1.0.0 (/home/group-7/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake)
+[1.141s] -- Configuring done (1.1s)
+[1.152s] -- Generating done (0.0s)
+[1.156s] -- Build files have been written to: /home/group-7/dd2419_ws/build/robp_phidgets_encoders
+[1.165s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/group-7/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/group-7/dd2419_ws/install/robp_phidgets_encoders
+[1.166s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/group-7/dd2419_ws/build/robp_phidgets_encoders -- -j16 -l16
+[1.216s] [ 66%] [32mBuilding CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o[0m
+[1.216s] [ 66%] [32mBuilding CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o[0m
+[5.789s] [100%] [32m[1mLinking CXX shared library librobp_phidgets_encoders.so[0m
+[5.917s] [100%] Built target robp_phidgets_encoders
+[5.929s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/group-7/dd2419_ws/build/robp_phidgets_encoders -- -j16 -l16
+[5.930s] Invoking command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/group-7/dd2419_ws/build/robp_phidgets_encoders
+[5.937s] -- Install configuration: "Release"
+[5.937s] -- Execute custom install script
+[5.938s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/lib/librobp_phidgets_encoders.so
+[5.946s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/include/robp_phidgets_encoders/encoder.hpp
+[5.954s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/include/robp_phidgets_encoders/encoders.hpp
+[5.962s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/launch/encoders_launch.py
+[5.970s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_encoders
+[5.978s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_encoders
+[5.986s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/ament_prefix_path.sh
+[5.994s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/ament_prefix_path.dsv
+[6.002s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/path.sh
+[6.011s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/path.dsv
+[6.019s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.bash
+[6.027s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.sh
+[6.035s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.zsh
+[6.043s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.dsv
+[6.051s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/package.dsv
+[6.060s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/packages/robp_phidgets_encoders
+[6.068s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/rclcpp_components/robp_phidgets_encoders
+[6.076s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/cmake/robp_phidgets_encodersConfig.cmake
+[6.084s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/cmake/robp_phidgets_encodersConfig-version.cmake
+[6.093s] -- Symlinking: /home/group-7/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/package.xml
+[6.103s] Invoked command in '/home/group-7/dd2419_ws/build/robp_phidgets_encoders' returned '0': AMENT_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/group-7/dd2419_ws/install/robp_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/group-7/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/group-7/dd2419_ws/build/robp_phidgets_encoders

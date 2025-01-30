@@ -1,0 +1,1 @@
+/home/group-7/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.sh

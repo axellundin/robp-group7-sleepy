@@ -1,0 +1,18 @@
+[0.727s] Invoking command in '/home/group-7/dd2419_ws/build/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group-7/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group-7/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group-7/dd2419_ws/build/arm_servos_pubs_subs/build --no-deps symlink_data
+[0.978s] running develop
+[1.135s] running egg_info
+[1.150s] writing arm_servos_pubs_subs.egg-info/PKG-INFO
+[1.150s] writing dependency_links to arm_servos_pubs_subs.egg-info/dependency_links.txt
+[1.151s] writing entry points to arm_servos_pubs_subs.egg-info/entry_points.txt
+[1.151s] writing requirements to arm_servos_pubs_subs.egg-info/requires.txt
+[1.151s] writing top-level names to arm_servos_pubs_subs.egg-info/top_level.txt
+[1.183s] reading manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[1.184s] writing manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[1.200s] running build_ext
+[1.200s] Creating /home/group-7/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm-servos-pubs-subs.egg-link (link to .)
+[1.201s] Installing listener script to /home/group-7/dd2419_ws/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[1.201s] Installing talker script to /home/group-7/dd2419_ws/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[1.201s] 
+[1.201s] Installed /home/group-7/dd2419_ws/build/arm_servos_pubs_subs
+[1.202s] running symlink_data
+[1.229s] Invoked command in '/home/group-7/dd2419_ws/build/arm_servos_pubs_subs' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group-7/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group-7/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group-7/dd2419_ws/build/arm_servos_pubs_subs/build --no-deps symlink_data

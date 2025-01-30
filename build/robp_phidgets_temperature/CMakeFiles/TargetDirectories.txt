@@ -1,0 +1,10 @@
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/uninstall.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/robp_phidgets_temperature_uninstall.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/robp_phidgets_temperature.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/test.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/edit_cache.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/rebuild_cache.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/list_install_components.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/install.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/install/local.dir
+/home/group-7/dd2419_ws/build/robp_phidgets_temperature/CMakeFiles/install/strip.dir
