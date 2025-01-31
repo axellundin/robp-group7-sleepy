@@ -1,4 +1,0 @@
-[submodule "src/robp_robot"]
-	path = src/robp_robot
-	url = https://github.com/KTH-CAS-UAV/robp_robot.git
-	branch = vt25
