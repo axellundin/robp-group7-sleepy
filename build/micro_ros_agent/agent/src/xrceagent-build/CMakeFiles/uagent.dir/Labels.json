@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/CMakeFiles/uagent"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/CMakeFiles/uagent.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/CMakeFiles/uagent-complete.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-build.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-configure.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-download.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-install.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-mkdir.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-patch.rule"
+		},
+		{
+			"file" : "/home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/src/uagent-stamp/uagent-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"uagent"
+		],
+		"name" : "uagent"
+	}
+}

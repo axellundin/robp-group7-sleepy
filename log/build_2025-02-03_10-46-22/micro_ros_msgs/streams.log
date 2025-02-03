@@ -1,0 +1,10 @@
+[0.039s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_msgs -- -j8 -l8
+[0.349s] [  1%] Built target micro_ros_msgs__rosidl_generator_type_description
+[0.350s] [  3%] Built target micro_ros_msgs__cpp
+[0.351s] [ 24%] Built target micro_ros_msgs__rosidl_generator_c
+[0.354s] failed to create symbolic link '/home/sleepy/robp-group7-sleepy/build/micro_ros_msgs/ament_cmake_python/micro_ros_msgs/micro_ros_msgs' because existing path cannot be removed: Is a directory
+[0.354s] gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs] Error 1
+[0.355s] gmake[1]: *** [CMakeFiles/Makefile2:452: CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs.dir/all] Error 2
+[0.355s] gmake[1]: *** Waiting for unfinished jobs....
+[0.355s] gmake: *** [Makefile:146: all] Error 2
+[0.359s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_msgs' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_msgs -- -j8 -l8

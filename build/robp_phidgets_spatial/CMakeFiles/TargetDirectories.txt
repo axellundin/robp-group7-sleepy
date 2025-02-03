@@ -1,0 +1,10 @@
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/uninstall.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial_uninstall.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/test.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/edit_cache.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/rebuild_cache.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/list_install_components.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/install.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/install/local.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_spatial/CMakeFiles/install/strip.dir

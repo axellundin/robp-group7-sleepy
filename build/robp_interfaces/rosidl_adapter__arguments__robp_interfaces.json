@@ -1,0 +1,7 @@
+{
+  "package_name": "robp_interfaces",
+  "non_idl_tuples": [
+    "/home/sleepy/robp-group7-sleepy/src/robp_robot/robp_interfaces:msg/DutyCycles.msg",
+    "/home/sleepy/robp-group7-sleepy/src/robp_robot/robp_interfaces:msg/Encoders.msg"
+  ]
+}

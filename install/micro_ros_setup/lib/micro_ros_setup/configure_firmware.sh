@@ -1,0 +1,1 @@
+/home/sleepy/robp-group7-sleepy/src/micro_ros_setup/scripts/configure_firmware.sh
