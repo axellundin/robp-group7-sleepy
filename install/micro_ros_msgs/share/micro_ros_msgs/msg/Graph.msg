@@ -1,1 +1,1 @@
-Node[] nodes
+/home/sleepy/robp-group7-sleepy/src/uros/micro_ros_msgs/msg/Graph.msg

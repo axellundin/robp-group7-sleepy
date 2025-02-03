@@ -1,3 +1,1 @@
-# generated from ament_package/template/environment_hook/pythonpath.sh.in
-
-ament_prepend_unique_value PYTHONPATH "$AMENT_CURRENT_PREFIX/lib/python3.12/site-packages"
+/home/sleepy/robp-group7-sleepy/build/micro_ros_msgs/ament_cmake_environment_hooks/pythonpath.sh

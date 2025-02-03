@@ -1,3 +1,1 @@
-string<=256 node_namespace
-string<=256 node_name
-Entity[] entities
+/home/sleepy/robp-group7-sleepy/src/uros/micro_ros_msgs/msg/Node.msg
