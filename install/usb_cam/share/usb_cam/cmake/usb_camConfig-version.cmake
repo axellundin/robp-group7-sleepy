@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake

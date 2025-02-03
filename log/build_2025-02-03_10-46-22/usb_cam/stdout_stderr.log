@@ -1,7 +1,0 @@
-[ 14%] Built target usb_cam
-[ 28%] Built target gtest
-[ 42%] Built target gtest_main
-[ 57%] Built target usb_cam_node_exe
-[ 71%] Built target usb_cam_node
-[ 85%] Built target test_usb_cam_utils
-[100%] Built target test_pixel_formats

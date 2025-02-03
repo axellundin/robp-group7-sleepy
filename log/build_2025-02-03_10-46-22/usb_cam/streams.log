@@ -1,8 +1,0 @@
-[0.332s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/usb_cam -- -j8 -l8
-[0.421s] [ 14%] Built target usb_cam
-[0.423s] [ 28%] Built target gtest
-[0.425s] [ 42%] Built target gtest_main
-[0.425s] [ 57%] Built target usb_cam_node_exe
-[0.461s] [ 71%] Built target usb_cam_node
-[0.462s] [ 85%] Built target test_usb_cam_utils
-[0.462s] [100%] Built target test_pixel_formats

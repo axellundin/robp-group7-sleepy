@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/src/robp_robot/sllidar_ros2/launch/sllidar_s1_tcp_launch.py
