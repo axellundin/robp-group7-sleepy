@@ -1,0 +1,21 @@
+[1.020s] Invoking command in '/home/sleepy/robp-group7-sleepy/src/core/odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/src/core/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/odometry build --build-base /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build install --record /home/sleepy/robp-group7-sleepy/src/core/build/odometry/install.log --single-version-externally-managed install_data
+[1.353s] running egg_info
+[1.377s] writing ../build/odometry/odometry.egg-info/PKG-INFO
+[1.377s] writing dependency_links to ../build/odometry/odometry.egg-info/dependency_links.txt
+[1.377s] writing entry points to ../build/odometry/odometry.egg-info/entry_points.txt
+[1.377s] writing requirements to ../build/odometry/odometry.egg-info/requires.txt
+[1.377s] writing top-level names to ../build/odometry/odometry.egg-info/top_level.txt
+[1.427s] reading manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+[1.427s] writing manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+[1.427s] running build
+[1.428s] running build_py
+[1.428s] running install
+[1.437s] running install_lib
+[1.462s] running install_data
+[1.462s] running install_egg_info
+[1.489s] removing '/home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry-0.0.0-py3.12.egg-info' (and everything under it)
+[1.489s] Copying ../build/odometry/odometry.egg-info to /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry-0.0.0-py3.12.egg-info
+[1.490s] running install_scripts
+[1.657s] Installing odometry script to /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/custom_launch
+[1.657s] writing list of installed files to '/home/sleepy/robp-group7-sleepy/src/core/build/odometry/install.log'
+[1.688s] Invoked command in '/home/sleepy/robp-group7-sleepy/src/core/odometry' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/src/core/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/odometry build --build-base /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build install --record /home/sleepy/robp-group7-sleepy/src/core/build/odometry/install.log --single-version-externally-managed install_data

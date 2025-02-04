@@ -1,0 +1,175 @@
+[1.055s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/drive_base_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/drive_base_msgs -- -j8 -l8
+[1.116s] [  1%] Built target drive_base_msgs__rosidl_generator_type_description
+[1.128s] [  1%] Built target ament_cmake_python_symlink_drive_base_msgs
+[1.145s] [ 23%] Built target drive_base_msgs__rosidl_generator_c
+[1.150s] [ 25%] Built target drive_base_msgs__cpp
+[1.185s] [ 34%] Built target drive_base_msgs__rosidl_typesupport_c
+[1.191s] [ 43%] Built target drive_base_msgs__rosidl_typesupport_fastrtps_cpp
+[1.192s] [ 53%] Built target drive_base_msgs__rosidl_typesupport_introspection_c
+[1.198s] [ 70%] Built target drive_base_msgs__rosidl_typesupport_fastrtps_c
+[1.198s] [ 71%] Built target drive_base_msgs__rosidl_typesupport_cpp
+[1.204s] [ 81%] Built target drive_base_msgs__rosidl_typesupport_introspection_cpp
+[1.227s] [ 81%] Built target drive_base_msgs
+[1.251s] [ 82%] Built target drive_base_msgs__py
+[1.279s] [ 90%] Built target drive_base_msgs__rosidl_generator_py
+[1.313s] [ 93%] Built target drive_base_msgs_s__rosidl_typesupport_fastrtps_c
+[1.315s] [ 96%] Built target drive_base_msgs_s__rosidl_typesupport_introspection_c
+[1.316s] [100%] Built target drive_base_msgs_s__rosidl_typesupport_c
+[1.510s] running egg_info
+[1.515s] writing drive_base_msgs.egg-info/PKG-INFO
+[1.515s] writing dependency_links to drive_base_msgs.egg-info/dependency_links.txt
+[1.521s] writing top-level names to drive_base_msgs.egg-info/top_level.txt
+[1.654s] reading manifest file 'drive_base_msgs.egg-info/SOURCES.txt'
+[1.654s] writing manifest file 'drive_base_msgs.egg-info/SOURCES.txt'
+[1.710s] [100%] Built target ament_cmake_python_build_drive_base_msgs_egg
+[1.767s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/drive_base_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/drive_base_msgs -- -j8 -l8
+[1.769s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/drive_base_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/drive_base_msgs
+[1.807s] -- Install configuration: ""
+[1.807s] -- Execute custom install script
+[1.807s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/ament_index/resource_index/rosidl_interfaces/drive_base_msgs
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandHeader.json
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/BaseInfo.json
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandStatus.json
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/TRVCommand.json
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/base_info.h
+[1.808s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/command_header.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/command_status.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__functions.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__struct.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__type_support.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__functions.h
+[1.809s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__struct.h
+[1.810s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__type_support.h
+[1.810s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__functions.h
+[1.810s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__struct.h
+[1.810s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__type_support.h
+[1.811s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__functions.h
+[1.811s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__struct.h
+[1.811s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__type_support.h
+[1.811s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/rosidl_generator_c__visibility_control.h
+[1.811s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/trv_command.h
+[1.812s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/library_path.sh
+[1.812s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/library_path.dsv
+[1.812s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__rosidl_typesupport_fastrtps_c.h
+[1.812s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__rosidl_typesupport_fastrtps_c.h
+[1.812s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__rosidl_typesupport_fastrtps_c.h
+[1.813s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__rosidl_typesupport_fastrtps_c.h
+[1.813s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.813s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/base_info.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/command_header.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/command_status.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__builder.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__struct.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__traits.hpp
+[1.814s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__type_support.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__builder.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__struct.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__traits.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__type_support.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__builder.hpp
+[1.815s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__struct.hpp
+[1.816s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__traits.hpp
+[1.816s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__type_support.hpp
+[1.816s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__builder.hpp
+[1.816s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__struct.hpp
+[1.816s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__traits.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__type_support.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/trv_command.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__rosidl_typesupport_fastrtps_cpp.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__rosidl_typesupport_fastrtps_cpp.hpp
+[1.817s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__rosidl_typesupport_fastrtps_cpp.hpp
+[1.818s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__rosidl_typesupport_fastrtps_cpp.hpp
+[1.818s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.818s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__rosidl_typesupport_introspection_c.h
+[1.818s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__rosidl_typesupport_introspection_c.h
+[1.818s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__rosidl_typesupport_introspection_c.h
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__rosidl_typesupport_introspection_c.h
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/base_info__rosidl_typesupport_introspection_cpp.hpp
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_header__rosidl_typesupport_introspection_cpp.hpp
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/command_status__rosidl_typesupport_introspection_cpp.hpp
+[1.819s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/include/drive_base_msgs/drive_base_msgs/msg/detail/trv_command__rosidl_typesupport_introspection_cpp.hpp
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/pythonpath.sh
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/pythonpath.dsv
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs-0.0.0-py3.12.egg-info/PKG-INFO
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs-0.0.0-py3.12.egg-info/SOURCES.txt
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs-0.0.0-py3.12.egg-info/dependency_links.txt
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs-0.0.0-py3.12.egg-info/top_level.txt
+[1.820s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/__init__.py
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/_drive_base_msgs_s.ep.rosidl_typesupport_c.c
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/_drive_base_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/_drive_base_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_c.so
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_fastrtps_c.so
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_introspection_c.so
+[1.821s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/__init__.py
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_base_info.py
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_base_info_s.c
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_command_header.py
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_command_header_s.c
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_command_status.py
+[1.822s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_command_status_s.c
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_trv_command.py
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg/_trv_command_s.c
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_fastrtps_c.so
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_introspection_c.so
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/drive_base_msgs_s__rosidl_typesupport_c.so
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandHeader.idl
+[1.823s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/BaseInfo.idl
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandStatus.idl
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/TRVCommand.idl
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandHeader.msg
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/BaseInfo.msg
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/CommandStatus.msg
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/msg/TRVCommand.msg
+[1.824s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/ament_index/resource_index/package_run_dependencies/drive_base_msgs
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/ament_index/resource_index/parent_prefix_path/drive_base_msgs
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/ament_prefix_path.sh
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/ament_prefix_path.dsv
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/path.sh
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/environment/path.dsv
+[1.825s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/local_setup.bash
+[1.826s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/local_setup.sh
+[1.826s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/local_setup.zsh
+[1.826s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/local_setup.dsv
+[1.826s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/package.dsv
+[1.835s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/ament_index/resource_index/packages/drive_base_msgs
+[1.835s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/rosidl_cmake-extras.cmake
+[1.836s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.836s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.836s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[1.836s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[1.837s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[1.837s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[1.837s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgsConfig.cmake
+[1.838s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgsConfig-version.cmake
+[1.838s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/package.xml
+[1.838s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_generator_c.so
+[1.839s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_fastrtps_c.so
+[1.840s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_fastrtps_cpp.so
+[1.841s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_introspection_c.so
+[1.842s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_c.so
+[1.842s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_introspection_cpp.so
+[1.843s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_typesupport_cpp.so
+[1.905s] Listing '/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs'...
+[1.905s] Listing '/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages/drive_base_msgs/msg'...
+[1.911s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/libdrive_base_msgs__rosidl_generator_py.so
+[1.911s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_generator_cExport.cmake
+[1.911s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_generator_cExport-noconfig.cmake
+[1.911s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[1.912s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[1.912s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_generator_cppExport.cmake
+[1.912s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[1.912s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[1.912s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_introspection_cExport.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_cExport.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_cppExport.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/drive_base_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[1.913s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_generator_pyExport.cmake
+[1.914s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/drive_base_msgs/share/drive_base_msgs/cmake/export_drive_base_msgs__rosidl_generator_pyExport-noconfig.cmake
+[2.145s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/drive_base_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/drive_base_msgs

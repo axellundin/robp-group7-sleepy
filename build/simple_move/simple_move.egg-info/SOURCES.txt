@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+resource/simple_move
+simple_move/__init__.py
+simple_move/simple_move.py
+simple_move.egg-info/PKG-INFO
+simple_move.egg-info/SOURCES.txt
+simple_move.egg-info/dependency_links.txt
+simple_move.egg-info/entry_points.txt
+simple_move.egg-info/requires.txt
+simple_move.egg-info/top_level.txt
+simple_move.egg-info/zip-safe

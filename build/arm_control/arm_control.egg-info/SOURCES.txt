@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+arm_control/__init__.py
+arm_control/move_arm_hardcoded.py
+arm_control.egg-info/PKG-INFO
+arm_control.egg-info/SOURCES.txt
+arm_control.egg-info/dependency_links.txt
+arm_control.egg-info/entry_points.txt
+arm_control.egg-info/requires.txt
+arm_control.egg-info/top_level.txt
+arm_control.egg-info/zip-safe
+resource/arm_control

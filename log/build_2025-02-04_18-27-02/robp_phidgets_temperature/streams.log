@@ -1,0 +1,63 @@
+[0.059s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_temperature -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature
+[1.983s] -- robp_phidgets_temperature: You did not request a specific build type: Choosing 'Release' for maximum performance
+[1.983s] -- The C compiler identification is GNU 13.3.0
+[1.983s] -- The CXX compiler identification is GNU 13.3.0
+[1.983s] -- Detecting C compiler ABI info
+[1.984s] -- Detecting C compiler ABI info - done
+[1.984s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.984s] -- Detecting C compile features
+[1.984s] -- Detecting C compile features - done
+[1.984s] -- Detecting CXX compiler ABI info
+[1.984s] -- Detecting CXX compiler ABI info - done
+[1.984s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.985s] -- Detecting CXX compile features
+[1.985s] -- Detecting CXX compile features - done
+[1.985s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[1.985s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.985s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.985s] -- Found libphidget22: 2.3.3 (/opt/ros/jazzy/share/libphidget22/cmake)
+[1.985s] -- Found phidgets_api: 2.3.3 (/opt/ros/jazzy/share/phidgets_api/cmake)
+[1.985s] -- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+[2.317s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[2.373s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[2.460s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.577s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.975s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[2.991s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[3.284s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[3.369s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[3.464s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[3.817s] -- Found rclcpp_components: 28.1.6 (/opt/ros/jazzy/share/rclcpp_components/cmake)
+[3.989s] -- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[4.597s] -- Configuring done (4.5s)
+[4.630s] -- Generating done (0.0s)
+[4.638s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature
+[4.672s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/robp_robot/robp_phidgets/robp_phidgets_temperature -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature
+[4.674s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature -- -j8 -l8
+[6.140s] [ 50%] [32mBuilding CXX object CMakeFiles/robp_phidgets_temperature.dir/src/temperature.cpp.o[0m
+[31.156s] [100%] [32m[1mLinking CXX shared library librobp_phidgets_temperature.so[0m
+[31.633s] [100%] Built target robp_phidgets_temperature
+[31.676s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature -- -j8 -l8
+[31.677s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature
+[31.695s] -- Install configuration: "Release"
+[31.697s] -- Execute custom install script
+[31.700s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib/librobp_phidgets_temperature.so
+[31.727s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/include/robp_phidgets_temperature/temperature.hpp
+[31.746s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/launch/temperature_launch.py
+[31.769s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_temperature
+[31.788s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_temperature
+[31.806s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/ament_prefix_path.sh
+[31.823s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/ament_prefix_path.dsv
+[31.843s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/path.sh
+[31.860s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/path.dsv
+[31.887s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.bash
+[31.907s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.sh
+[31.930s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.zsh
+[31.961s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.dsv
+[31.990s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.dsv
+[32.023s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/ament_index/resource_index/packages/robp_phidgets_temperature
+[32.060s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/ament_index/resource_index/rclcpp_components/robp_phidgets_temperature
+[32.093s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/cmake/robp_phidgets_temperatureConfig.cmake
+[32.126s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/cmake/robp_phidgets_temperatureConfig-version.cmake
+[32.195s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.xml
+[32.229s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature

@@ -1,0 +1,2 @@
+[console_scripts]
+lidar_processing = lidar_processing.lidar_processing:main

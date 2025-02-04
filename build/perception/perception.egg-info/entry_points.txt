@@ -1,0 +1,2 @@
+[console_scripts]
+camera_processing = perception.camera_processing:main

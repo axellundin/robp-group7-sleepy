@@ -1,0 +1,2 @@
+[console_scripts]
+simple_move = simple_move.simple_move:main

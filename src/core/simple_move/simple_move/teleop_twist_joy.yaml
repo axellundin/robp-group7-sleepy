@@ -1,0 +1,13 @@
+teleop_twist_joy_node:
+  ros__parameters:
+    enable_button: 5  # Knappen som måste hållas intryckt för att aktivera styrning
+
+    axis_linear:
+      x: 1  # Vilken joystick-axel som ska styra framåt/bakåt
+    scale_linear:
+      x: 1.0  # Maxhastighet vid normal körning
+
+    axis_angular:
+      yaw: 0  # Vilken joystick-axel som ska styra rotation
+    scale_angular:
+      yaw: 1.0  # Max rotationshastighet

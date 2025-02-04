@@ -1,0 +1,22 @@
+running develop
+running egg_info
+creating perception.egg-info
+writing perception.egg-info/PKG-INFO
+writing dependency_links to perception.egg-info/dependency_links.txt
+writing entry points to perception.egg-info/entry_points.txt
+writing requirements to perception.egg-info/requires.txt
+writing top-level names to perception.egg-info/top_level.txt
+writing manifest file 'perception.egg-info/SOURCES.txt'
+reading manifest file 'perception.egg-info/SOURCES.txt'
+writing manifest file 'perception.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages/perception.egg-link (link to .)
+Installing camera_processing script to /home/sleepy/robp-group7-sleepy/install/perception/lib/perception
+
+Installed /home/sleepy/robp-group7-sleepy/build/perception
+running symlink_data
+creating /home/sleepy/robp-group7-sleepy/install/perception/share/ament_index
+creating /home/sleepy/robp-group7-sleepy/install/perception/share/ament_index/resource_index
+creating /home/sleepy/robp-group7-sleepy/install/perception/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/perception/resource/perception -> /home/sleepy/robp-group7-sleepy/install/perception/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/perception/package.xml -> /home/sleepy/robp-group7-sleepy/install/perception/share/perception

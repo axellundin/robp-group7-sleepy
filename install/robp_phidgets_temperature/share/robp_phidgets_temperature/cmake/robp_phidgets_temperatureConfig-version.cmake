@@ -1,0 +1,1 @@
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature/ament_cmake_core/robp_phidgets_temperatureConfig-version.cmake

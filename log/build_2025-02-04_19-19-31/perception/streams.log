@@ -1,0 +1,17 @@
+[2.424s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/perception': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/perception/build --no-deps symlink_data
+[2.903s] running develop
+[3.159s] running egg_info
+[3.183s] writing perception.egg-info/PKG-INFO
+[3.183s] writing dependency_links to perception.egg-info/dependency_links.txt
+[3.184s] writing entry points to perception.egg-info/entry_points.txt
+[3.184s] writing requirements to perception.egg-info/requires.txt
+[3.184s] writing top-level names to perception.egg-info/top_level.txt
+[3.233s] reading manifest file 'perception.egg-info/SOURCES.txt'
+[3.234s] writing manifest file 'perception.egg-info/SOURCES.txt'
+[3.260s] running build_ext
+[3.261s] Creating /home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages/perception.egg-link (link to .)
+[3.262s] Installing camera_processing script to /home/sleepy/robp-group7-sleepy/install/perception/lib/perception
+[3.262s] 
+[3.262s] Installed /home/sleepy/robp-group7-sleepy/build/perception
+[3.262s] running symlink_data
+[3.309s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/perception' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/perception/build --no-deps symlink_data

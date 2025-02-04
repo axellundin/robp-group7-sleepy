@@ -1,0 +1,10 @@
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/uninstall.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/robp_phidgets_motors_uninstall.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/robp_phidgets_motors.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/test.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/edit_cache.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/rebuild_cache.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/list_install_components.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/install.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/install/local.dir
+/home/sleepy/robp-group7-sleepy/build/robp_phidgets_motors/CMakeFiles/install/strip.dir

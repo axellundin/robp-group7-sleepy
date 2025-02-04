@@ -1,0 +1,36 @@
+[1.040s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/lidar_processing': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/sleepy/robp-group7-sleepy/build/lidar_processing/build
+[1.432s] running develop
+[1.689s] Removing /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar-processing.egg-link (link to .)
+[1.725s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/lidar_processing' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/sleepy/robp-group7-sleepy/build/lidar_processing/build
+[1.727s] Invoking command in '/home/sleepy/robp-group7-sleepy/src/core/lidar_processing': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/lidar_processing build --build-base /home/sleepy/robp-group7-sleepy/build/lidar_processing/build install --record /home/sleepy/robp-group7-sleepy/build/lidar_processing/install.log --single-version-externally-managed install_data --force
+[2.066s] running egg_info
+[2.089s] writing ../../../build/lidar_processing/lidar_processing.egg-info/PKG-INFO
+[2.090s] writing dependency_links to ../../../build/lidar_processing/lidar_processing.egg-info/dependency_links.txt
+[2.090s] writing entry points to ../../../build/lidar_processing/lidar_processing.egg-info/entry_points.txt
+[2.090s] writing requirements to ../../../build/lidar_processing/lidar_processing.egg-info/requires.txt
+[2.090s] writing top-level names to ../../../build/lidar_processing/lidar_processing.egg-info/top_level.txt
+[2.139s] reading manifest file '../../../build/lidar_processing/lidar_processing.egg-info/SOURCES.txt'
+[2.140s] writing manifest file '../../../build/lidar_processing/lidar_processing.egg-info/SOURCES.txt'
+[2.141s] running build
+[2.141s] running build_py
+[2.141s] creating /home/sleepy/robp-group7-sleepy/build/lidar_processing/build
+[2.141s] creating /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib
+[2.141s] creating /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib/lidar_processing
+[2.141s] copying lidar_processing/lidar_processing.py -> /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib/lidar_processing
+[2.142s] copying lidar_processing/__init__.py -> /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib/lidar_processing
+[2.142s] running install
+[2.151s] running install_lib
+[2.175s] creating /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing
+[2.175s] copying /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib/lidar_processing/lidar_processing.py -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing
+[2.175s] copying /home/sleepy/robp-group7-sleepy/build/lidar_processing/build/lib/lidar_processing/__init__.py -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing
+[2.176s] byte-compiling /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing/lidar_processing.py to lidar_processing.cpython-312.pyc
+[2.178s] byte-compiling /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing/__init__.py to __init__.cpython-312.pyc
+[2.178s] running install_data
+[2.178s] copying resource/lidar_processing -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/ament_index/resource_index/packages
+[2.178s] copying package.xml -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/lidar_processing
+[2.179s] running install_egg_info
+[2.207s] Copying ../../../build/lidar_processing/lidar_processing.egg-info to /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar_processing-0.0.0-py3.12.egg-info
+[2.208s] running install_scripts
+[2.371s] Installing lidar_processing script to /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/lidar_processing
+[2.372s] writing list of installed files to '/home/sleepy/robp-group7-sleepy/build/lidar_processing/install.log'
+[2.406s] Invoked command in '/home/sleepy/robp-group7-sleepy/src/core/lidar_processing' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/lidar_processing build --build-base /home/sleepy/robp-group7-sleepy/build/lidar_processing/build install --record /home/sleepy/robp-group7-sleepy/build/lidar_processing/install.log --single-version-externally-managed install_data --force

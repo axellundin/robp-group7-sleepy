@@ -1,0 +1,35 @@
+running egg_info
+creating ../build/odometry/odometry.egg-info
+writing ../build/odometry/odometry.egg-info/PKG-INFO
+writing dependency_links to ../build/odometry/odometry.egg-info/dependency_links.txt
+writing entry points to ../build/odometry/odometry.egg-info/entry_points.txt
+writing requirements to ../build/odometry/odometry.egg-info/requires.txt
+writing top-level names to ../build/odometry/odometry.egg-info/top_level.txt
+writing manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+reading manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+writing manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build
+creating /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib
+creating /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib/odometry
+copying odometry/odometry.py -> /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib/odometry
+copying odometry/__init__.py -> /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib/odometry
+running install
+running install_lib
+creating /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry
+copying /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib/odometry/odometry.py -> /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry
+copying /home/sleepy/robp-group7-sleepy/src/core/build/odometry/build/lib/odometry/__init__.py -> /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry
+byte-compiling /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry/odometry.py to odometry.cpython-312.pyc
+byte-compiling /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/sleepy/robp-group7-sleepy/src/core/install/odometry/share/ament_index
+creating /home/sleepy/robp-group7-sleepy/src/core/install/odometry/share/ament_index/resource_index
+creating /home/sleepy/robp-group7-sleepy/src/core/install/odometry/share/ament_index/resource_index/packages
+copying resource/odometry -> /home/sleepy/robp-group7-sleepy/src/core/install/odometry/share/ament_index/resource_index/packages
+copying package.xml -> /home/sleepy/robp-group7-sleepy/src/core/install/odometry/share/odometry
+running install_egg_info
+Copying ../build/odometry/odometry.egg-info to /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/python3.12/site-packages/odometry-0.0.0-py3.12.egg-info
+running install_scripts
+Installing odometry script to /home/sleepy/robp-group7-sleepy/src/core/install/odometry/lib/custom_launch
+writing list of installed files to '/home/sleepy/robp-group7-sleepy/src/core/build/odometry/install.log'

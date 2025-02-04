@@ -1,0 +1,22 @@
+running develop
+running egg_info
+creating simple_move.egg-info
+writing simple_move.egg-info/PKG-INFO
+writing dependency_links to simple_move.egg-info/dependency_links.txt
+writing entry points to simple_move.egg-info/entry_points.txt
+writing requirements to simple_move.egg-info/requires.txt
+writing top-level names to simple_move.egg-info/top_level.txt
+writing manifest file 'simple_move.egg-info/SOURCES.txt'
+reading manifest file 'simple_move.egg-info/SOURCES.txt'
+writing manifest file 'simple_move.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages/simple-move.egg-link (link to .)
+Installing simple_move script to /home/sleepy/robp-group7-sleepy/install/simple_move/lib/simple_move
+
+Installed /home/sleepy/robp-group7-sleepy/build/simple_move
+running symlink_data
+creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index
+creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index
+creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/simple_move/resource/simple_move -> /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/simple_move/package.xml -> /home/sleepy/robp-group7-sleepy/install/simple_move/share/simple_move

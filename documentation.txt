@@ -1,0 +1,24 @@
+Joy stick setup:
+
+    terminal 1:
+    ros2 run joy joy_node
+
+    terminal 2:
+    ros2 run teleop_twist_joy teleop_node --ros-args --params-file ~/robp-group7-sleepy/src/core/simple_move/simple_move/teleop_twist_joy.yaml
+
+        configuration: make changes in ~/robp-group7-sleepy/src/core/simple_move/simple_move/teleop_twist_joy.yaml
+    
+    terminal 3:
+    ros2 launch robp_launch phidgets_launch.py
+
+    terminal 4:
+    ros2 run simple_move simple_move
+
+    trying to make it work with ros2 launch core_launch launch_joymove.py but it still doesn't work
+
+Camera:
+    Visualize image:
+        terminal 1:
+        ros2 launch realsense2_camera rs_launch.py depth_module.depth_profile:=1280x720x30 pointcloud.enable:=true
+        terminal 2:
+        ros2 run rqt_image_view rqt_image_view

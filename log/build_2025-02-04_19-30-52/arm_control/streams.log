@@ -1,0 +1,17 @@
+[2.758s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/arm_control': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_control/build --no-deps symlink_data
+[3.448s] running develop
+[3.920s] running egg_info
+[3.963s] writing arm_control.egg-info/PKG-INFO
+[3.964s] writing dependency_links to arm_control.egg-info/dependency_links.txt
+[3.964s] writing entry points to arm_control.egg-info/entry_points.txt
+[3.965s] writing requirements to arm_control.egg-info/requires.txt
+[3.965s] writing top-level names to arm_control.egg-info/top_level.txt
+[4.057s] reading manifest file 'arm_control.egg-info/SOURCES.txt'
+[4.057s] writing manifest file 'arm_control.egg-info/SOURCES.txt'
+[4.090s] running build_ext
+[4.090s] Creating /home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages/arm-control.egg-link (link to .)
+[4.091s] Installing move_arm_hardcoded script to /home/sleepy/robp-group7-sleepy/install/arm_control/lib/arm_control
+[4.092s] 
+[4.092s] Installed /home/sleepy/robp-group7-sleepy/build/arm_control
+[4.092s] running symlink_data
+[4.135s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/arm_control' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_control/build --no-deps symlink_data

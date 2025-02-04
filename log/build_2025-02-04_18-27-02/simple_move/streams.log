@@ -1,0 +1,24 @@
+[4.086s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/simple_move': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/simple_move/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/simple_move/build --no-deps symlink_data
+[5.415s] running develop
+[6.266s] running egg_info
+[6.266s] creating simple_move.egg-info
+[6.354s] writing simple_move.egg-info/PKG-INFO
+[6.366s] writing dependency_links to simple_move.egg-info/dependency_links.txt
+[6.376s] writing entry points to simple_move.egg-info/entry_points.txt
+[6.376s] writing requirements to simple_move.egg-info/requires.txt
+[6.376s] writing top-level names to simple_move.egg-info/top_level.txt
+[6.376s] writing manifest file 'simple_move.egg-info/SOURCES.txt'
+[6.669s] reading manifest file 'simple_move.egg-info/SOURCES.txt'
+[6.671s] writing manifest file 'simple_move.egg-info/SOURCES.txt'
+[6.865s] running build_ext
+[6.865s] Creating /home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages/simple-move.egg-link (link to .)
+[6.865s] Installing simple_move script to /home/sleepy/robp-group7-sleepy/install/simple_move/lib/simple_move
+[6.869s] 
+[6.869s] Installed /home/sleepy/robp-group7-sleepy/build/simple_move
+[6.869s] running symlink_data
+[6.869s] creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index
+[6.870s] creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index
+[6.870s] creating /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index/packages
+[6.870s] symbolically linking /home/sleepy/robp-group7-sleepy/build/simple_move/resource/simple_move -> /home/sleepy/robp-group7-sleepy/install/simple_move/share/ament_index/resource_index/packages
+[6.870s] symbolically linking /home/sleepy/robp-group7-sleepy/build/simple_move/package.xml -> /home/sleepy/robp-group7-sleepy/install/simple_move/share/simple_move
+[7.004s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/simple_move' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/simple_move/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/simple_move/build --no-deps symlink_data

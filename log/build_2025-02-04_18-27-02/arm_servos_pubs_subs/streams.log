@@ -1,0 +1,25 @@
+[4.022s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/build --no-deps symlink_data
+[5.965s] running develop
+[5.965s] running egg_info
+[5.965s] creating arm_servos_pubs_subs.egg-info
+[5.966s] writing arm_servos_pubs_subs.egg-info/PKG-INFO
+[5.966s] writing dependency_links to arm_servos_pubs_subs.egg-info/dependency_links.txt
+[5.966s] writing entry points to arm_servos_pubs_subs.egg-info/entry_points.txt
+[5.966s] writing requirements to arm_servos_pubs_subs.egg-info/requires.txt
+[5.966s] writing top-level names to arm_servos_pubs_subs.egg-info/top_level.txt
+[5.966s] writing manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[5.966s] reading manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[5.967s] writing manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[5.978s] running build_ext
+[5.978s] Creating /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm-servos-pubs-subs.egg-link (link to .)
+[5.989s] Installing listener script to /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[6.001s] Installing talker script to /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[6.001s] 
+[6.001s] Installed /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs
+[6.002s] running symlink_data
+[6.002s] creating /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/share/ament_index
+[6.002s] creating /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/share/ament_index/resource_index
+[6.002s] creating /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/share/ament_index/resource_index/packages
+[6.002s] symbolically linking /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/resource/arm_servos_pubs_subs -> /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/share/ament_index/resource_index/packages
+[6.002s] symbolically linking /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/package.xml -> /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/share/arm_servos_pubs_subs
+[6.121s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/build --no-deps symlink_data

@@ -1,0 +1,31 @@
+running develop
+Removing /home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages/core-launch.egg-link (link to .)
+running egg_info
+writing ../../../build/core_launch/core_launch.egg-info/PKG-INFO
+writing dependency_links to ../../../build/core_launch/core_launch.egg-info/dependency_links.txt
+writing requirements to ../../../build/core_launch/core_launch.egg-info/requires.txt
+writing top-level names to ../../../build/core_launch/core_launch.egg-info/top_level.txt
+reading manifest file '../../../build/core_launch/core_launch.egg-info/SOURCES.txt'
+writing manifest file '../../../build/core_launch/core_launch.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/sleepy/robp-group7-sleepy/build/core_launch/build
+creating /home/sleepy/robp-group7-sleepy/build/core_launch/build/lib
+creating /home/sleepy/robp-group7-sleepy/build/core_launch/build/lib/core_launch
+copying core_launch/__init__.py -> /home/sleepy/robp-group7-sleepy/build/core_launch/build/lib/core_launch
+running install
+running install_lib
+creating /home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages/core_launch
+copying /home/sleepy/robp-group7-sleepy/build/core_launch/build/lib/core_launch/__init__.py -> /home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages/core_launch
+byte-compiling /home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages/core_launch/__init__.py to __init__.cpython-312.pyc
+running install_data
+copying resource/core_launch -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/ament_index/resource_index/packages
+copying package.xml -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/core_launch
+copying launch/launch_perception.py -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/core_launch/launch
+copying launch/launch_everything.py -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/core_launch/launch
+copying launch/launch_static_tf.py -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/core_launch/launch
+copying launch/launch_joymove.py -> /home/sleepy/robp-group7-sleepy/install/core_launch/share/core_launch/launch
+running install_egg_info
+Copying ../../../build/core_launch/core_launch.egg-info to /home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages/core_launch-0.0.0-py3.12.egg-info
+running install_scripts
+writing list of installed files to '/home/sleepy/robp-group7-sleepy/build/core_launch/install.log'

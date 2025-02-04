@@ -1,0 +1,24 @@
+[3.835s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/arm_control': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_control/build --no-deps symlink_data
+[4.750s] running develop
+[5.420s] running egg_info
+[5.421s] creating arm_control.egg-info
+[5.488s] writing arm_control.egg-info/PKG-INFO
+[5.489s] writing dependency_links to arm_control.egg-info/dependency_links.txt
+[5.489s] writing entry points to arm_control.egg-info/entry_points.txt
+[5.489s] writing requirements to arm_control.egg-info/requires.txt
+[5.489s] writing top-level names to arm_control.egg-info/top_level.txt
+[5.490s] writing manifest file 'arm_control.egg-info/SOURCES.txt'
+[5.669s] reading manifest file 'arm_control.egg-info/SOURCES.txt'
+[5.675s] writing manifest file 'arm_control.egg-info/SOURCES.txt'
+[5.828s] running build_ext
+[5.828s] Creating /home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages/arm-control.egg-link (link to .)
+[5.828s] Installing move_arm_hardcoded script to /home/sleepy/robp-group7-sleepy/install/arm_control/lib/arm_control
+[5.829s] 
+[5.829s] Installed /home/sleepy/robp-group7-sleepy/build/arm_control
+[5.830s] running symlink_data
+[5.830s] creating /home/sleepy/robp-group7-sleepy/install/arm_control/share/ament_index
+[5.830s] creating /home/sleepy/robp-group7-sleepy/install/arm_control/share/ament_index/resource_index
+[5.831s] creating /home/sleepy/robp-group7-sleepy/install/arm_control/share/ament_index/resource_index/packages
+[5.841s] symbolically linking /home/sleepy/robp-group7-sleepy/build/arm_control/resource/arm_control -> /home/sleepy/robp-group7-sleepy/install/arm_control/share/ament_index/resource_index/packages
+[5.841s] symbolically linking /home/sleepy/robp-group7-sleepy/build/arm_control/package.xml -> /home/sleepy/robp-group7-sleepy/install/arm_control/share/arm_control
+[5.985s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/arm_control' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_control/build --no-deps symlink_data

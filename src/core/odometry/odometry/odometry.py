@@ -8,13 +8,20 @@ import rclpy
 from rclpy.node import Node
 
 from tf2_ros import TransformBroadcaster
-from tf_transformations import quaternion_from_euler, euler_from_quaternion
 
 from geometry_msgs.msg import TransformStamped
 from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 
+def quaternion_from_yaw(x,y,yaw):
+    """
+    Convert yaw angle to quaternion, for 2D rotation only.
+    """
+    return [0.0,                  # x
+            0.0,                  # y
+            math.sin(yaw / 2.0),  # z
+            math.cos(yaw / 2.0)]  # w
 
 class Odometry(Node):
 
@@ -53,23 +60,34 @@ class Odometry(Node):
         # The kinematic parameters for the differential configuration
         dt = 50 / 1000
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.0  # TODO: Fill in
-        base = 0.0  # TODO: Fill in
+        wheel_radius = 0.04921  # TODO: Fill in
+        base = 0.3  # TODO: Fill in
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
         delta_ticks_right = msg.delta_encoder_right
 
-        # TODO: Fill in
+        dist_l = 2 * math.pi * wheel_radius * delta_ticks_left / ticks_per_rev
+        dist_r = 2 * math.pi * wheel_radius * delta_ticks_right / ticks_per_rev
 
-        self._x = self._x  # TODO: Fill in
-        self._y = self._y  # TODO: Fill in
-        self._yaw = self._yaw  # TODO: Fill in
+        vel_l = dist_l / dt
+        vel_r = dist_r / dt
+
+        vel = (vel_l+vel_r)/2
+        omega = (vel_r - vel_l) / base
+
+        self._yaw = self._yaw + omega * dt
+        self._yaw = math.atan2(math.sin(self._yaw), math.cos(self._yaw))
+        self.average_yaw = self._yaw - omega*dt/2
+
+        self._x = self._x + vel * dt * math.cos(self.average_yaw) 
+        self._y = self._y + vel * dt * math.sin(self.average_yaw) 
         
-        stamp = None # TODO: Fill in
+        stamp = msg.header.stamp 
 
         self.broadcast_transform(stamp, self._x, self._y, self._yaw)
         self.publish_path(stamp, self._x, self._y, self._yaw)
+
 
     def broadcast_transform(self, stamp, x, y, yaw):
         """Takes a 2D pose and broadcasts it as a ROS transform.
@@ -98,7 +116,7 @@ class Odometry(Node):
         # For the same reason, the robot can only rotate around one axis
         # and this why we set rotation in x and y to 0 and obtain
         # rotation in z axis from the message
-        q = quaternion_from_euler(0.0, 0.0, yaw)
+        q = quaternion_from_yaw(0.0, 0.0, yaw)
         t.transform.rotation.x = q[0]
         t.transform.rotation.y = q[1]
         t.transform.rotation.z = q[2]
@@ -127,7 +145,7 @@ class Odometry(Node):
         pose.pose.position.y = y
         pose.pose.position.z = 0.01  # 1 cm up so it will be above ground level
 
-        q = quaternion_from_euler(0.0, 0.0, yaw)
+        q = quaternion_from_yaw(0.0, 0.0, yaw)
         pose.pose.orientation.x = q[0]
         pose.pose.orientation.y = q[1]
         pose.pose.orientation.z = q[2]

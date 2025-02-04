@@ -6,6 +6,8 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import PointCloud2, PointField
+import sensor_msgs_py.point_cloud2 as pc2
 
 class lidar_processing(Node):
     '''
@@ -17,6 +19,20 @@ class lidar_processing(Node):
     def __init__(self):
         super().__init__('lidar_processing')
 
+        self.accumulated_points = []
+
+        self.fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+        ]  
+
+        self.declare_parameter('debug', False)
+        self.debug = self.get_parameter('debug').value
+        if self.debug:
+            self.get_logger().info('Debug mode enabled')
+            self.get_logger().info('node lidar_processing inited')
+
         self.subscription = self.create_subscription(
             LaserScan,
             "/scan",
@@ -25,9 +41,33 @@ class lidar_processing(Node):
         )
         self.subscription
 
+        self.point_cloud_publisher = self.create_publisher(
+            PointCloud2,
+            '/lidar_pointcloud',  # 话题名称
+            10
+        )
+
 
     def lidar_listener_callback(self, msg):
-        print(f"Received lidar msg, time {msg.header.stamp.sec}")
+        if self.debug:
+            self.get_logger().info(f"Received lidar msg, time {msg.header.stamp.sec}")
+        
+        angles = np.arange(msg.angle_min, msg.angle_max, msg.angle_increment)
+        ranges = np.array(msg.ranges)
+
+        valid_indices = np.isfinite(ranges)# a mask to kick infinity points out
+        ranges = ranges[valid_indices]
+        angles = angles[valid_indices]
+        
+        x = ranges * np.cos(angles)# make up the points structure
+        y = ranges * np.sin(angles)
+        z = np.zeros_like(x)
+        points = np.column_stack((x, y, z))
+        
+        pc2_msg = pc2.create_cloud(msg.header, self.fields, points)
+        
+        self.point_cloud_publisher.publish(pc2_msg)
+
         '''
         a classic lidar msg has structure below:
         header:
@@ -65,6 +105,12 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
+    finally:
+        node.destroy_node()
+        try:
+            rclpy.try_shutdown()
+        except Exception:
+            pass
 
     rclpy.shutdown()
 
