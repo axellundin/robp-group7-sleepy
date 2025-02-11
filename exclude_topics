@@ -1,0 +1,8 @@
+/camera/camera/depth/camera_info
+/camera/camera/depth/color/points
+/camera/camera/depth/image_rect_raw
+/camera/camera/depth/image_rect_raw/compressed
+/camera/camera/depth/image_rect_raw/compressedDepth
+/camera/camera/depth/image_rect_raw/theora
+/camera/camera/depth/image_rect_raw/zstd
+/camera/camera/depth/metadata

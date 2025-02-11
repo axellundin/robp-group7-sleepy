@@ -20,7 +20,7 @@ class MoveArmHardcoded(Node):
         self.gripper_state = 1 # 1 = open -1 = close
 
         self.gripper_open = 4000
-        self.gripper_close = 10000
+        self.gripper_close = 11000
 
     def joy_callback(self, msg):
         if msg.buttons[0]: 
@@ -48,8 +48,8 @@ class MoveArmHardcoded(Node):
             -1,
             12000, 
             3000, 
-            16000, 
-            7000, 
+            14000, 
+            5000, 
             12000,
             self.T,
             self.T,

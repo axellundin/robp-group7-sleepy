@@ -8,6 +8,7 @@ core_launch.egg-info/dependency_links.txt
 core_launch.egg-info/requires.txt
 core_launch.egg-info/top_level.txt
 core_launch.egg-info/zip-safe
+launch/launch_arm_camera.py
 launch/launch_everything.py
 launch/launch_joymove.py
 launch/launch_lidar.py

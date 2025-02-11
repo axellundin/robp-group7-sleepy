@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from core_interfaces/action/MoveTo.action
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/PoseStamped.idl"
+
+module core_interfaces {
+  module action {
+    @verbatim (language="comment", text=
+      "Goal")
+    struct MoveTo_Goal {
+      geometry_msgs::msg::PoseStamped way_point;
+
+      boolean enforce_orientation;
+
+      boolean stop_at_goal;
+    };
+    @verbatim (language="comment", text=
+      "Result")
+    struct MoveTo_Result {
+      boolean success;
+    };
+    @verbatim (language="comment", text=
+      "Feedback")
+    struct MoveTo_Feedback {
+      float distance_to_goal;
+    };
+  };
+};

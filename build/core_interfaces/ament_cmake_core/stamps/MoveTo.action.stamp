@@ -1,0 +1,11 @@
+# Goal
+geometry_msgs/PoseStamped way_point
+bool enforce_orientation
+bool stop_at_goal
+---
+# Result
+bool success
+
+---
+# Feedback
+float32 distance_to_goal

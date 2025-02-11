@@ -3,6 +3,9 @@ setup.cfg
 setup.py
 odometry/__init__.py
 odometry/odometry.py
+odometry/odometry_ekf.py
+odometry/odometry_imu_fuse_simple.py
+odometry/yassirsodometry.py
 odometry.egg-info/PKG-INFO
 odometry.egg-info/SOURCES.txt
 odometry.egg-info/dependency_links.txt

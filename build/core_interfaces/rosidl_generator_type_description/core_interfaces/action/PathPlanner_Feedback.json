@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "core_interfaces/action/PathPlanner_Feedback",
+      "fields": [
+        {
+          "name": "progress",
+          "type": {
+            "type_id": 6,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "core_interfaces/action/PathPlanner_Feedback",
+      "hash_string": "RIHS01_2f992ffaaeea112022fc9fbedbfcee7908d3b31df2dbaa554d8da64f6271f822"
+    }
+  ]
+}

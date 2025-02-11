@@ -1,0 +1,17 @@
+[2.646s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/simple_move': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/simple_move/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/simple_move/build --no-deps symlink_data
+[3.380s] running develop
+[3.886s] running egg_info
+[3.937s] writing simple_move.egg-info/PKG-INFO
+[3.938s] writing dependency_links to simple_move.egg-info/dependency_links.txt
+[3.939s] writing entry points to simple_move.egg-info/entry_points.txt
+[3.941s] writing requirements to simple_move.egg-info/requires.txt
+[3.944s] writing top-level names to simple_move.egg-info/top_level.txt
+[4.030s] reading manifest file 'simple_move.egg-info/SOURCES.txt'
+[4.032s] writing manifest file 'simple_move.egg-info/SOURCES.txt'
+[4.085s] running build_ext
+[4.085s] Creating /home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages/simple-move.egg-link (link to .)
+[4.087s] Installing simple_move script to /home/sleepy/robp-group7-sleepy/install/simple_move/lib/simple_move
+[4.088s] 
+[4.088s] Installed /home/sleepy/robp-group7-sleepy/build/simple_move
+[4.088s] running symlink_data
+[4.374s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/simple_move' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/simple_move/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/simple_move/build --no-deps symlink_data

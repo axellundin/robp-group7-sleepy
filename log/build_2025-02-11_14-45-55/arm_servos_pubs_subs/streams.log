@@ -1,0 +1,18 @@
+[4.003s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/build --no-deps symlink_data
+[5.604s] running develop
+[6.347s] running egg_info
+[6.469s] writing arm_servos_pubs_subs.egg-info/PKG-INFO
+[6.475s] writing dependency_links to arm_servos_pubs_subs.egg-info/dependency_links.txt
+[6.477s] writing entry points to arm_servos_pubs_subs.egg-info/entry_points.txt
+[6.482s] writing requirements to arm_servos_pubs_subs.egg-info/requires.txt
+[6.483s] writing top-level names to arm_servos_pubs_subs.egg-info/top_level.txt
+[6.679s] reading manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[6.681s] writing manifest file 'arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[6.756s] running build_ext
+[6.757s] Creating /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm-servos-pubs-subs.egg-link (link to .)
+[6.778s] Installing listener script to /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[6.780s] Installing talker script to /home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[6.781s] 
+[6.782s] Installed /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs
+[6.788s] running symlink_data
+[6.935s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs/build --no-deps symlink_data

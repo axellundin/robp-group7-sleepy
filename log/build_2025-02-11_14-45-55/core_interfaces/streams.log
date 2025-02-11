@@ -1,0 +1,285 @@
+[0.063s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/core_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/core_interfaces -- -j8 -l8
+[1.284s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.285s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.285s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.285s] -- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.285s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[1.285s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.285s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.286s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.286s] -- Found geometry_msgs: 5.3.5 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[1.286s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[1.600s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.519s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.519s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[3.666s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[3.874s] -- Added test 'lint_cmake' to check CMake code style
+[3.879s] -- Added test 'xmllint' to check XML markup files
+[3.911s] -- Configuring done (3.8s)
+[4.345s] -- Generating done (0.4s)
+[4.461s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/core_interfaces
+[4.623s] [  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[4.705s] [  1%] Built target ament_cmake_python_symlink_core_interfaces
+[5.415s] running egg_info
+[5.461s] writing core_interfaces.egg-info/PKG-INFO
+[5.462s] writing dependency_links to core_interfaces.egg-info/dependency_links.txt
+[5.462s] writing top-level names to core_interfaces.egg-info/top_level.txt
+[5.596s] [  1%] Built target core_interfaces__rosidl_generator_type_description
+[5.631s] reading manifest file 'core_interfaces.egg-info/SOURCES.txt'
+[5.634s] writing manifest file 'core_interfaces.egg-info/SOURCES.txt'
+[5.640s] [  3%] [34m[1mGenerating C code for ROS interfaces[0m
+[5.675s] [  4%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[5.745s] [  4%] Built target ament_cmake_python_build_core_interfaces_egg
+[8.726s] [  4%] Built target core_interfaces__cpp
+[8.978s] [  6%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/srv/detail/geofence_compliance__description.c.o[0m
+[8.980s] [  7%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/move_to__functions.c.o[0m
+[8.981s] [  9%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/srv/detail/geofence_compliance__functions.c.o[0m
+[8.983s] [ 10%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/move_to__type_support.c.o[0m
+[8.989s] [ 14%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/path_planner__description.c.o[0m
+[8.997s] [ 15%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/path_planner__functions.c.o[0m
+[8.997s] [ 15%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/srv/detail/geofence_compliance__type_support.c.o[0m
+[9.049s] [ 17%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/move_to__description.c.o[0m
+[9.134s] [ 18%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/action/detail/path_planner__type_support.c.o[0m
+[9.157s] [ 20%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/msg/detail/detected_msg__description.c.o[0m
+[9.243s] [ 21%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/msg/detail/detected_msg__functions.c.o[0m
+[9.299s] [ 23%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_c.dir/rosidl_generator_c/core_interfaces/msg/detail/detected_msg__type_support.c.o[0m
+[9.528s] [ 25%] [32m[1mLinking C shared library libcore_interfaces__rosidl_generator_c.so[0m
+[9.598s] [ 25%] Built target core_interfaces__rosidl_generator_c
+[9.624s] [ 26%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[9.624s] [ 28%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[9.627s] [ 29%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[9.628s] [ 31%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[9.641s] [ 32%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[9.654s] [ 34%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[11.274s] [ 35%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/core_interfaces/srv/geofence_compliance__type_support.cpp.o[0m
+[11.279s] [ 37%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/core_interfaces/action/move_to__type_support.cpp.o[0m
+[11.282s] [ 39%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/core_interfaces/action/path_planner__type_support.cpp.o[0m
+[11.520s] [ 40%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/core_interfaces/msg/detected_msg__type_support.cpp.o[0m
+[11.578s] [ 42%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/core_interfaces/srv/geofence_compliance__type_support.cpp.o[0m
+[11.604s] [ 43%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/core_interfaces/action/path_planner__type_support.cpp.o[0m
+[11.613s] [ 45%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/core_interfaces/action/move_to__type_support.cpp.o[0m
+[11.669s] [ 46%] [32m[1mLinking CXX shared library libcore_interfaces__rosidl_typesupport_c.so[0m
+[11.898s] [ 46%] Built target core_interfaces__rosidl_typesupport_c
+[11.913s] [ 48%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/core_interfaces/msg/detected_msg__type_support.cpp.o[0m
+[12.113s] [ 50%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/core_interfaces/srv/detail/geofence_compliance__type_support.cpp.o[0m
+[12.516s] [ 51%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/core_interfaces/srv/detail/geofence_compliance__type_support.c.o[0m
+[12.633s] [ 53%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/core_interfaces/action/detail/move_to__type_support.c.o[0m
+[12.731s] [ 54%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/core_interfaces/action/detail/move_to__type_support.cpp.o[0m
+[12.879s] [ 56%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/core_interfaces/action/detail/path_planner__type_support.c.o[0m
+[13.149s] [ 57%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/core_interfaces/msg/detail/detected_msg__type_support.c.o[0m
+[13.184s] [ 59%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/core_interfaces/action/detail/path_planner__type_support.cpp.o[0m
+[13.290s] [ 60%] [32m[1mLinking C shared library libcore_interfaces__rosidl_typesupport_introspection_c.so[0m
+[13.367s] [ 60%] Built target core_interfaces__rosidl_typesupport_introspection_c
+[13.390s] [ 62%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/core_interfaces/msg/detail/detected_msg__type_support.cpp.o[0m
+[13.635s] [ 64%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/core_interfaces/srv/detail/dds_fastrtps/geofence_compliance__type_support.cpp.o[0m
+[13.636s] [ 65%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/core_interfaces/action/detail/dds_fastrtps/move_to__type_support.cpp.o[0m
+[13.647s] [ 67%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/core_interfaces/action/detail/dds_fastrtps/path_planner__type_support.cpp.o[0m
+[13.782s] [ 68%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/core_interfaces/srv/detail/geofence_compliance__type_support_c.cpp.o[0m
+[14.233s] [ 70%] [32m[1mLinking CXX shared library libcore_interfaces__rosidl_typesupport_cpp.so[0m
+[14.464s] [ 71%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/core_interfaces/msg/detail/dds_fastrtps/detected_msg__type_support.cpp.o[0m
+[14.608s] [ 71%] Built target core_interfaces__rosidl_typesupport_cpp
+[14.633s] [ 73%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/core_interfaces/action/detail/move_to__type_support_c.cpp.o[0m
+[14.838s] [ 75%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/core_interfaces/action/detail/path_planner__type_support_c.cpp.o[0m
+[14.978s] [ 76%] [32mBuilding CXX object CMakeFiles/core_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/core_interfaces/msg/detail/detected_msg__type_support_c.cpp.o[0m
+[15.390s] [ 78%] [32m[1mLinking CXX shared library libcore_interfaces__rosidl_typesupport_introspection_cpp.so[0m
+[15.641s] [ 78%] Built target core_interfaces__rosidl_typesupport_introspection_cpp
+[15.941s] [ 79%] [32m[1mLinking CXX shared library libcore_interfaces__rosidl_typesupport_fastrtps_cpp.so[0m
+[16.026s] [ 81%] [32m[1mLinking CXX shared library libcore_interfaces__rosidl_typesupport_fastrtps_c.so[0m
+[16.057s] [ 81%] Built target core_interfaces__rosidl_typesupport_fastrtps_cpp
+[16.109s] [ 81%] Built target core_interfaces__rosidl_typesupport_fastrtps_c
+[16.133s] [ 81%] Built target core_interfaces
+[16.159s] [ 82%] [34m[1mGenerating Python code for ROS interfaces[0m
+[18.050s] [ 82%] Built target core_interfaces__py
+[18.092s] [ 85%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_py.dir/rosidl_generator_py/core_interfaces/action/_path_planner_s.c.o[0m
+[18.092s] [ 85%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_py.dir/rosidl_generator_py/core_interfaces/msg/_detected_msg_s.c.o[0m
+[18.093s] [ 87%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_py.dir/rosidl_generator_py/core_interfaces/srv/_geofence_compliance_s.c.o[0m
+[18.095s] [ 89%] [32mBuilding C object CMakeFiles/core_interfaces__rosidl_generator_py.dir/rosidl_generator_py/core_interfaces/action/_move_to_s.c.o[0m
+[18.384s] [ 90%] [32m[1mLinking C shared library libcore_interfaces__rosidl_generator_py.so[0m
+[18.444s] [ 90%] Built target core_interfaces__rosidl_generator_py
+[18.498s] [ 92%] [32mBuilding C object CMakeFiles/core_interfaces_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[18.504s] [ 93%] [32mBuilding C object CMakeFiles/core_interfaces_s__rosidl_typesupport_c.dir/rosidl_generator_py/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_c.c.o[0m
+[18.508s] [ 95%] [32mBuilding C object CMakeFiles/core_interfaces_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[18.921s] [ 96%] [32m[1mLinking C shared module rosidl_generator_py/core_interfaces/core_interfaces_s__rosidl_typesupport_fastrtps_c.so[0m
+[18.939s] [ 98%] [32m[1mLinking C shared module rosidl_generator_py/core_interfaces/core_interfaces_s__rosidl_typesupport_c.so[0m
+[18.959s] [100%] [32m[1mLinking C shared module rosidl_generator_py/core_interfaces/core_interfaces_s__rosidl_typesupport_introspection_c.so[0m
+[18.988s] [100%] Built target core_interfaces_s__rosidl_typesupport_fastrtps_c
+[18.994s] [100%] Built target core_interfaces_s__rosidl_typesupport_c
+[19.021s] [100%] Built target core_interfaces_s__rosidl_typesupport_introspection_c
+[19.041s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/core_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/core_interfaces -- -j8 -l8
+[19.042s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/core_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/core_interfaces
+[19.053s] -- Install configuration: ""
+[19.053s] -- Execute custom install script
+[19.054s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/ament_index/resource_index/rosidl_interfaces/core_interfaces
+[19.055s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/srv/GeofenceCompliance.json
+[19.055s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/MoveTo.json
+[19.055s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/PathPlanner.json
+[19.055s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/msg/DetectedMsg.json
+[19.072s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__functions.h
+[19.073s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__struct.h
+[19.073s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__type_support.h
+[19.074s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__functions.h
+[19.074s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__struct.h
+[19.075s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__type_support.h
+[19.075s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/move_to.h
+[19.075s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/path_planner.h
+[19.075s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__functions.h
+[19.089s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__struct.h
+[19.106s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__type_support.h
+[19.122s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detected_msg.h
+[19.140s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/rosidl_generator_c__visibility_control.h
+[19.142s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__functions.h
+[19.143s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__struct.h
+[19.144s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__type_support.h
+[19.144s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/geofence_compliance.h
+[19.145s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/library_path.sh
+[19.145s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/library_path.dsv
+[19.147s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__rosidl_typesupport_fastrtps_c.h
+[19.147s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__rosidl_typesupport_fastrtps_c.h
+[19.152s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__rosidl_typesupport_fastrtps_c.h
+[19.166s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[19.167s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__rosidl_typesupport_fastrtps_c.h
+[19.167s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__rosidl_typesupport_introspection_c.h
+[19.167s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__rosidl_typesupport_introspection_c.h
+[19.168s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__rosidl_typesupport_introspection_c.h
+[19.188s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[19.188s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__rosidl_typesupport_introspection_c.h
+[19.192s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__builder.hpp
+[19.192s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__struct.hpp
+[19.198s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__traits.hpp
+[19.199s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__type_support.hpp
+[19.199s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__builder.hpp
+[19.199s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__struct.hpp
+[19.199s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__traits.hpp
+[19.200s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__type_support.hpp
+[19.200s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/move_to.hpp
+[19.200s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/path_planner.hpp
+[19.200s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__builder.hpp
+[19.217s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__struct.hpp
+[19.236s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__traits.hpp
+[19.252s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__type_support.hpp
+[19.267s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detected_msg.hpp
+[19.282s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[19.283s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__builder.hpp
+[19.284s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__struct.hpp
+[19.284s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__traits.hpp
+[19.285s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__type_support.hpp
+[19.285s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/geofence_compliance.hpp
+[19.287s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__rosidl_typesupport_fastrtps_cpp.hpp
+[19.287s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__rosidl_typesupport_fastrtps_cpp.hpp
+[19.288s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__rosidl_typesupport_fastrtps_cpp.hpp
+[19.302s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[19.303s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/move_to__rosidl_typesupport_introspection_cpp.hpp
+[19.304s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/action/detail/path_planner__rosidl_typesupport_introspection_cpp.hpp
+[19.304s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/msg/detail/detected_msg__rosidl_typesupport_introspection_cpp.hpp
+[19.321s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/include/core_interfaces/core_interfaces/srv/detail/geofence_compliance__rosidl_typesupport_introspection_cpp.hpp
+[19.322s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/pythonpath.sh
+[19.322s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/pythonpath.dsv
+[19.324s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces-0.0.0-py3.12.egg-info/PKG-INFO
+[19.325s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces-0.0.0-py3.12.egg-info/SOURCES.txt
+[19.325s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces-0.0.0-py3.12.egg-info/dependency_links.txt
+[19.325s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces-0.0.0-py3.12.egg-info/top_level.txt
+[19.326s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/__init__.py
+[19.326s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_c.c
+[19.326s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[19.326s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/_core_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/__init__.py
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_move_to.py
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_move_to_s.c
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_path_planner.py
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_path_planner_s.c
+[19.327s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_c.so
+[19.329s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_fastrtps_c.so
+[19.329s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_introspection_c.so
+[19.329s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg/__init__.py
+[19.341s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg/_detected_msg.py
+[19.353s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg/_detected_msg_s.c
+[19.372s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv/__init__.py
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv/_geofence_compliance.py
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv/_geofence_compliance_s.c
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_fastrtps_c.so
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_introspection_c.so
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/core_interfaces_s__rosidl_typesupport_c.so
+[19.373s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/srv/GeofenceCompliance.idl
+[19.374s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/MoveTo.idl
+[19.374s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/PathPlanner.idl
+[19.374s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/msg/DetectedMsg.idl
+[19.391s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/srv/GeofenceCompliance.srv
+[19.391s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/MoveTo.action
+[19.391s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/action/PathPlanner.action
+[19.392s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/msg/DetectedMsg.msg
+[19.408s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/ament_index/resource_index/package_run_dependencies/core_interfaces
+[19.409s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/ament_index/resource_index/parent_prefix_path/core_interfaces
+[19.409s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/ament_prefix_path.sh
+[19.411s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/ament_prefix_path.dsv
+[19.411s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/path.sh
+[19.411s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/environment/path.dsv
+[19.412s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/local_setup.bash
+[19.412s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/local_setup.sh
+[19.414s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/local_setup.zsh
+[19.414s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/local_setup.dsv
+[19.414s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/package.dsv
+[19.430s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/ament_index/resource_index/packages/core_interfaces
+[19.430s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/rosidl_cmake-extras.cmake
+[19.431s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[19.434s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[19.434s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[19.434s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[19.434s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[19.435s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[19.435s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfacesConfig.cmake
+[19.435s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfacesConfig-version.cmake
+[19.435s] -- Up-to-date symlink: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/package.xml
+[19.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_generator_c.so
+[19.437s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_generator_c.so" to ""
+[19.438s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_fastrtps_c.so
+[19.438s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_fastrtps_c.so" to ""
+[19.438s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_introspection_c.so
+[19.438s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_introspection_c.so" to ""
+[19.438s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_c.so
+[19.439s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_c.so" to ""
+[19.439s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[19.440s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_fastrtps_cpp.so" to ""
+[19.441s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_introspection_cpp.so
+[19.443s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_introspection_cpp.so" to ""
+[19.443s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_cpp.so
+[19.445s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_typesupport_cpp.so" to ""
+[19.575s] Listing '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces'...
+[19.577s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/__init__.py'...
+[19.578s] Listing '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action'...
+[19.580s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/__init__.py'...
+[19.581s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_move_to.py'...
+[19.582s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/action/_path_planner.py'...
+[19.583s] Listing '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg'...
+[19.584s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg/__init__.py'...
+[19.584s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/msg/_detected_msg.py'...
+[19.585s] Listing '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv'...
+[19.585s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv/__init__.py'...
+[19.585s] Compiling '/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages/core_interfaces/srv/_geofence_compliance.py'...
+[19.586s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_generator_py.so
+[19.588s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/libcore_interfaces__rosidl_generator_py.so" to ""
+[19.588s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_cExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_cExport-noconfig.cmake].
+[19.588s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_cExport.cmake
+[19.589s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_cExport-noconfig.cmake
+[19.591s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake].
+[19.591s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[19.592s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[19.593s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake].
+[19.593s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[19.594s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[19.594s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cExport-noconfig.cmake].
+[19.595s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cExport.cmake
+[19.598s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[19.599s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_cppExport.cmake
+[19.600s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake].
+[19.600s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[19.601s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[19.601s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cppExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake].
+[19.602s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[19.603s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[19.604s] -- Old export file "/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cppExport.cmake" will be replaced.  Removing files [/home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cppExport-noconfig.cmake].
+[19.605s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cppExport.cmake
+[19.605s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/core_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[19.605s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_pyExport.cmake
+[19.605s] -- Installing: /home/sleepy/robp-group7-sleepy/install/core_interfaces/share/core_interfaces/cmake/export_core_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[19.610s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/core_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/core_interfaces

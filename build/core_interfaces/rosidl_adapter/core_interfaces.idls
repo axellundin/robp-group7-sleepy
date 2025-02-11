@@ -1,0 +1,4 @@
+/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_adapter/core_interfaces:srv/GeofenceCompliance.idl
+/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_adapter/core_interfaces:action/MoveTo.idl
+/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_adapter/core_interfaces:action/PathPlanner.idl
+/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_adapter/core_interfaces:msg/DetectedMsg.idl

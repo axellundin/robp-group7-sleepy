@@ -14,6 +14,13 @@ def generate_launch_description():
         ])
     )
 
+    arm_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('core_launch'), 
+            'launch', 'launch_arm_camera.py')
+        ])
+    )
+
     lidar_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('core_launch'), 
@@ -61,7 +68,7 @@ def generate_launch_description():
         executable='lidar_processing', 
     )
 
-    # # Jaystick start node 
+    # # Joystick start node 
     joy_node = Node(
         package='joy', 
         executable='joy_node', 
@@ -94,17 +101,18 @@ def generate_launch_description():
 
     return LaunchDescription([
         camera_launch,
+        arm_camera_launch,
         lidar_launch,
         phidgets_launch,
         static_tf_launch,
-        odometry_node,
+        # odometry_node,
         joy_node, 
         teleop_node, 
         simple_move_node, 
         micro_ros_node, 
         joystick_arm_control, 
-        lidar_processing_node, 
-        camera_processing_node
+        # lidar_processing_node, 
+        # camera_processing_node
     ])  
 
 if __name__ == '__main__':

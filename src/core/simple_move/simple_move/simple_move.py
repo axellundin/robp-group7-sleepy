@@ -4,6 +4,7 @@ from geometry_msgs.msg import Twist
 from robp_interfaces.msg import DutyCycles
 import numpy as np
 
+
 class simple_move(Node):
     """
     this Node will check controller signal,
@@ -26,14 +27,10 @@ class simple_move(Node):
         motor_msg = DutyCycles()
         motor_msg.header.stamp = self.get_clock().now().to_msg()
         motor_msg.header.frame_id = "motors"
-        B = 0.3124
-        Vmax = 300
-        wmax = 100
-        r = 0.04921
-        K = 3072 * 2*np.pi
+        duty_cycle_max = 0.5
 
-        motor_msg.duty_cycle_right = (1/(K*r))*(Vmax*msg.linear.x+wmax*msg.angular.z)
-        motor_msg.duty_cycle_left = (1/(K*r))*(Vmax*msg.linear.x-wmax*msg.angular.z)
+        motor_msg.duty_cycle_right =  duty_cycle_max * np.max([-1 ,np.min([1, msg.linear.x + msg.angular.z] )]) 
+        motor_msg.duty_cycle_left = duty_cycle_max *  np.max([-1,np.min([1, msg.linear.x-msg.angular.z] )] )
         print("Höger")
         print(motor_msg.duty_cycle_right)
         print("Vänster:")

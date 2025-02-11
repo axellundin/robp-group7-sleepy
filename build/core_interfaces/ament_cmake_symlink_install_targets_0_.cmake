@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_generator_py/core_interfaces/core_interfaces_s__rosidl_typesupport_fastrtps_c.so" "TARGETS" "core_interfaces_s__rosidl_typesupport_fastrtps_c" "DESTINATION" "lib/python3.12/site-packages/core_interfaces")

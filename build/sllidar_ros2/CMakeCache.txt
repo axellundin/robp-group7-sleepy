@@ -268,6 +268,9 @@ PKG_CONFIG_ARGN:STRING=
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Select ROS middleware implementation to link against
+RMW_IMPLEMENTATION:STRING=rmw_fastrtps_cpp
+
 //Name of the computer/site where compile is being run
 SITE:STRING=sleepy
 

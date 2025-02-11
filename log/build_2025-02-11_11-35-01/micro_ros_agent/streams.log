@@ -1,0 +1,576 @@
+[0.121s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/uros/micro-ROS-Agent/micro_ros_agent -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/micro_ros_agent
+[0.414s] -- The C compiler identification is GNU 13.3.0
+[0.460s] -- Detecting C compiler ABI info
+[0.799s] -- Detecting C compiler ABI info - done
+[0.846s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.846s] -- Detecting C compile features
+[0.847s] -- Detecting C compile features - done
+[1.072s] -- The CXX compiler identification is GNU 13.3.0
+[1.116s] -- Detecting CXX compiler ABI info
+[1.489s] -- Detecting CXX compiler ABI info - done
+[1.560s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.573s] -- Detecting CXX compile features
+[1.577s] -- Detecting CXX compile features - done
+[1.761s] -- Configuring done (1.6s)
+[1.788s] -- Generating done (0.0s)
+[1.789s] [33mCMake Warning:
+[1.789s]   Manually-specified variables were not used by the project:
+[1.790s] 
+[1.790s]     AMENT_CMAKE_SYMLINK_INSTALL
+[1.790s] 
+[1.790s] [0m
+[1.801s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent
+[1.817s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent' returned '0': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/uros/micro-ROS-Agent/micro_ros_agent -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/micro_ros_agent
+[1.818s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_agent -- -j8 -l8
+[4.104s] [  6%] [34m[1mCreating directories for 'xrceagent'[0m
+[4.104s] [ 12%] [34m[1mPerforming download step (git clone) for 'xrceagent'[0m
+[4.105s] Cloning into 'xrceagent'...
+[6.720s] HEAD is now at 7362281 Release v2.4.3
+[6.892s] [ 18%] [34m[1mPerforming update step for 'xrceagent'[0m
+[6.962s] [ 25%] [34m[1mNo patch step for 'xrceagent'[0m
+[7.025s] [ 31%] [34m[1mPerforming configure step for 'xrceagent'[0m
+[7.056s] loading initial cache file /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/tmp/xrceagent-cache-.cmake
+[7.251s] -- The C compiler identification is GNU 13.3.0
+[7.297s] -- Detecting C compiler ABI info
+[7.597s] -- Detecting C compiler ABI info - done
+[7.640s] -- Check for working C compiler: /usr/bin/cc - skipped
+[7.641s] -- Detecting C compile features
+[7.642s] -- Detecting C compile features - done
+[7.818s] -- The CXX compiler identification is GNU 13.3.0
+[7.861s] -- Detecting CXX compiler ABI info
+[8.167s] -- Detecting CXX compiler ABI info - done
+[8.212s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[8.213s] -- Detecting CXX compile features
+[8.215s] -- Detecting CXX compile features - done
+[8.357s] -- Configuring done (1.3s)
+[8.371s] -- Generating done (0.0s)
+[8.373s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build
+[8.453s] [ 37%] [34m[1mPerforming build step for 'xrceagent'[0m
+[8.602s] [  6%] [34m[1mCreating directories for 'spdlog'[0m
+[8.693s] [ 12%] [34m[1mPerforming download step (git clone) for 'spdlog'[0m
+[8.762s] Cloning into 'spdlog'...
+[14.810s] HEAD is now at eb322062 Bump version to 1.9.2
+[14.906s] [ 18%] [34m[1mPerforming update step for 'spdlog'[0m
+[14.952s] [ 25%] [34m[1mNo patch step for 'spdlog'[0m
+[15.000s] [ 31%] [34m[1mPerforming configure step for 'spdlog'[0m
+[15.018s] loading initial cache file /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/spdlog/tmp/spdlog-cache-.cmake
+[15.147s] -- The CXX compiler identification is GNU 13.3.0
+[15.190s] -- Detecting CXX compiler ABI info
+[15.380s] -- Detecting CXX compiler ABI info - done
+[15.402s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[15.403s] -- Detecting CXX compile features
+[15.404s] -- Detecting CXX compile features - done
+[15.406s] -- Build spdlog: 1.9.2
+[15.414s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[15.632s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[15.636s] -- Found Threads: TRUE  
+[15.636s] -- Build type: Release
+[15.639s] -- Generating example(s)
+[15.639s] -- Generating install
+[15.684s] -- Configuring done (0.7s)
+[15.706s] -- Generating done (0.0s)
+[15.713s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/spdlog/src/spdlog-build
+[15.762s] [ 37%] [34m[1mPerforming build step for 'spdlog'[0m
+[15.896s] [ 10%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/spdlog.cpp.o[0m
+[30.722s] [ 20%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/fmt.cpp.o[0m
+[36.618s] [ 30%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/cfg.cpp.o[0m
+[37.680s] [ 40%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/async.cpp.o[0m
+[39.381s] [ 50%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/file_sinks.cpp.o[0m
+[40.669s] [ 60%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/color_sinks.cpp.o[0m
+[42.724s] [ 70%] [32mBuilding CXX object CMakeFiles/spdlog.dir/src/stdout_sinks.cpp.o[0m
+[44.340s] [ 80%] [32m[1mLinking CXX static library libspdlog.a[0m
+[44.416s] [ 80%] Built target spdlog
+[44.439s] [ 90%] [32mBuilding CXX object example/CMakeFiles/example.dir/example.cpp.o[0m
+[49.729s] [100%] [32m[1mLinking CXX executable example[0m
+[49.841s] [100%] Built target example
+[49.872s] [ 43%] [34m[1mPerforming install step for 'spdlog'[0m
+[49.931s] [ 80%] Built target spdlog
+[49.959s] [100%] Built target example
+[49.981s] [36mInstall the project...[0m
+[49.991s] -- Install configuration: "Release"
+[49.991s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include
+[49.991s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog
+[49.991s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/pattern_formatter-inl.h
+[49.991s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/version.h
+[49.991s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bin_to_hex.h
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/ostr.h
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/fmt.h
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/chrono.h
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/xchar.h
+[49.992s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/compile.h
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/pattern_formatter.h
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/async_logger.h
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/common.h
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/backtracer-inl.h
+[49.993s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/os.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/thread_pool-inl.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/file_helper-inl.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/log_msg_buffer.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/registry.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/synchronous_factory.h
+[49.994s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/windows_include.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/periodic_worker-inl.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/circular_q.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/os-inl.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/fmt_helper.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/mpmc_blocking_q.h
+[49.995s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/registry-inl.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/periodic_worker.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/tcp_client-windows.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/file_helper.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/thread_pool.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/null_mutex.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/backtracer.h
+[49.996s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/console_globals.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/log_msg_buffer-inl.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/tcp_client.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/log_msg-inl.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/details/log_msg.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/async_logger-inl.h
+[49.997s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/tweakme.h
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fwd.h
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/async.h
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/spdlog.h
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/systemd_sink.h
+[49.998s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/dist_sink.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/ringbuffer_sink.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/sink.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/mongo_sink.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/base_sink-inl.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/qt_sinks.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/wincolor_sink.h
+[49.999s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/stdout_sinks.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/sink-inl.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/dup_filter_sink.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/wincolor_sink-inl.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/base_sink.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/rotating_file_sink-inl.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/rotating_file_sink.h
+[50.000s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/tcp_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/daily_file_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/basic_file_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/msvc_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/win_eventlog_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/ansicolor_sink-inl.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/syslog_sink.h
+[50.001s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/stdout_color_sinks-inl.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/ansicolor_sink.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/basic_file_sink-inl.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/stdout_sinks-inl.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/null_sink.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/stdout_color_sinks.h
+[50.002s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/android_sink.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/hourly_file_sink.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/sinks/ostream_sink.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/spdlog-inl.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/stopwatch.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/formatter.h
+[50.003s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/logger.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/logger-inl.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/common-inl.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/cfg
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/cfg/helpers.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/cfg/env.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/cfg/argv.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/cfg/helpers-inl.h
+[50.004s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/libspdlog.a
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled/
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//os.h
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//ostream.h
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//locale.h
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//core.h
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//chrono.h
+[50.005s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//xchar.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//args.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//printf.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//ranges.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//format.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//format-inl.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//compile.h
+[50.006s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/include/spdlog/fmt/bundled//color.h
+[50.007s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/pkgconfig/spdlog.pc
+[50.007s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/cmake/spdlog/spdlogConfigTargets.cmake
+[50.007s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/cmake/spdlog/spdlogConfigTargets-release.cmake
+[50.007s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/cmake/spdlog/spdlogConfig.cmake
+[50.007s] -- Installing: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/temp_install/spdlog-1.9.2/lib/cmake/spdlog/spdlogConfigVersion.cmake
+[50.024s] [ 50%] [34m[1mCompleted 'spdlog'[0m
+[50.063s] [ 50%] Built target spdlog
+[50.089s] [ 56%] [34m[1mCreating directories for 'uagent'[0m
+[50.121s] [ 62%] [34m[1mNo download step for 'uagent'[0m
+[50.153s] [ 68%] [34m[1mNo update step for 'uagent'[0m
+[50.182s] [ 75%] [34m[1mNo patch step for 'uagent'[0m
+[50.211s] [ 81%] [34m[1mPerforming configure step for 'uagent'[0m
+[50.222s] loading initial cache file /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build/uagent-prefix/tmp/uagent-cache-.cmake
+[50.230s] -- Setting build type to 'Release' as none was specified.
+[50.247s] -- Found TinyXML2: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[50.314s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[50.317s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[50.418s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[50.419s] -- Found Threads: TRUE  
+[50.424s] -- Configuring done (0.2s)
+[50.436s] -- Generating done (0.0s)
+[50.437s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/agent/src/xrceagent-build
+[50.459s] [ 87%] [34m[1mPerforming build step for 'uagent'[0m
+[50.509s] [  2%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/Agent.cpp.o[0m
+[53.523s] [  4%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/publisher/Publisher.cpp.o[0m
+[54.540s] [  7%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/topic/Topic.cpp.o[0m
+[54.695s] [  9%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/participant/Participant.cpp.o[0m
+[54.733s] [ 11%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/subscriber/Subscriber.cpp.o[0m
+[55.751s] [ 14%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/datawriter/DataWriter.cpp.o[0m
+[55.816s] [ 16%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/client/ProxyClient.cpp.o[0m
+[55.985s] [ 19%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/datareader/DataReader.cpp.o[0m
+[56.291s] [ 21%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/requester/Requester.cpp.o[0m
+[57.307s] [ 23%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/replier/Replier.cpp.o[0m
+[58.328s] [ 26%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/processor/Processor.cpp.o[0m
+[59.362s] [ 28%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/Root.cpp.o[0m
+[60.402s] [ 30%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/AgentInstance.cpp.o[0m
+[62.236s] [ 33%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/object/XRCEObject.cpp.o[0m
+[63.417s] [ 35%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/types/MessageHeader.cpp.o[0m
+[63.420s] [ 38%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/types/XRCETypes.cpp.o[0m
+[63.774s] [ 40%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/types/SubMessageHeader.cpp.o[0m
+[64.793s] [ 42%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/message/InputMessage.cpp.o[0m
+[64.800s] [ 45%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/message/OutputMessage.cpp.o[0m
+[65.249s] [ 47%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/utils/ArgumentParser.cpp.o[0m
+[73.219s] [ 52%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/udp/UDPv6AgentLinux.cpp.o[0m
+[73.219s] [ 52%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/udp/UDPv4AgentLinux.cpp.o[0m
+[73.327s] [ 54%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/custom/CustomAgent.cpp.o[0m
+[74.353s] [ 57%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/tcp/TCPv4AgentLinux.cpp.o[0m
+[75.373s] [ 59%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/Server.cpp.o[0m
+[75.387s] [ 61%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/stream_framing/StreamFramingProtocol.cpp.o[0m
+[76.027s] [ 64%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/tcp/TCPv6AgentLinux.cpp.o[0m
+[77.105s] [ 66%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/serial/SerialAgentLinux.cpp.o[0m
+[83.115s] [ 69%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/serial/PseudoTerminalAgentLinux.cpp.o[0m
+[83.549s] [ 71%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/can/CanAgentLinux.cpp.o[0m
+[84.568s] [ 73%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/discovery/DiscoveryServerLinux.cpp.o[0m
+[84.869s] [ 76%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/serial/MultiTermiosAgentLinux.cpp.o[0m
+[85.152s] [ 78%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/discovery/DiscoveryServer.cpp.o[0m
+[86.171s] [ 80%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/types/TopicPubSubType.cpp.o[0m
+[86.437s] [ 83%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/serial/MultiSerialAgentLinux.cpp.o[0m
+[87.475s] [ 85%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/xmlobjects/xmlobjects.cpp.o[0m
+[87.827s] [ 88%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/transport/serial/TermiosAgentLinux.cpp.o[0m
+[88.862s] [ 90%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/middleware/fast/FastEntities.cpp.o[0m
+[89.108s] [ 92%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/middleware/fast/FastMiddleware.cpp.o[0m
+[89.561s] [ 95%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/middleware/fastdds/FastDDSEntities.cpp.o[0m
+[90.503s] [ 97%] [32mBuilding CXX object CMakeFiles/microxrcedds_agent.dir/src/cpp/middleware/fastdds/FastDDSMiddleware.cpp.o[0m
+[100.818s] [100%] [32m[1mLinking CXX shared library libmicroxrcedds_agent.so[0m
+[101.129s] [100%] Built target microxrcedds_agent
+[101.158s] [34m[1mNo install step for 'uagent'[0m
+[101.186s] [34m[1mCompleted 'uagent'[0m
+[101.224s] Built target uagent
+[101.253s] [ 43%] [34m[1mPerforming install step for 'xrceagent'[0m
+[101.371s] [100%] Built target microxrcedds_agent
+[101.392s] [36mInstall the project...[0m
+[101.402s] -- Install configuration: "Release"
+[101.402s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/libmicroxrcedds_agent.so.2.4.3
+[101.406s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/libmicroxrcedds_agent.so.2.4
+[101.406s] -- Set non-toolchain portion of runtime path of "/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/libmicroxrcedds_agent.so.2.4.3" to ""
+[101.406s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/libmicroxrcedds_agent.so
+[101.406s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/datareader
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/datareader/DataReader.hpp
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/p2p
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/p2p/InternalClientManager.hpp
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/p2p/InternalClient.hpp
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/processor
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/processor/Processor.hpp
+[101.407s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/topic
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/topic/Topic.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/requester
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/requester/Requester.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/scheduler
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/scheduler/PacketScheduler.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/scheduler/Scheduler.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/visibility.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/participant
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/participant/Participant.hpp
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/object
+[101.408s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/object/XRCEObject.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/replier
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/replier/Replier.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/Root.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/p2p
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/p2p/AgentDiscoverer.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/p2p/AgentDiscovererLinux.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/discovery
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/discovery/DiscoveryServerLinux.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/discovery/DiscoveryServer.hpp
+[101.409s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/discovery/DiscoveryServerWindows.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/SessionManager.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/PseudoTerminalAgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/MultiSerialAgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/SerialAgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/MultiTermiosAgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/TermiosAgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/serial/baud_rate_table_linux.h
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/udp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/udp/UDPv4AgentLinux.hpp
+[101.410s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/udp/UDPv6AgentWindows.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/udp/UDPv4AgentWindows.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/udp/UDPv6AgentLinux.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/TransportRc.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/stream_framing
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/stream_framing/StreamFramingProtocol.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/custom
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/custom/CustomAgent.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/util
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/util/InterfaceLinux.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/util/InterfaceWindows.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/Server.hpp
+[101.411s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/IPv6EndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/MultiSerialEndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/SerialEndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/IPv4EndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/CustomEndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/endpoint/CanEndPoint.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/can
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/can/CanAgentLinux.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPv4AgentWindows.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPConnection.hpp
+[101.412s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPv6AgentLinux.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPv6AgentWindows.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPv4AgentLinux.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/transport/tcp/TCPServerBase.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types/SubMessageHeader.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types/Optional.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types/MessageHeader.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types/XRCETypes.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/types/TopicPubSubType.hpp
+[101.413s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/ProxyClient.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session/Session.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session/stream
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session/stream/InputStream.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session/stream/OutputStream.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/client/session/SessionInfo.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/datawriter
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/datawriter/DataWriter.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/message
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/message/InputMessage.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/message/OutputMessage.hpp
+[101.414s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/message/Packet.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/TokenBucket.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/ArgumentParser.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/SeqNum.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/Color.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/Conversion.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/Time.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/SharedMutex.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/Functions.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/utils/SharedMutexPriority.hpp
+[101.415s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/AgentInstance.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/subscriber
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/subscriber/Subscriber.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/publisher
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/publisher/Publisher.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/Agent.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fast
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fast/FastEntities.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fast/FastMiddleware.hpp
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/ced
+[101.416s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/ced/CedEntities.hpp
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/ced/CedMiddleware.hpp
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/utils
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/utils/Callbacks.hpp
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/Middleware.hpp
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fastdds
+[101.417s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fastdds/FastDDSMiddleware.hpp
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/middleware/fastdds/FastDDSEntities.hpp
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/reader
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/reader/Reader.hpp
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/logger
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/logger/Logger.hpp
+[101.418s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/microxrcedds_agent/cmake/microxrcedds_agentTargets.cmake
+[101.419s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/microxrcedds_agent/cmake/microxrcedds_agentTargets-release.cmake
+[101.419s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/uxr/agent/config.hpp
+[101.419s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/microxrcedds_agent/LICENSE
+[101.419s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/microxrcedds_agent/cmake/microxrcedds_agentConfig.cmake
+[101.419s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/microxrcedds_agent/cmake/microxrcedds_agentConfigVersion.cmake
+[101.419s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent
+[101.419s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/pkgconfig
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/pkgconfig/spdlog.pc
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake/spdlog
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake/spdlog/spdlogConfigVersion.cmake
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake/spdlog/spdlogConfigTargets-release.cmake
+[101.420s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake/spdlog/spdlogConfig.cmake
+[101.421s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/cmake/spdlog/spdlogConfigTargets.cmake
+[101.421s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/libspdlog.a
+[101.421s] -- Up-to-date: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include
+[101.421s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog
+[101.421s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/pattern_formatter-inl.h
+[101.421s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/version.h
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bin_to_hex.h
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/ostr.h
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/fmt.h
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/chrono.h
+[101.422s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/xchar.h
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/os.h
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/ostream.h
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/locale.h
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/core.h
+[101.423s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/chrono.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/xchar.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/args.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/printf.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/ranges.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/format.h
+[101.424s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/format-inl.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/compile.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/bundled/color.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fmt/compile.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/pattern_formatter.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/async_logger.h
+[101.425s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/common.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/backtracer-inl.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/os.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/thread_pool-inl.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/file_helper-inl.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/log_msg_buffer.h
+[101.426s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/registry.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/synchronous_factory.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/windows_include.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/periodic_worker-inl.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/circular_q.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/os-inl.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/fmt_helper.h
+[101.427s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/mpmc_blocking_q.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/registry-inl.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/periodic_worker.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/tcp_client-windows.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/file_helper.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/thread_pool.h
+[101.428s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/null_mutex.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/backtracer.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/console_globals.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/log_msg_buffer-inl.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/tcp_client.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/log_msg-inl.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/details/log_msg.h
+[101.429s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/async_logger-inl.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/tweakme.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/fwd.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/async.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/spdlog.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/systemd_sink.h
+[101.430s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/dist_sink.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/ringbuffer_sink.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/sink.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/mongo_sink.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/base_sink-inl.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/qt_sinks.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/wincolor_sink.h
+[101.431s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/stdout_sinks.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/sink-inl.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/dup_filter_sink.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/wincolor_sink-inl.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/base_sink.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/rotating_file_sink-inl.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/rotating_file_sink.h
+[101.432s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/tcp_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/daily_file_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/basic_file_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/msvc_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/win_eventlog_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/ansicolor_sink-inl.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/syslog_sink.h
+[101.433s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/stdout_color_sinks-inl.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/ansicolor_sink.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/basic_file_sink-inl.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/stdout_sinks-inl.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/null_sink.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/stdout_color_sinks.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/android_sink.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/hourly_file_sink.h
+[101.434s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/sinks/ostream_sink.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/spdlog-inl.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/stopwatch.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/formatter.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/logger.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/logger-inl.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/common-inl.h
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/cfg
+[101.435s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/cfg/helpers.h
+[101.436s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/cfg/env.h
+[101.436s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/cfg/argv.h
+[101.436s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/include/spdlog/cfg/helpers-inl.h
+[101.453s] [ 50%] [34m[1mCompleted 'xrceagent'[0m
+[101.491s] [ 50%] Built target xrceagent
+[101.514s] [ 56%] [34m[1mCreating directories for 'micro_ros_agent'[0m
+[101.545s] [ 62%] [34m[1mNo download step for 'micro_ros_agent'[0m
+[101.574s] [ 68%] [34m[1mNo update step for 'micro_ros_agent'[0m
+[101.602s] [ 75%] [34m[1mNo patch step for 'micro_ros_agent'[0m
+[101.631s] [ 81%] [34m[1mPerforming configure step for 'micro_ros_agent'[0m
+[101.642s] loading initial cache file /home/sleepy/robp-group7-sleepy/build/micro_ros_agent/micro_ros_agent-prefix/tmp/micro_ros_agent-cache-.cmake
+[101.650s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[101.862s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[101.964s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[102.091s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[102.095s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[102.212s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[102.213s] -- Found Threads: TRUE  
+[102.218s] -- Found rosidl_cmake: 4.6.5 (/opt/ros/jazzy/share/rosidl_cmake/cmake)
+[102.221s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[102.237s] -- Found fastrtps_cmake_module: 3.6.1 (/opt/ros/jazzy/share/fastrtps_cmake_module/cmake)
+[102.240s] -- Found rmw_dds_common: 3.1.0 (/opt/ros/jazzy/share/rmw_dds_common/cmake)
+[102.289s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[102.309s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[102.322s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[102.351s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[102.378s] -- Found rmw_fastrtps_shared_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_shared_cpp/cmake)
+[102.416s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[102.419s] -- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[102.424s] -- Found ament_cmake_gtest: 2.5.3 (/opt/ros/jazzy/share/ament_cmake_gtest/cmake)
+[102.425s] -- Found micro_ros_msgs: 5.0.2 (/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/share/micro_ros_msgs/cmake)
+[102.569s] -- Configuring done (0.9s)
+[102.578s] -- Generating done (0.0s)
+[102.582s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_agent
+[102.607s] [ 87%] [34m[1mPerforming build step for 'micro_ros_agent'[0m
+[102.656s] [ 33%] [32mBuilding CXX object CMakeFiles/micro_ros_agent.dir/src/agent/graph_manager/graph_manager.cpp.o[0m
+[102.656s] [ 33%] [32mBuilding CXX object CMakeFiles/micro_ros_agent.dir/src/agent/Agent.cpp.o[0m
+[102.658s] [ 50%] [32mBuilding CXX object CMakeFiles/micro_ros_agent.dir/src/main.cpp.o[0m
+[106.473s] [ 83%] [32mBuilding CXX object CMakeFiles/micro_ros_agent.dir/src/agent/graph_manager/graph_typesupport.cpp.o[0m
+[106.473s] [ 83%] [32mBuilding CXX object CMakeFiles/micro_ros_agent.dir/src/agent/utils/demangle.cpp.o[0m
+[108.774s] [100%] [32m[1mLinking CXX executable micro_ros_agent[0m
+[109.149s] [100%] Built target micro_ros_agent
+[109.178s] [34m[1mNo install step for 'micro_ros_agent'[0m
+[109.207s] [34m[1mCompleted 'micro_ros_agent'[0m
+[109.244s] Built target micro_ros_agent
+[109.257s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent' returned '0': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_agent -- -j8 -l8
+[109.258s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/micro_ros_agent
+[109.267s] -- Install configuration: ""
+[109.267s] -- Execute custom install script
+[109.268s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/ament_index/resource_index/package_run_dependencies/micro_ros_agent
+[109.278s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/ament_index/resource_index/parent_prefix_path/micro_ros_agent
+[109.288s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/environment/ament_prefix_path.sh
+[109.299s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/environment/ament_prefix_path.dsv
+[109.310s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/environment/path.sh
+[109.320s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/environment/path.dsv
+[109.330s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/local_setup.bash
+[109.340s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/local_setup.sh
+[109.352s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/local_setup.zsh
+[109.362s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/local_setup.dsv
+[109.372s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/package.dsv
+[109.383s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/ament_index/resource_index/packages/micro_ros_agent
+[109.393s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/cmake/ament_cmake_export_dependencies-extras.cmake
+[109.404s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/cmake/micro_ros_agentConfig.cmake
+[109.414s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/cmake/micro_ros_agentConfig-version.cmake
+[109.424s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/package.xml
+[109.435s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent
+[109.446s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_agent/share/micro_ros_agent/launch/micro_ros_agent_launch.py
+[109.459s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_agent' returned '0': CMAKE_PREFIX_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs:/home/sleepy/robp-group7-sleepy/install/usb_cam:/home/sleepy/robp-group7-sleepy/install/sllidar_ros2:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders:/home/sleepy/robp-group7-sleepy/install/robp_interfaces:/home/sleepy/robp-group7-sleepy/install/micro_ros_setup:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs:/home/sleepy/robp-group7-sleepy/install/core_interfaces:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib:/home/sleepy/robp-group7-sleepy/install/usb_cam/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_temperature/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_spatial/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_motors/lib:/home/sleepy/robp-group7-sleepy/install/robp_phidgets_encoders/lib:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib:/home/sleepy/robp-group7-sleepy/install/micro_ros_agent/lib:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/sleepy/robp-group7-sleepy/install/micro_ros_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/simple_move:/home/sleepy/robp-group7-sleepy/install/simple_move/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/core_launch:/home/sleepy/robp-group7-sleepy/install/core_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/robp_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/perception:/home/sleepy/robp-group7-sleepy/install/perception/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/odometry:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/navigation:/home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/lidar_processing:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/drive_base_msgs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/install/core_interfaces/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/sleepy/robp-group7-sleepy/build/arm_control:/home/sleepy/robp-group7-sleepy/install/arm_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/micro_ros_agent

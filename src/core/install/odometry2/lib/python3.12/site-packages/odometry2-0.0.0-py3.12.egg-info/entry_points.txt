@@ -1,2 +1,0 @@
-[console_scripts]
-odometry2 = odometry2.odometry2:main

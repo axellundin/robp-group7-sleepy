@@ -1,0 +1,24 @@
+[2.039s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/lidar_processing': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/lidar_processing/build --no-deps symlink_data
+[2.756s] running develop
+[3.271s] running egg_info
+[3.271s] creating lidar_processing.egg-info
+[3.312s] writing lidar_processing.egg-info/PKG-INFO
+[3.313s] writing dependency_links to lidar_processing.egg-info/dependency_links.txt
+[3.313s] writing entry points to lidar_processing.egg-info/entry_points.txt
+[3.314s] writing requirements to lidar_processing.egg-info/requires.txt
+[3.314s] writing top-level names to lidar_processing.egg-info/top_level.txt
+[3.315s] writing manifest file 'lidar_processing.egg-info/SOURCES.txt'
+[3.449s] reading manifest file 'lidar_processing.egg-info/SOURCES.txt'
+[3.450s] writing manifest file 'lidar_processing.egg-info/SOURCES.txt'
+[3.516s] running build_ext
+[3.516s] Creating /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages/lidar-processing.egg-link (link to .)
+[3.518s] Installing lidar_processing script to /home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/lidar_processing
+[3.518s] 
+[3.519s] Installed /home/sleepy/robp-group7-sleepy/build/lidar_processing
+[3.519s] running symlink_data
+[3.520s] creating /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/ament_index
+[3.520s] creating /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/ament_index/resource_index
+[3.520s] creating /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/ament_index/resource_index/packages
+[3.521s] symbolically linking /home/sleepy/robp-group7-sleepy/build/lidar_processing/resource/lidar_processing -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/ament_index/resource_index/packages
+[3.521s] symbolically linking /home/sleepy/robp-group7-sleepy/build/lidar_processing/package.xml -> /home/sleepy/robp-group7-sleepy/install/lidar_processing/share/lidar_processing
+[3.672s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/lidar_processing' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/lidar_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/lidar_processing/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/lidar_processing/build --no-deps symlink_data

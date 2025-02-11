@@ -1,0 +1,17 @@
+[3.973s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/odometry/build --no-deps symlink_data
+[5.476s] running develop
+[6.019s] running egg_info
+[6.084s] writing odometry.egg-info/PKG-INFO
+[6.085s] writing dependency_links to odometry.egg-info/dependency_links.txt
+[6.089s] writing entry points to odometry.egg-info/entry_points.txt
+[6.089s] writing requirements to odometry.egg-info/requires.txt
+[6.089s] writing top-level names to odometry.egg-info/top_level.txt
+[6.223s] reading manifest file 'odometry.egg-info/SOURCES.txt'
+[6.227s] writing manifest file 'odometry.egg-info/SOURCES.txt'
+[6.349s] running build_ext
+[6.349s] Creating /home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages/odometry.egg-link (link to .)
+[6.359s] Installing odometry script to /home/sleepy/robp-group7-sleepy/install/odometry/lib/odometry
+[6.359s] 
+[6.360s] Installed /home/sleepy/robp-group7-sleepy/build/odometry
+[6.360s] running symlink_data
+[6.534s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/odometry' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sleepy/robp-group7-sleepy/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sleepy/robp-group7-sleepy/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/sleepy/robp-group7-sleepy/build/odometry/build --no-deps symlink_data

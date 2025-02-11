@@ -1,0 +1,6 @@
+[console_scripts]
+generate_pose = navigation.random_pose_client:main
+geofence_compliance = navigation.geofence_compliance:main
+geofence_publisher = navigation.geofence_publisher:main
+move_to = navigation.move_to:main
+path_planner = navigation.path_planner:main

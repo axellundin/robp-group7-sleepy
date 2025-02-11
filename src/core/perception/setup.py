@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'camera_processing = perception.camera_processing:main'
+            'camera_processing = perception.camera_processing:main',
+            'ransac = perception.ransac:main', 
+            'map_gen = perception.generate_map:main'
         ],
     },
 )

@@ -1,0 +1,183 @@
+[0.488s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/micro_ros_setup -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/micro_ros_setup
+[0.666s] -- The C compiler identification is GNU 13.3.0
+[0.830s] -- The CXX compiler identification is GNU 13.3.0
+[0.902s] -- Detecting C compiler ABI info
+[1.163s] -- Detecting C compiler ABI info - done
+[1.200s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.201s] -- Detecting C compile features
+[1.202s] -- Detecting C compile features - done
+[1.224s] -- Detecting CXX compiler ABI info
+[1.500s] -- Detecting CXX compiler ABI info - done
+[1.539s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.539s] -- Detecting CXX compile features
+[1.540s] -- Detecting CXX compile features - done
+[1.547s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.861s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[2.027s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.105s] -- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.336s] -- Configuring done (1.8s)
+[2.345s] -- Generating done (0.0s)
+[2.348s] -- Build files have been written to: /home/sleepy/robp-group7-sleepy/build/micro_ros_setup
+[2.357s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/sleepy/robp-group7-sleepy/src/micro_ros_setup -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/sleepy/robp-group7-sleepy/install/micro_ros_setup
+[2.358s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_setup -- -j8 -l8
+[2.659s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/sleepy/robp-group7-sleepy/build/micro_ros_setup -- -j8 -l8
+[2.678s] Invoking command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/micro_ros_setup
+[3.558s] -- Install configuration: ""
+[3.558s] -- Execute custom install script
+[3.558s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/ament_index/resource_index/package_run_dependencies/micro_ros_setup
+[3.558s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/ament_index/resource_index/parent_prefix_path/micro_ros_setup
+[3.558s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/environment/ament_prefix_path.sh
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/environment/ament_prefix_path.dsv
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/environment/path.sh
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/environment/path.dsv
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/local_setup.bash
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/local_setup.sh
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/local_setup.zsh
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/local_setup.dsv
+[3.559s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/package.dsv
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/ament_index/resource_index/packages/micro_ros_setup
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/cmake/micro_ros_setupConfig.cmake
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/cmake/micro_ros_setupConfig-version.cmake
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/share/micro_ros_setup/package.xml
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/create_ws.sh
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/create_agent_ws.sh
+[3.560s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/create_firmware_ws.sh
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/configure_firmware.sh
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/flash_firmware.sh
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/build_firmware.sh
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/build_agent.sh
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/yaml_filter.py
+[3.561s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/clean_env.sh
+[3.564s] -- Symlinking: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/lib/micro_ros_setup/component
+[3.566s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config
+[3.566s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib
+[3.566s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic
+[3.566s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/build.sh
+[3.566s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/package.xml
+[3.576s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/client_uros_packages.repos
+[3.576s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/create.sh
+[3.576s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/flash.sh
+[3.576s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/demo_toolchain.cmake
+[3.576s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/generic/client-colcon.meta
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/dev_ros2_packages.txt
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/generate_lib/dev_uros_packages.repos
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/agent_ros2_packages.txt
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/board.repos
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/configure.sh
+[3.577s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/build.sh
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/package.xml
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/client_uros_packages.repos
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/create.sh
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/flash.sh
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446ze/client-colcon.meta
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21
+[3.578s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/board.repos
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/configure.sh
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/build.sh
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/package.xml
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/client_uros_packages.repos
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/create.sh
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/flash.sh
+[3.579s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/crazyflie21/client-colcon.meta
+[3.606s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re
+[3.606s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/board.repos
+[3.606s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/configure.sh
+[3.606s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/build.sh
+[3.606s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/package.xml
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/client_uros_packages.repos
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/create.sh
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/flash.sh
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f446re/client-colcon.meta
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg
+[3.607s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/board.repos
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/configure.sh
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/build.sh
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/package.xml
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/client_uros_packages.repos
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/create.sh
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/flash.sh
+[3.608s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f746zg/client-colcon.meta
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/board.repos
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/configure.sh
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/build.sh
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/package.xml
+[3.609s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/client_uros_packages.repos
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/create.sh
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/flash.sh
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/nucleo_f767zi/client-colcon.meta
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/dev_ros2_packages.txt
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32
+[3.614s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/board.repos
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/configure.sh
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/build.sh
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/package.xml
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/client_uros_packages.repos
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/create.sh
+[3.615s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/README.md
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/flash.sh
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/esp32/client-colcon.meta
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/dev_uros_packages.repos
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/list_apps.sh
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/board.repos
+[3.616s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/configure.sh
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/build.sh
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/package.xml
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/client_uros_packages.repos
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/create.sh
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/flash.sh
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/freertos/olimex-stm32-e407/client-colcon.meta
+[3.617s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/client_ros2_packages.txt
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/build.sh
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/package.xml
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/client_uros_packages.repos
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/create.sh
+[3.627s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/flash.sh
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/generic/client-colcon.meta
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/dev_ros2_packages.txt
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/android/dev_uros_packages.repos
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/agent_uros_packages.repos
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic
+[3.628s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/board.repos
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/configure.sh
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/build.sh
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/package.xml
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/client_uros_packages.repos
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/create.sh
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/flash.sh
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/supported_platforms
+[3.629s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/generic/client-colcon.meta
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/dev_ros2_packages.txt
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/dev_uros_packages.repos
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/zephyr/list_apps.sh
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/client_ros2_packages.txt
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic
+[3.630s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/build.sh
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/package.xml
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/create.sh
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/client-host-colcon.meta
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/flash.sh
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/generic/client_host_packages.repos
+[3.635s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/dev_ros2_packages.txt
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/host/dev_uros_packages.repos
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/configure.sh
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/build.sh
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/client_uros_packages.repos
+[3.636s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/create.sh
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/flash.sh
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/supported_platforms
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/generic/client-colcon.meta
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/dev_ros2_packages.txt
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/raspbian/dev_uros_packages.repos
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/client_uros_packages.repos
+[3.637s] -- Installing: /home/sleepy/robp-group7-sleepy/install/micro_ros_setup/./config/utils.sh
+[3.661s] Invoked command in '/home/sleepy/robp-group7-sleepy/build/micro_ros_setup' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sleepy/robp-group7-sleepy/install/simple_move:/home/sleepy/robp-group7-sleepy/install/core_launch:/home/sleepy/robp-group7-sleepy/install/robp_launch:/home/sleepy/robp-group7-sleepy/install/perception:/home/sleepy/robp-group7-sleepy/install/odometry:/home/sleepy/robp-group7-sleepy/install/navigation:/home/sleepy/robp-group7-sleepy/install/lidar_processing:/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs:/home/sleepy/robp-group7-sleepy/install/arm_control:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/sleepy/robp-group7-sleepy/build/micro_ros_setup

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "core_interfaces__py",
+		"source" : "/home/sleepy/robp-group7-sleepy/build/core_interfaces/core_interfaces__py"
+	}
+}

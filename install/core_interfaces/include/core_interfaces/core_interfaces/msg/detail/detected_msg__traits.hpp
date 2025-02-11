@@ -1,0 +1,1 @@
+/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_generator_cpp/core_interfaces/msg/detail/detected_msg__traits.hpp

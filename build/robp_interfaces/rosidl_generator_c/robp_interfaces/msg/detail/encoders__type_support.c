@@ -5,9 +5,9 @@
 #include <string.h>
 
 #include "robp_interfaces/msg/detail/encoders__struct.h"
-#include "robp_interfaces/msg/detail/encoders__functions.h"
-#include "robp_interfaces/msg/detail/encoders__type_support.h"
 #include "rosidl_typesupport_interface/macros.h"
+#include "robp_interfaces/msg/detail/encoders__type_support.h"
+#include "robp_interfaces/msg/detail/encoders__functions.h"
 
 #ifdef __cplusplus
 extern "C"

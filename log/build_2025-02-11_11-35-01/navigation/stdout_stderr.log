@@ -1,0 +1,29 @@
+running develop
+running egg_info
+creating navigation.egg-info
+writing navigation.egg-info/PKG-INFO
+writing dependency_links to navigation.egg-info/dependency_links.txt
+writing entry points to navigation.egg-info/entry_points.txt
+writing requirements to navigation.egg-info/requires.txt
+writing top-level names to navigation.egg-info/top_level.txt
+writing manifest file 'navigation.egg-info/SOURCES.txt'
+reading manifest file 'navigation.egg-info/SOURCES.txt'
+writing manifest file 'navigation.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/sleepy/robp-group7-sleepy/install/navigation/lib/python3.12/site-packages/navigation.egg-link (link to .)
+Installing generate_pose script to /home/sleepy/robp-group7-sleepy/install/navigation/lib/navigation
+Installing geofence_compliance script to /home/sleepy/robp-group7-sleepy/install/navigation/lib/navigation
+Installing geofence_publisher script to /home/sleepy/robp-group7-sleepy/install/navigation/lib/navigation
+Installing move_to script to /home/sleepy/robp-group7-sleepy/install/navigation/lib/navigation
+Installing path_planner script to /home/sleepy/robp-group7-sleepy/install/navigation/lib/navigation
+
+Installed /home/sleepy/robp-group7-sleepy/build/navigation
+running symlink_data
+creating /home/sleepy/robp-group7-sleepy/install/navigation/share/ament_index
+creating /home/sleepy/robp-group7-sleepy/install/navigation/share/ament_index/resource_index
+creating /home/sleepy/robp-group7-sleepy/install/navigation/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/navigation/resource/navigation -> /home/sleepy/robp-group7-sleepy/install/navigation/share/ament_index/resource_index/packages
+symbolically linking /home/sleepy/robp-group7-sleepy/build/navigation/package.xml -> /home/sleepy/robp-group7-sleepy/install/navigation/share/navigation
+creating /home/sleepy/robp-group7-sleepy/install/navigation/share/core_interfaces
+creating /home/sleepy/robp-group7-sleepy/install/navigation/share/core_interfaces/action
+symbolically linking /home/sleepy/robp-group7-sleepy/build/core_interfaces/action/MoveTo.action -> /home/sleepy/robp-group7-sleepy/install/navigation/share/core_interfaces/action
