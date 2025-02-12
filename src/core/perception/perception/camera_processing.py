@@ -47,18 +47,12 @@ class Detection(Node):
 
     def __init__(self):
         super().__init__('detection')
-        '''
-        self.objects = []
-        self.boxes = [] 
 
-        msg = DetectedMsg() 
-        msg.objects = self.objects
-        msg.boxes = self.boxes
         self.detected_objects_publisher = self.create_publisher(
             DetectedMsg,
             'detected',
-            10
-        '''
+            10)
+
         self.detection_max_distance = 0.9
         self.time_it_times = 1
 
@@ -111,6 +105,13 @@ class Detection(Node):
 
         cluster = self.cluster_points(points, colors)
         self.deal_with_clustered_points(cluster)
+
+        self.objects = []
+        self.boxes = [] 
+
+        msg = DetectedMsg() 
+        msg.objects = self.objects
+        msg.boxes = self.boxes
 
         self.time_it_times -= 1
 
@@ -246,7 +247,7 @@ class Detection(Node):
                 # planes cx cy cz nx ny nz  
                 # cx is right, cy is down, cz is far from camera 
                 # nz is biggest vertical to camera
-                
+
                 for i, plane in enumerate(planes):
                     print(f"平面 {i+1} 的参数：{plane}")
                     print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")

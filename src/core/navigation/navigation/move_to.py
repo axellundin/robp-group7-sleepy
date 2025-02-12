@@ -71,7 +71,7 @@ class Move_to(Node):
 
         self._move_state = "turn"
 
-        #Action server executing the path 
+        #Creating action server executing the path 
         self._action_server = ActionServer(
             self,
             MoveTo,
@@ -79,32 +79,27 @@ class Move_to(Node):
             self.move_callback,
             cancel_callback=self.cancel_callback
         )
-        #
-        self._pub_wp = self.create_publisher(PoseStamped, '/current_waypoint', 10)
 
+        #Creating publisher for motor drive
         self._pub_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self._current_vel_x = 0
         self._current_vel_w = 0
 
+        #creating buffer and transform listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=True)
 
-        self.current_duty_cycle = DutyCycles()
-
-        self.encoder_subscription = self.create_subscription(DutyCycles, '/motor/current_duty_cycles', self.current_duty_cycle_calback, 10)
-        self.encoder_subscription
-
-        
     def move_callback(self, goal_handle):
-        
+        #Fetching request
         goal_pose = goal_handle.request.way_point
         point_only = goal_handle.request.enforce_orientation
         stop_at_goal = goal_handle.request.stop_at_goal
+
         if stop_at_goal:
             self._move_state = "turn"
         else:
             self._move_state = "forward"
-        self._pub_wp.publish(goal_pose)
+
         while not goal_handle.is_cancel_requested:
 
             transformed_goal_pose = self.transform(goal_pose)
@@ -187,10 +182,11 @@ class Move_to(Node):
 
                 vel.linear.x = self._current_vel_x + self._vel_change_threshold*(dif_x/(abs(dif_x)+abs(dif_w)))
                 vel.angular.z = self._current_vel_w + self._vel_change_threshold*(dif_w/(abs(dif_x)+abs(dif_w)))
-                self._current_vel_x = vel.linear.x
-                self._current_vel_w = vel.angular.z
+
             if dist < self.slow_down_threshold and stop_at_goal:
                 vel.linear.x = np.min(vel.linear.x, self.k_slow_down*dist + self.m_slow_down)
+            self._current_vel_x = vel.linear.x
+            self._current_vel_w = vel.angular.z
             self._pub_vel.publish(vel)
         if stop_at_goal:
             vel = Twist()
@@ -209,9 +205,6 @@ class Move_to(Node):
 
         self._pub_motor.publish(motor_msg)
         return True
-
-    def current_duty_cycle_calback(self, current_duty):
-        self.current_duty_cycle = current_duty
     
     def transform(self,goal_pose):
         #wait for tramsform to base_link
