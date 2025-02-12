@@ -249,10 +249,12 @@ class Detection(Node):
                 # nz is biggest vertical to camera
 
                 for i, plane in enumerate(planes):
-                    print(f"平面 {i+1} 的参数：{plane}")
-                    print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")
-                    pose, _, _ = self.plane_to_pose(plane)
+                    # print(f"平面 {i+1} 的参数：{plane}")
+                    # print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")
+                    pose, center, normal = self.plane_to_pose(plane)
+                    
                     self.publish_transform(f"box_face_{i}", pose)
+
 
             else:                
                 pose = Pose()

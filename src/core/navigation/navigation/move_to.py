@@ -100,10 +100,17 @@ class Move_to(Node):
         else:
             self._move_state = "forward"
 
+        #Loop until request is cancel or goal is achieved
         while not goal_handle.is_cancel_requested:
-
+            #Transforming goal pose
             transformed_goal_pose = self.transform(goal_pose)
+
+            #Calculates the distance to the goal and breaks if the robot are close enough
             dist = np.sqrt(transformed_goal_pose.position.x**2 + transformed_goal_pose.position.y**2)
+            if dist < self.dist_threshold and abs(yaw) < self.yaw_threshold :
+                break
+
+            #Converting orientation to yaw
             qx = transformed_goal_pose.orientation.x
             qy = transformed_goal_pose.orientation.y
             qz = transformed_goal_pose.orientation.z
@@ -113,32 +120,30 @@ class Move_to(Node):
             else:
                 yaw=np.arctan2(2*(qw*qz+qx*qy),1-2*(qy**2+qz**2))
 
-            if dist < self.dist_threshold and abs(yaw) < self.yaw_threshold :
-                break
-            print("goal pose: ")
-            print(transformed_goal_pose.position.x)
-            print(transformed_goal_pose.position.y)
-            print(yaw)
+
             ##Feedback sending
             feedback_msg = MoveTo.Feedback()
             feedback_msg.distance_to_goal = float(dist)
             goal_handle.publish_feedback(feedback_msg)
+
+            print("goal pose: ")
+            print(transformed_goal_pose.position.x)
+            print(transformed_goal_pose.position.y)
+            print(yaw)
             print("Yaw:")
             print(yaw)
             print("Dist:")
             print(dist)
             
-            #Robot move pub
+            #Moves towards the goal if the robot isn't close enough
             if dist > self.dist_threshold:
                 angle = np.arctan2(transformed_goal_pose.position.y,transformed_goal_pose.position.x)
-
-
 
                 vel = Twist()
 
                 print("angle: ")
                 print(angle*180/np.pi)
-
+                #
                 if (angle < -self.rad_tol_turn and self._move_state == "turn") or (angle < -self.rad_tol_forvard and self._move_state == "forward"):
                     self._move_state = "turn"
                     print("right")
@@ -164,6 +169,8 @@ class Move_to(Node):
                     print("Foooooooorward")
                     vel.linear.x = 0.3
                     vel.angular.z = 0.0
+
+
             elif abs(yaw) > self.yaw_threshold:
                 self._move_state = "turn"
                 vel = Twist()
