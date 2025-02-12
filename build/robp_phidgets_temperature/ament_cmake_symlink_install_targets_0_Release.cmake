@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/sleepy/robp-group7-sleepy/build/robp_phidgets_temperature/librobp_phidgets_temperature.so" "TARGETS" "robp_phidgets_temperature" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "bin")

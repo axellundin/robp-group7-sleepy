@@ -1,9 +1,0 @@
-{
-  "package_name": "core_interfaces",
-  "non_idl_tuples": [
-    "/home/sleepy/robp-group7-sleepy/src/core/core_interfaces:srv/GeofenceCompliance.srv",
-    "/home/sleepy/robp-group7-sleepy/src/core/core_interfaces:action/MoveTo.action",
-    "/home/sleepy/robp-group7-sleepy/src/core/core_interfaces:action/PathPlanner.action",
-    "/home/sleepy/robp-group7-sleepy/src/core/core_interfaces:msg/DetectedMsg.msg"
-  ]
-}

@@ -93,8 +93,9 @@ class Odometry(Node):
         self._yaw_encoder = self._yaw_encoder + omega * dt
         self._yaw_encoder = math.atan2(math.sin(self._yaw_encoder), math.cos(self._yaw_encoder))
 
-        # Simple fuse of Imu and encoder
-        self._yaw = (self._yaw_encoder + self._yaw_imu) / 2
+        alpha = 0.98  # Trust encoders more, change this if necessary, increase if too much drift, decrease if you need more shortterm corrections.
+        #Imu has a very high update rate so alpha should be very high. 
+        self._yaw = alpha * (self._yaw_encoder) + (1 - alpha) * self._yaw_imu
 
         self.average_yaw = self._yaw - omega * dt / 2
 
@@ -109,7 +110,11 @@ class Odometry(Node):
     def imu_callback(self, msg: Imu):
         """recieves the message from Imu, converts and uppdates"""
         q = msg.orientation
-        self._yaw_imu = quaternion_to_yaw(q.x, q.y, q.z, q.w)
+        raw_yaw = quaternion_to_yaw(q.x, q.y, q.z, q.w)
+        
+        #low pass filter to smooth the Imu data
+        imu_alpha = 0.9
+        self._yaw_imu = imu_alpha * self._yaw_imu + (1-imu_alpha) * raw_yaw
 
     def broadcast_transform(self, stamp, x, y, yaw):
         """Takes a 2D pose and broadcasts it as a ROS transform.

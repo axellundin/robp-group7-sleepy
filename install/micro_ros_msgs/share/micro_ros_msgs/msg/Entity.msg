@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/src/uros/micro_ros_msgs/msg/Entity.msg

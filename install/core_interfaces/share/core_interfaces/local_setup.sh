@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/build/core_interfaces/ament_cmake_environment_hooks/local_setup.sh

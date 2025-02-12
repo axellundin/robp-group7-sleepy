@@ -1,4 +1,4 @@
-from polygon import Polygon
+from src.core.navigation.navigation.polygon import Polygon
 import numpy as np
 import matplotlib.pyplot as plt
 

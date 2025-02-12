@@ -100,7 +100,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        camera_launch,
+        # camera_launch,
         arm_camera_launch,
         lidar_launch,
         phidgets_launch,

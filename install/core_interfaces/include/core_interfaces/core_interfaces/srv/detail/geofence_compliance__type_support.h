@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_generator_c/core_interfaces/srv/detail/geofence_compliance__type_support.h

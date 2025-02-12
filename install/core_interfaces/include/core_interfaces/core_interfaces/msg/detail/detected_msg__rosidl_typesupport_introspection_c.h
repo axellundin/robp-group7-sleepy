@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/build/core_interfaces/rosidl_typesupport_introspection_c/core_interfaces/msg/detail/detected_msg__rosidl_typesupport_introspection_c.h

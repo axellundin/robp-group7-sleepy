@@ -23,30 +23,55 @@ class Move_to(Node):
 
         #Distance from target when break
         self.dist_threshold = 0.05
-        self.yaw_threshold = 5
+        self.slow_down_threshold = 0.2
+        self.slow_down_min_speed = 0.085
+        self.slow_down_max_speed = 0.3
+        self.k_slow_down = (self.slow_down_max_speed - self.slow_down_min_speed)/(self.slow_down_threshold - self.dist_threshold)
+        self.m_slow_down = self.slow_down_min_speed - self.k_slow_down*self.dist_threshold
+        
+        #Tolerance of yaw error at stop pose
+        self.yaw_threshold = 2
         self.yaw_threshold = self.yaw_threshold*np.pi/180
 
         #Maximum difference in speed between two ticks
         self._vel_change_threshold = 0.1
 
-        # Yaw change speeds 
+        #Tolerated diff from optimal direction during turning before forward driving
+        self._deg_tol_turn = 3 #deg
+
+        #Yaw adjustment speed during turning before forward driving
         self.max_turn = 0.2
         self.min_turn = 0.09
-
         self.max_turn_threshold = np.pi/4
 
-        # Forward yaw change speed
-        self.max_turn_forward = 0.075
-        self.min_turn_forward = 0.01
+        self.rad_tol_turn = np.pi*self._deg_tol_turn/180
+        self.k_angle = (self.max_turn - self.min_turn)/(self.max_turn_threshold - self.rad_tol_turn)
+        self.m_angle = self.min_turn - self.k_angle*self.rad_tol_turn
 
-        #Tolerated diff from optimal direction during forward driving
+        #Tolerated diff from optimal direction during forward driving befor stop for yaw adjustment
         self._deg_tol_forward = 18
+        
+        #Yaw adjustment speed during forward driving
+        self.max_turn_forward = 0.2#0.15#0.1#0.075
+        self.min_turn_forward = 0.007#0.01
+        self.rad_tol_forward = np.pi*self._deg_tol_forward/180
+        
+        self.k_forward_turn = (self.max_turn_forward - self.min_turn_forward)/self.rad_tol_forward
+        self.m_forward_turn = self.min_turn_forward
+        
 
-        #Tolerated diff from optimal direction during turning
-        self._deg_tol_turn = 3
+        #Forward speed adjustment during high yaw adjustment while driving forward
+        self.max_speed_forward = 0.3
+        self.min_speed_forward = 0.0
+        self.max_speed_threshold = 0.1 #w
+        self.min_speed_threshold = 0.2 #w
+
+        self.k_forward = (self.max_speed_forward - self.min_speed_forward)/(self.max_speed_threshold - self.min_speed_threshold)
+        self.m_forward = self.min_speed_forward - self.k_forward*self.min_speed_threshold
 
         self._move_state = "turn"
 
+        #Action server executing the path 
         self._action_server = ActionServer(
             self,
             MoveTo,
@@ -54,6 +79,7 @@ class Move_to(Node):
             self.move_callback,
             cancel_callback=self.cancel_callback
         )
+        #
         self._pub_wp = self.create_publisher(PoseStamped, '/current_waypoint', 10)
 
         self._pub_vel = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -106,16 +132,7 @@ class Move_to(Node):
             print(yaw)
             print("Dist:")
             print(dist)
-            rad_tol_forvard = np.pi*self._deg_tol_forward/180
-            rad_tol_turn = np.pi*self._deg_tol_turn/180
             
-            k_angle = (self.max_turn - self.min_turn)/(self.max_turn_threshold - rad_tol_turn)
-            m_angle = self.min_turn - k_angle*rad_tol_turn
-
-            
-            k_forward = (self.max_turn_forward - self.min_turn_forward)/rad_tol_forvard
-            m_forward = self.min_turn_forward
-
             #Robot move pub
             if dist > self.dist_threshold:
                 angle = np.arctan2(transformed_goal_pose.position.y,transformed_goal_pose.position.x)
@@ -127,26 +144,26 @@ class Move_to(Node):
                 print("angle: ")
                 print(angle*180/np.pi)
 
-                if (angle < -rad_tol_turn and self._move_state == "turn") or (angle < -rad_tol_forvard and self._move_state == "forward"):
+                if (angle < -self.rad_tol_turn and self._move_state == "turn") or (angle < -self.rad_tol_forvard and self._move_state == "forward"):
                     self._move_state = "turn"
                     print("right")
                     vel.linear.x = 0.0
-                    vel.angular.z = np.max([-self.max_turn, k_angle*angle - m_angle])
-                elif (angle > rad_tol_turn and self._move_state == "turn") or (angle > rad_tol_forvard and self._move_state == "forward"):
+                    vel.angular.z = np.max([-self.max_turn, self.k_angle*angle - self.m_angle])
+                elif (angle > self.rad_tol_turn and self._move_state == "turn") or (angle > self.rad_tol_forvard and self._move_state == "forward"):
                     self._move_state = "turn"
                     print("left")
                     vel.linear.x = 0.0
-                    vel.angular.z = np.min([self.max_turn, k_angle*angle + m_angle])
-                elif angle < -rad_tol_turn:
+                    vel.angular.z = np.min([self.max_turn, self.k_angle*angle + self.m_angle])
+                elif angle < - self.rad_tol_turn:
                     self._move_state = "forward"
                     print("right and forward")
-                    vel.linear.x = 0.3
-                    vel.angular.z = np.max([-self.max_turn, k_forward*angle - m_forward])
-                elif angle > rad_tol_turn:
+                    vel.angular.z = np.max([-self.max_turn, self.k_forward_turn*angle - self.m_forward_turn])
+                    vel.linear.x = np.min([self.max_speed_forward, self.k_forward*abs(vel.angular.z) + self.m_forward])
+                elif angle > self.rad_tol_turn:
                     self._move_state = "forward"
                     print("left and forward")
-                    vel.linear.x = 0.3
-                    vel.angular.z = np.min([self.max_turn, k_forward*angle + m_forward])
+                    vel.angular.z = np.min([self.max_turn, self.k_forward_turn*angle + self.m_forward_turn])
+                    vel.linear.x = np.min([self.max_speed_forward, self.k_forward*abs(vel.angular.z) + self.m_forward])
                 else:
                     self._move_state = "forward"
                     print("Foooooooorward")
@@ -158,11 +175,11 @@ class Move_to(Node):
                 if yaw < -self.yaw_threshold:
                     print("pose fix right")
                     vel.linear.x = 0.0
-                    vel.angular.z = np.max([-self.max_turn, k_angle*yaw - m_angle])
-                elif yaw > rad_tol_turn:
+                    vel.angular.z = np.max([-self.max_turn, self.k_angle*yaw - self.m_angle])
+                elif yaw > self.rad_tol_turn:
                     print("pose fix left")
                     vel.linear.x = 0.0
-                    vel.angular.z = np.min([self.max_turn, k_angle*yaw + m_angle])
+                    vel.angular.z = np.min([self.max_turn, self.k_angle*yaw + self.m_angle])
     
             if vel.linear.x > self._vel_change_threshold + self._current_vel_x or vel.linear.x < self._current_vel_x - self._vel_change_threshold or vel.angular.z > self._vel_change_threshold + self._current_vel_w or vel.angular.z < self._current_vel_w - self._vel_change_threshold:
                 dif_x = vel.linear.x -self._current_vel_x
@@ -172,6 +189,8 @@ class Move_to(Node):
                 vel.angular.z = self._current_vel_w + self._vel_change_threshold*(dif_w/(abs(dif_x)+abs(dif_w)))
                 self._current_vel_x = vel.linear.x
                 self._current_vel_w = vel.angular.z
+            if dist < self.slow_down_threshold and stop_at_goal:
+                vel.linear.x = np.min(vel.linear.x, self.k_slow_down*dist + self.m_slow_down)
             self._pub_vel.publish(vel)
         if stop_at_goal:
             vel = Twist()

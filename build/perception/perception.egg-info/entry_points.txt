@@ -1,4 +1,0 @@
-[console_scripts]
-camera_processing = perception.camera_processing:main
-map_gen = perception.generate_map:main
-ransac = perception.ransac:main

@@ -11,6 +11,7 @@ core_interfaces_action_path = os.path.join(
     'action',
     'MoveTo.action'
 )
+
 setup(
     name=package_name,
     version='0.0.0',
@@ -20,6 +21,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/core_interfaces/action', [core_interfaces_action_path]),
+        ('share/' + package_name + '/launch', glob(os.path.join('launch', '*.[pxy][yma]*')))
     ],
     install_requires=['setuptools'],
     zip_safe=True,

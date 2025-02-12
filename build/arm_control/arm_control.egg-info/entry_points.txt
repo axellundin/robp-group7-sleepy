@@ -1,2 +1,0 @@
-[console_scripts]
-move_arm_hardcoded = arm_control.move_arm_hardcoded:main

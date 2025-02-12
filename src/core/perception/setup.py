@@ -22,7 +22,8 @@ setup(
         'console_scripts': [
             'camera_processing = perception.camera_processing:main',
             'ransac = perception.ransac:main', 
-            'map_gen = perception.generate_map:main'
+            'map_gen = perception.generate_map:main',
+            'DBSCAN = perception.DBSCAN:main'
         ],
     },
 )

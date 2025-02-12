@@ -1,8 +1,0 @@
-action/MoveTo.action
-action/MoveTo.idl
-action/PathPlanner.action
-action/PathPlanner.idl
-msg/DetectedMsg.idl
-msg/DetectedMsg.msg
-srv/GeofenceCompliance.idl
-srv/GeofenceCompliance.srv

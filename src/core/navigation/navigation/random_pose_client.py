@@ -4,6 +4,9 @@ from rclpy.action import ActionClient
 from geometry_msgs.msg import PoseStamped
 from core_interfaces.action import MoveTo 
 import numpy as np
+from geometry_msgs.msg import Polygon
+from rclpy.qos import QoSProfile, DurabilityPolicy
+from core_interfaces.srv import GeofenceCompliance
 
 class SendGoalClient(Node):
     def __init__(self):
@@ -12,47 +15,148 @@ class SendGoalClient(Node):
 
         self._move_to_client = ActionClient(self, MoveTo, 'move_to')
         self._goal_list = []
+        self.generate_hardcoded_goals()
+        self._goal_nr = 0
+
+        # Create QoS profile matching the geofence publisher
+        latching_qos = QoSProfile(depth=1,
+                                durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.geofence_subscriber = self.create_subscription(
+            Polygon, 
+            'geofence', 
+            self.geofence_callback, 
+            latching_qos)  # Use matching QoS profile
+        self.geofence = None # geofence polygon 
+        self.bounding_box = None # geofence bounding box, [min_x, min_y, max_x, max_y]
+
+        # I want to create a client for a serivce called geofence_compliance
+        self.geofence_compliance_client = self.create_client(GeofenceCompliance, 'geofence_compliance')
+    
+    def generate_hardcoded_goals(self):
+        """
+        This function is called to generate a list of hardcoded goals.
+        """
         points = 20
         angle_inc = 2*np.pi/points
         for i in range(points):
             angle = -np.pi/2 +i*angle_inc
             goal_msg = MoveTo.Goal()
-            goal_msg.enforce_orientation = False
-            goal_msg.stop_at_goal = False
+            if i == points-1:
+                goal_msg.enforce_orientation = True
+            else:
+                goal_msg.stop_at_goal = False
             goal_msg.way_point = PoseStamped()
             goal_msg.way_point.header.frame_id = "map"
             goal_msg.way_point.header.stamp = self.get_clock().now().to_msg()
-            goal_msg.way_point.pose.position.x = np.cos(angle)
-            goal_msg.way_point.pose.position.y =np.sin(angle)+1
-            goal_msg.way_point.pose.orientation.z = 1.0 
-            goal_msg.way_point.pose.orientation.w = 0.0
+            goal_msg.way_point.pose.position.x = 0.5*np.cos(angle)
+            goal_msg.way_point.pose.position.y =0.5*(np.sin(angle)+1)
+            goal_msg.way_point.pose.orientation.z = 0.0 
+            goal_msg.way_point.pose.orientation.w = 1.0
             self._goal_list.append(goal_msg)
-        self._goal_nr = 0
 
+
+    def geofence_callback(self, polygon):
+        """ 
+        This function is called when the geofence is received.
+        It updates the geofence and the bounding box.
+        """
+        self.get_logger().info('Geofence received: %s' % polygon)
+        self.geofence = polygon
+        self.bounding_box = [float('inf'), float('inf'), float('-inf'), float('-inf')]
+        for point in self.geofence.points:
+            self.bounding_box[0] = min(self.bounding_box[0], point.x)
+            self.bounding_box[1] = min(self.bounding_box[1], point.y)
+            self.bounding_box[2] = max(self.bounding_box[2], point.x)
+            self.bounding_box[3] = max(self.bounding_box[3], point.y)
+
+    def rejection_sample(self) -> MoveTo.Goal:
+        """ 
+        This function is called to sample a random pose from the bounding box.
+        It uses rejection sampling to ensure the pose is within the geofence.
+        """
+        if self.bounding_box is None:
+            print("Bounding box not set")
+            return None
+    
+        min_x, min_y, max_x, max_y = self.bounding_box
+        found_valid_pose = False
+        while not found_valid_pose:
+            rx, ry = np.random.uniform(min_x, max_x), np.random.uniform(min_y, max_y)
+            req = GeofenceCompliance.Request()
+            req.pose = PoseStamped() 
+            req.pose.header.frame_id = "map" 
+            req.pose.header.stamp = self.get_clock().now().to_msg()
+            req.pose.pose.position.x = rx
+            req.pose.pose.position.y = ry
+            req.pose.pose.position.z = 0.0
+            req.pose.pose.orientation.z = 0.0
+            req.pose.pose.orientation.w = 1.0
+
+            if not self.geofence_compliance_client.call_async(req):
+                continue
+
+            goal_msg = MoveTo.Goal()
+            goal_msg.way_point = req.pose
+            goal_msg.enforce_orientation = False
+            goal_msg.stop_at_goal = True
+            found_valid_pose = True
+        return goal_msg
+    
     def send_goal(self):
+        goal_msg = self._goal_list[self._goal_nr]
+        self._send_goal(goal_msg, self.goal_response_callback)
+    
+    def _send_goal(self, goal_msg, callback):
 
         self._move_to_client.wait_for_server()
-        goal_msg = self._goal_list[self._goal_nr]
-        print(goal_msg.way_point.pose.position.x)
-        print(goal_msg.way_point.pose.position.y)
 
         self._move_request = self._move_to_client.send_goal_async(
             goal_msg,
             feedback_callback=self.feedback_callback
         )
-        self._move_request.add_done_callback(self.goal_response_callback)
-        
+        self._move_request.add_done_callback(callback)
+    
+    def test_rejection_sample(self):
+        """ 
+        This function is used to test the rejection sampling.
+        """
+        goal_msg = self.rejection_sample()
+        print(f"Rejection sampling gives goal: {goal_msg.way_point.pose.position.x}, {goal_msg.way_point.pose.position.y}")
+
+    def send_random_goals_until_stopped(self):
+        """ 
+        This is called recursively when the last goal is reached.
+        """
+        goal_msg = self.rejection_sample()
+        if goal_msg is None:
+            return
+        self._send_goal(goal_msg, self.send_random_goals_until_stopped)
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
-        #self.get_logger().info(f'Feedback: Distance to goal = {feedback.distance_to_goal:.2f} m')
+        # self.get_logger().info(f'Feedback: Distance to goal = {feedback.distance_to_goal:.2f} m')
     
-    def goal_response_callback(self, future):
+    def send_random_goal_callback(self, future):
+        """ 
+        Callback for sending random goals until the goal is stopped.
+        """
         goal_handle = future.result()
         result_future = goal_handle.get_result_async()
-        result_future.add_done_callback(self.get_result_callback)
-    
-    def get_result_callback(self, future):
+        result_future.add_done_callback(self.send_random_goals_until_stopped)
+
+    def goal_response_callback(self, future):
+        """
+        Callback for sending the next hardcoded goal.
+        """
+        goal_handle = future.result()
+        result_future = goal_handle.get_result_async()
+        result_future.add_done_callback(self.send_next_goal_callback)
+
+    def send_next_goal_callback(self, future):
+        """ 
+        Callback for sending the next hardcoded goal.
+        This should be called when the last goal is reached.
+        """
         result = future.result().result
         if result.success:
             self.get_logger().info('Målet slutfört med framgång!')
@@ -66,14 +170,14 @@ class SendGoalClient(Node):
             self.get_logger().info('Alla mål är slutförda.')
             rclpy.shutdown()
 
-
 def main(args=None):
     rclpy.init(args=args)
     action_client = SendGoalClient()
     
+    # for i in range(10):
+    #     action_client.test_rejection_sample()
 
     action_client.send_goal()
-    
 
     rclpy.spin(action_client)
 

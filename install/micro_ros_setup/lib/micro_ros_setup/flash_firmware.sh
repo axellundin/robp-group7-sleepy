@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/src/micro_ros_setup/scripts/flash_firmware.sh

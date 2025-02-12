@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import math
-
+from math import atan2, sqrt
+import time
 import numpy as np
 
 import rclpy
 from rclpy.node import Node
 
-from sklearn.cluster import DBSCAN
 from collections import Counter
 
 from sensor_msgs.msg import PointCloud2
@@ -17,12 +17,31 @@ from tf2_ros import TransformBroadcaster, TransformStamped
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_geometry_msgs import Pose, do_transform_pose
-from .ransac import RANSACPlaneDetector as rspd
+from .ransac import RANSACPlaneDetector as RSPD
+from .DBSCAN import better_DBSCAN
 
 import ctypes
 import struct
 
 from core_interfaces.msg import DetectedMsg
+
+time_it_enable = True
+
+def time_it(func):
+    """ 
+    calculate the time used for executing the function
+    """
+    def wrapper(*args, **kwargs):
+        if time_it_enable:  
+            start_time = time.time() 
+            result = func(*args, **kwargs) 
+            end_time = time.time()  
+            elapsed_time = end_time - start_time 
+            print(f"Function '{func.__name__}' executed in {elapsed_time:.4f} seconds")
+        else:
+            result = func(*args, **kwargs)  
+        return result  
+    return wrapper
 
 class Detection(Node):
 
@@ -40,7 +59,8 @@ class Detection(Node):
             'detected',
             10
         '''
-        self.detection_max_distance = 1.5
+        self.detection_max_distance = 0.9
+        self.time_it_times = 1
 
         # Initialize the transform broadcaster
         self.tf_broadcaster = TransformBroadcaster(self)
@@ -65,31 +85,36 @@ class Detection(Node):
 
     def cloud_callback(self, msg: PointCloud2):
         """Takes point cloud readings to detect objects.
-
-        This function is called for every message that is published on the '/camera/depth/color/points' topic.
-
-        Your task is to use the point cloud data in 'msg' to detect objects. You are allowed to add/change things outside this function.
-
-        Keyword arguments:
-        msg -- A point cloud ROS message. To see more information about it 
-        run 'ros2 interface show sensor_msgs/msg/PointCloud2' in a terminal.
         """
+        global time_it_enable
+        if self.time_it_times<=0:
+            time_it_enable = False
 
-        # Convert ROS -> NumPy
-        points, colors = self.pointcloud_to_points_and_colors(msg)
+        # here start the show-----------------------------------------------------------------
 
-        points, colors = self.voxel_grid_downsample(points,colors, 0.01)
+        # faster pc to munpy
+        points, colors = self.pointcloud_to_points_and_colors_optimized(msg)
 
-        points, colors = self.filter_points(points, colors, 0.5)
+       # faster downsample
+        points, colors = self.voxel_grid_downsample_optimized(points,colors, 0.01)
 
-        pointcloud2 = create_pointcloud2(points, colors, "camera_link", msg.header.stamp)
+        #print some shit
+        # self.debug_points(points)
+
+        #filter points for ground
+        points, colors = self.filter_points(points, colors, 0.08)
+
+        #create pc for publishing 
+        pointcloud2 = create_pointcloud2(points, colors, "camera_depth_optical_frame", msg.header.stamp)
+
         self.pointcloud_pub.publish(pointcloud2)
 
-        #do things here 
+        cluster = self.cluster_points(points, colors)
+        self.deal_with_clustered_points(cluster)
 
-        # rspd.ransac_plane_detection(1,1,1)
+        self.time_it_times -= 1
 
-
+    @time_it
     def pointcloud_to_points_and_colors(self, msg):
         gen = pc2.read_points_numpy(msg, skip_nans=True)
         points = gen[:, :3]
@@ -122,32 +147,151 @@ class Detection(Node):
         colors = colors.astype(np.float32) / 255
         return points, colors
 
-    def filter_points(self, points, colors, min_height = 0.2):
+    @time_it
+    def pointcloud_to_points_and_colors_optimized(self, msg):
+        """ fast speed from pointcloud to points and colors """
+        
+        def convert_color_to_rgb(colors):
+            rgb_colors = np.empty((colors.shape[0], 3), dtype=np.uint8)
+            for idx, c in enumerate(colors):
+                s = struct.pack('>f', c)  # 将浮点数打包
+                i = struct.unpack('>l', s)[0]  # 解包为整数
+                pack = ctypes.c_uint32(i).value
+                rgb_colors[idx, 0] = (pack >> 16) & 255
+                rgb_colors[idx, 1] = (pack >> 8) & 255
+                rgb_colors[idx, 2] = pack & 255
+            return rgb_colors
+        
+        gen = pc2.read_points_numpy(msg, skip_nans=True)
+        points = gen[:, :3]  
+        colors = gen[:, 3]  
+
+        distances = np.linalg.norm(points, axis=1)
+        valid_mask = distances <= self.detection_max_distance 
+
+        points = points[valid_mask]
+        colors = colors[valid_mask]
+
+        colors = convert_color_to_rgb(colors)
+        colors = colors.astype(np.float32) / 255.0
+
+        return points, colors
+
+    @time_it
+    def debug_points(self, points):
         avg_x = np.mean(points[:, 0]) 
         avg_y = np.mean(points[:, 1]) 
         avg_z = np.mean(points[:, 2])  
         print(f"Average X: {avg_x}, Average Y: {avg_y}, Average Z: {avg_z}")
 
-        filtered_points = points[points[:, 2] >= min_height]
-        filtered_colors = colors[points[:, 2] >= min_height]
+    @time_it
+    def filter_points(self, points, colors, min_height = 0.1):
+        filtered_points = points[points[:, 1] <= min_height]
+        filtered_colors = colors[points[:, 1] <= min_height]
         return filtered_points, filtered_colors
+
+    @time_it
+    def cluster_points(self, points, colors, eps=0.02, min_samples=6):
+        """
+        Use DBSCAN (Density-Based Spatial Clustering of Applications with Noise) to group points into clusters.
+        Points that are in a dense region will be grouped together as a cluster. Points that do not belong to any cluster will be marked as noise.
+
+        :param points: (numpy.ndarray) The input points to be clustered.
+        :param colors: (numpy.ndarray) The colors corresponding to each point.
+        :param eps: (float, optional) The maximum distance between two points for one to be considered as in the neighborhood of the other. Default is 0.02.
+        :param min_samples: (int, optional) The number of points required to form a dense region (a cluster). Default is 6.
+
+        Returns:
+        - sorted_clusters (dict): A dictionary where:
+            - Key: cluster ID (int), which is a unique identifier for each cluster.
+            - Value: a dictionary containing two keys:
+                - 'points' (numpy.ndarray): The coordinates of the points in the cluster.
+                - 'colors' (numpy.ndarray): The colors corresponding to the points in the cluster.
+        """
+        db = better_DBSCAN(eps=eps, min_samples=min_samples)  
+        sorted_clusters = db.fit_predict(points, colors)
+
+        # open if you want to debug
+        for cluster_id, data in sorted_clusters.items():
+            print(f"Cluster {cluster_id} has {len(data['points'])} points.")
         
-    def cluster_points(self, points, colors, eps=1, min_samples=0.2):
-        """
-        use skleaarn.cluster dbscan 
-        if a point have lots of points around it, it is considered as part of the point class
-        """
-        db = DBSCAN(eps=eps, min_samples=min_samples)  
-        labels = db.fit_predict(points)
-        label_counts = Counter(labels)
+        return sorted_clusters
 
-        for label, count in label_counts.items():
-            if label == -1:
-                print(f"Noise (label {label}) has {count} points.")
-            else:
-                print(f"Cluster {label} has {count} points.")
+    @time_it
+    def deal_with_clustered_points(self, cluster):
+        if not cluster:
+            self.get_logger().info("No clusters found. Returning without processing.")
+            return
+        
+        for cluster_id, cluster_data in cluster.items():
+            points = cluster_data['points']
+            colors = cluster_data['colors']
 
-    def voxel_grid_downsample(self, points,colors, voxel_size):
+            avg_position = np.mean(points, axis=0)
+            avg_color = np.mean(colors, axis=0)
+        
+            if len(points) > 120:
+                # pose = Pose()
+                # pose.position.x = avg_position[0]
+                # pose.position.y = avg_position[1]
+                # pose.position.z = avg_position[2]                
+                # self.publish_transform(f"box_{cluster_id}", pose)
+
+                detector = RSPD()
+                planes, inliers, remained_points = detector.ransac_plane_detection(
+                    points, 3, 0.006, max_trials=200, stop_inliers_ratio=0.9, 
+                    out_layer_inliers_threshold=80, out_layer_remains_threshold=30
+                )
+
+                # planes cx cy cz nx ny nz  
+                # cx is right, cy is down, cz is far from camera 
+                # nz is biggest vertical to camera
+                
+                for i, plane in enumerate(planes):
+                    print(f"平面 {i+1} 的参数：{plane}")
+                    print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")
+                    pose, _, _ = self.plane_to_pose(plane)
+                    self.publish_transform(f"box_face_{i}", pose)
+
+            else:                
+                pose = Pose()
+                pose.position.x = avg_position[0]
+                pose.position.y = avg_position[1]
+                pose.position.z = avg_position[2]
+                self.publish_transform(f"obj_{cluster_id}", pose)
+
+    def plane_to_pose(self,plane_params):
+        center = plane_params[:3] 
+        normal = plane_params[3:]  
+
+        center[1] = 0.04
+
+        if normal[2] > 0:  
+            normal = -normal  
+
+        roll = 0.0
+        pitch = -atan2(normal[2], normal[0]) 
+        print(pitch)
+        yaw = 0.0  
+        
+        quaternion = quaternion_from_euler(roll, pitch, yaw)
+
+        # 创建 Pose 消息
+        pose = Pose()
+        pose.position.x = center[0]
+        pose.position.y = center[1]
+        pose.position.z = center[2]
+        
+        # 设置旋转四元数
+        pose.orientation.x = quaternion[0]
+        pose.orientation.y = quaternion[1]
+        pose.orientation.z = quaternion[2]
+        pose.orientation.w = quaternion[3]
+        
+        return pose, center, normal
+    
+    @time_it
+    def voxel_grid_downsample(self, points,colors, voxel_size = 0.02):
         # use indices of voxel to re_represent points
         voxel_indices = np.floor(points / voxel_size).astype(np.int32)
         unique_voxels, inverse_indices = np.unique(voxel_indices, axis=0, return_inverse=True)
@@ -156,6 +300,47 @@ class Detection(Node):
         downsampled_colors = np.array([colors[inverse_indices == i].mean(axis=0) for i in range(len(unique_voxels))], dtype=colors.dtype)
         return downsampled_points, downsampled_colors
 
+    @time_it
+    def voxel_grid_downsample_optimized(self, points, colors, voxel_size=0.02):
+        voxel_indices = np.floor(points / voxel_size).astype(np.int32)
+        
+        unique_voxels, inverse_indices = np.unique(voxel_indices, axis=0, return_inverse=True)
+        
+        sum_points = np.zeros((len(unique_voxels), points.shape[1]), dtype=np.float32)
+        sum_colors = np.zeros((len(unique_voxels), colors.shape[1]), dtype=np.float32)
+        voxel_counts = np.zeros(len(unique_voxels), dtype=np.int32)
+        
+        np.add.at(sum_points, inverse_indices, points)
+        np.add.at(sum_colors, inverse_indices, colors)
+        np.add.at(voxel_counts, inverse_indices, 1)
+        
+        downsampled_points = sum_points / voxel_counts[:, None]
+        downsampled_colors = sum_colors / voxel_counts[:, None]
+        
+        return downsampled_points, downsampled_colors
+
+    def publish_transform(self, child_frame_id, pose, father_frame_id = 'camera_depth_optical_frame'):
+            transform = TransformStamped()
+
+            transform.header.stamp = self.get_clock().now().to_msg()
+
+            transform.header.frame_id = father_frame_id
+            transform.child_frame_id = child_frame_id
+
+            transform.transform.translation.x = pose.position.x
+            transform.transform.translation.y = pose.position.y
+            transform.transform.translation.z = pose.position.z
+
+            transform.transform.rotation.x = pose.orientation.x
+            transform.transform.rotation.y = pose.orientation.y
+            transform.transform.rotation.z = pose.orientation.z
+            transform.transform.rotation.w = pose.orientation.w
+
+            # 发布变换
+            self.tf_broadcaster.sendTransform(transform)
+            self.get_logger().info(f"Dynamic transform published: {child_frame_id}")
+
+@time_it
 def create_pointcloud2(points, colors, frame_id= None, stamp = None):
     assert points.shape[0] == colors.shape[0], "Points and colors must have the same number of elements."
 
@@ -200,128 +385,26 @@ def create_pointcloud2(points, colors, frame_id= None, stamp = None):
 
     return pointcloud_msg
 
-def main():
-    rclpy.init()
-    node = Detection()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
+def quaternion_from_euler(roll, pitch, yaw):
+    """
+    Converts euler roll, pitch, yaw to quaternion (w in last place)
+    quat = [x, y, z, w]
+    Bellow should be replaced when porting for ROS 2 Python tf_conversions is done.
+    """
+    cy = math.cos(yaw * 0.5)
+    sy = math.sin(yaw * 0.5)
+    cp = math.cos(pitch * 0.5)
+    sp = math.sin(pitch * 0.5)
+    cr = math.cos(roll * 0.5)
+    sr = math.sin(roll * 0.5)
 
-    rclpy.shutdown()
+    q = [0] * 4
+    q[3] = cy * cp * cr + sy * sp * sr
+    q[0] = cy * cp * sr - sy * sp * cr
+    q[1] = sy * cp * sr + cy * sp * cr
+    q[2] = sy * cp * cr - cy * sp * sr
 
-
-if __name__ == '__main__':
-    main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-import math
-
-import numpy as np
-
-import rclpy
-from rclpy.node import Node
-
-from sensor_msgs.msg import PointCloud2
-import sensor_msgs_py.point_cloud2 as pc2
-
-import ctypes
-import struct
-
-
-class Detection(Node):
-
-    def __init__(self):
-        super().__init__('detection')
-
-        # Initialize the publisher
-        self._pub = self.create_publisher(
-            PointCloud2, '/camera/depth/color/ds_points', 10)
-
-        # Subscribe to point cloud topic and call callback function on each received message
-        self.create_subscription(
-            PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
-
-    def cloud_callback(self, msg: PointCloud2):
-        """Takes point cloud readings to detect objects.
-
-        This function is called for every message that is published on the '/camera/depth/color/points' topic.
-
-        Your task is to use the point cloud data in 'msg' to detect objects. You are allowed to add/change things outside this function.
-
-        Keyword arguments:
-        msg -- A point cloud ROS message. To see more information about it 
-        run 'ros2 interface show sensor_msgs/msg/PointCloud2' in a terminal.
-        """
-
-        # Convert ROS -> NumPy
-        print("inne")
-
-        gen = pc2.read_points_numpy(msg, skip_nans=True)
-        points = gen[:, :3]
-        colors = np.empty(points.shape, dtype=np.uint32)
-
-        for idx, x in enumerate(gen):
-            c = x[3]
-            s = struct.pack('>f', c)
-            i = struct.unpack('>l', s)[0]
-            pack = ctypes.c_uint32(i).value
-            colors[idx, 0] = np.asarray((pack >> 16) & 255, dtype=np.uint8)
-            colors[idx, 1] = np.asarray((pack >> 8) & 255, dtype=np.uint8)
-            colors[idx, 2] = np.asarray(pack & 255, dtype=np.uint8)
-
-        colors = colors.astype(np.float32) / 255
-#rod over gron + blo
-#gron over rod + 48, blo over rod + 40
-
-        distances = np.linalg.norm(points, axis=1)
-
-        red = '\033[91m'
-        green = '\033[92m'
-        reset = '\033[0m'
-        new_data = []
-        for i in range(msg.width):
-            keep_point = False
-            if distances[i] < 0.9:
-                if colors[i,0] > colors[i,1]+colors[i,2]:
-                    keep_point = True
-                    self.get_logger().info(f"{red}Detected red Sphere!{reset}")
-
-                elif colors[i,1]>colors[i,0]+0.188 and colors[i,2]>colors[i,0]+0.157:
-                    keep_point = True
-                    self.get_logger().info(f"{green}Detected green Cube!{reset}")
-            if keep_point == True:
-                new_data.append(msg.data[i*msg.point_step:i*msg.point_step+msg.point_step])
-            
-
-        new_message = PointCloud2()
-        new_message.fields = msg.fields
-        new_message.header = msg.header
-        new_message.height = 1
-        new_message.is_bigendian = msg.is_bigendian
-        new_message.point_step = msg.point_step
-        new_message.is_dense = msg.is_dense
-        new_message.width = len(new_data)
-        new_message.row_step = new_message.point_step*new_message.width 
-        new_message.data = b''.join(new_data)
-
-
-        self._pub.publish(new_message)
-
-
+    return q
 
 def main():
     rclpy.init()
@@ -336,211 +419,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-the structure for /camera/camera/depth/color/points
-header:
-  stamp:
-    sec: 1738691132
-    nanosec: 359928955
-  frame_id: camera_depth_optical_frame
-height: 1
-width: 103074
-fields:
-- name: x
-  offset: 0
-  datatype: 7
-  count: 1
-- name: y
-  offset: 4
-  datatype: 7
-  count: 1
-- name: z
-  offset: 8
-  datatype: 7
-  count: 1
-- name: rgb
-  offset: 16
-  datatype: 7
-  count: 1
-is_bigendian: false
-point_step: 20
-row_step: 6144000
-data:
-- 163
-- 50
-- 10
-- 192
-- 164
-- '...'
-is_dense: true
-
-
-
-
-        red_ball_success, red_ball_center = self.detect_red_ball(colors, points)
-        if red_ball_success:
-            print("Detected red ball")
-            self.send_detection_to_tf(msg.header.frame_id, red_ball_center, msg.header.stamp, "red_ball")
-
-        green_cube_success, green_cube_center = self.detect_green_cube(colors, points)
-        if green_cube_success:
-            print("Detected green cube")
-            self.send_detection_to_tf(msg.header.frame_id, green_cube_center, msg.header.stamp, "green_cube")
-
-    def detect_red_ball(self, colors, points):
-        discretization_length = 0.07
-        neighborhood_distance = 0.1
-        count_threshold = 10
-        conditions = [1, -1, -1]
-        color_value_thresholds = [0.6, 0.4, 0.4]
-        return self.detect_obj(colors, points, discretization_length, neighborhood_distance, count_threshold, conditions, color_value_thresholds)
-    
-    def detect_green_cube(self, colors, points):
-        discretization_length = 0.07
-        neighborhood_distance = 0.1
-        count_threshold = 10
-        conditions = [-1, 1, 1]
-        color_value_thresholds = [0.3, 0.5, 0.4]
-        return self.detect_obj(colors, points, discretization_length, neighborhood_distance, count_threshold, conditions, color_value_thresholds)
-    
-    def detect_obj(self, colors, points, discretization_length, neighborhood_distance, count_threshold, conditions, color_value_thresholds):
-        green_idx = self.filter_based_on_color(colors, conditions, color_value_thresholds)
-        if len(green_idx) == 0:
-            return False, None
-        filtered_pc = points[green_idx]
-        bounds = self.find_bounds_of_filtered_points(filtered_pc)
-        success, max_center = self.count_points_into_histogram(filtered_pc, bounds, discretization_len=discretization_length, count_threshold=count_threshold)
-        if not success: 
-            return False, None
-        fom = self.compute_first_order_moment(filtered_pc, max_center, neighborhood_distance=neighborhood_distance)
-        print(f"{fom=}")
-
-        return True, fom
-    
-    def send_detection_to_tf(self, camera_frame, position_in_camera_frame, timestamp, frame_name):
-
-        frame_to='map'
-        frame_from=camera_frame
-        object_frame = f'objects/detected_{frame_name}'
-        pose = Pose()
-        pose.position.x = position_in_camera_frame[0]
-        pose.position.y = position_in_camera_frame[1]
-        pose.position.z = position_in_camera_frame[2]
-        # Wait for the transform asynchronously
-        _time = rclpy.time.Time().from_msg(timestamp)
-
-        tf_future = self.tf_buffer.wait_for_transform_async(
-            target_frame=frame_to,
-            source_frame=frame_from,
-            time=_time
-        )
-
-        # Spin until transform found or `timeout_sec` seconds has passed
-        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
-
-        try: 
-            T = self.tf_buffer.lookup_transform(
-                frame_to, 
-                frame_from, 
-                time=_time, 
-                # timeout=rclpy.time.Duration(seconds=5)
-            )
-
-            pose_in_map = do_transform_pose(pose, T)
-
-            new_T = TransformStamped()
-            new_T.child_frame_id = object_frame
-            new_T.header.frame_id = frame_to 
-            new_T.header.stamp = timestamp
-            new_T.transform.translation.x = pose_in_map.position.x
-            new_T.transform.translation.y = pose_in_map.position.y
-            new_T.transform.translation.z = pose_in_map.position.z
-
-            new_T.transform.rotation.x = pose_in_map.orientation.x
-            new_T.transform.rotation.y = pose_in_map.orientation.y
-            new_T.transform.rotation.z = pose_in_map.orientation.z
-            new_T.transform.rotation.w = pose_in_map.orientation.w
-            self.tf_broadcaster.sendTransform(new_T)
-        except Exception as e: 
-            print(str(e))
-
-    def filter_based_on_color(self, colors, condition_directions, color_value_thresholds):
-        filtered_idx = np.where(((colors[:, 0] - color_value_thresholds[0]) * condition_directions[0] > 0) 
-                           & ((colors[:, 1] - color_value_thresholds[1]) * condition_directions[1] > 0)  
-                           & ((colors[:, 2] - color_value_thresholds[2]) * condition_directions[2] > 0) )[0]
-        return filtered_idx
-
-    def find_bounds_of_filtered_points(self, filtered_pc):
-        lower_bounds = np.min(filtered_pc, axis=0)
-        upper_bounds = np.max(filtered_pc, axis=0)
-        return np.vstack((lower_bounds, upper_bounds))
-
-    def count_points_into_histogram(self, filtered_pc, bounds, discretization_len=0.1, count_threshold=5):
-        # Compute number of bins: 
-        n_bins = np.ceil((bounds[1,:] - bounds[0,:]) / discretization_len)
-        n_bins = n_bins.astype(int)
-        if np.min(n_bins) == 0:
-            return False, None
-        # Create histogram 
-        hist = np.zeros(n_bins)
-        # Count points into the bins         
-        max_count = 0
-        max_bin = None
-        for point in filtered_pc:
-            bin = np.floor((point - bounds[0,:]) / discretization_len)
-            if np.min(n_bins - bin) == 0:
-                print("Bad indicies. Skipping this point.")
-                continue
-            bin = tuple(bin.astype(int))
-            hist[bin] += 1
-            if hist[bin] > max_count:
-                max_count = hist[bin]
-                max_bin = bin 
-
-        # Nothing found if max count is below threshold
-        if max_count < count_threshold:
-            return False, None 
-
-        # Compute center of the bin: 
-        center = bounds[0,:] + np.array(max_bin) * discretization_len + np.ones(3) * discretization_len / 2
-        
-        return True, center
-        
-    def compute_first_order_moment(self, filtered_pc, max_center, neighborhood_distance=0.3):
-        # Filter points based on distance to center
-        neighbor_points = filtered_pc[np.sqrt(np.sum((filtered_pc-max_center)**2, axis=1)) < neighborhood_distance]
-        return np.mean(neighbor_points, axis=0)
-
-    def _recursive_3d_search(self, idx_list, points, lim_min, lim_max, min_size=0.1):
-        
-        octant_count = np.zeros((2, 2, 2))
-        lim_mid = lim_min + (lim_max - lim_min) // 2 
-        new_idx_lst = []
-        for idx in idx_list:
-            p = points[idx,:]
-            # Check if within bounds 
-            if np.all(p - lim_min < 0) or np.all(p - lim_max > 0):
-                continue
-
-            # Find octant that it belongs to 
-            octant = np.greater(p, lim_mid).astype(int)
-            octant_count[octant[0], octant[1], octant[2]] += 1
-            new_idx_lst.append(idx)
-
-        new_idx_lst = np.array(new_idx_lst) 
-        print(f"{octant_count=}")
-        max_idx = np.where(octant_count == np.max(octant_count))
-        max_idx = np.array([max_idx[0][0], max_idx[1][0], max_idx[2][0]])
-        print(f"{max_idx=}")
-        # Compute new limits 
-        new_xlim_min = lim_min + max_idx * (lim_max - lim_min) // 2  
-        new_xlim_max = lim_max - (np.ones(3) - max_idx) * (lim_max - lim_min) // 2  
-        
-        if np.max(new_xlim_max - new_xlim_min) < min_size:
-            return len(new_idx_lst) > 5, points[new_idx_lst]
-
-        return self._recursive_3d_search(new_idx_lst, points, lim_min, lim_max, min_size=min_size)
-"""
-
-'''

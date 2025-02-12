@@ -1,1 +1,0 @@
-/home/sleepy/robp-group7-sleepy/build/drive_base_msgs/rosidl_generator_cpp/drive_base_msgs/msg/detail/command_header__struct.hpp

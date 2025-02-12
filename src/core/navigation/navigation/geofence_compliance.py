@@ -1,12 +1,17 @@
 from core_interfaces.srv import GeofenceCompliance
+from std_msgs.msg import Header
+# from ..polygon import LocalPolygon
 from geometry_msgs.msg import Polygon, Point32
 import rclpy
+from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy
+import numpy as np
 
 class GeofenceComplianceService(Node):
 
     def __init__(self):
+        print("Initializing GeofenceComplianceService")
         super().__init__('geofence_compliance')
         self.srv = self.create_service(GeofenceCompliance, 'geofence_compliance', self.geofence_compliance_callback)
         
@@ -14,28 +19,26 @@ class GeofenceComplianceService(Node):
         latching_qos = QoSProfile(depth=1,
                                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         
+        self.robot_convex_hull = [ 
+            np.array([0.1, 0.16]),
+            np.array([-0.3, 0.16]),
+            np.array([-0.3, -0.16]),
+            np.array([0.1, -0.16]),
+        ]
+
         self.geofence_subscriber = self.create_subscription(
             Polygon, 
             'geofence', 
-            self.geofence_callback, 
-            latching_qos)  # Use matching QoS profile
+            self.geofence_callback,
+            latching_qos
+            )  # Use matching QoS profile
+        
         self.geofence = None
-    
+
     def geofence_callback(self, polygon):
         self.get_logger().info('Geofence received: %s' % polygon)
         self.geofence = polygon
-    
-    def cross(self, a: Point32, b: Point32):
-        return a.x * b.y - a.y * b.x
-    
-    def is_to_the_left(self, p1: Point32, p2: Point32, x: Point32):
-        x_p1 = Point32()
-        x_p1.x = x.x - p1.x
-        x_p1.y = x.y - p1.y
-        p2_p1 = Point32()
-        p2_p1.x = p2.x - p1.x
-        p2_p1.y = p2.y - p1.y
-        return self.cross(x_p1, p2_p1) < 0
+        self.polygon = LocalPolygon(self.geofence.points)
 
     def check_geofence_compliance(self, pose):
         if self.geofence is None:
@@ -43,10 +46,17 @@ class GeofenceComplianceService(Node):
             return True
         
         # Check if the pose is inside the geofence
-        for i in range(len(self.geofence.points)):
-            p1 = self.geofence.points[i]
-            p2 = self.geofence.points[(i + 1) % len(self.geofence.points)]
-            if not self.is_to_the_left(p1, p2, pose.position):
+        position = np.array([pose.position.x, pose.position.y])
+        if not self.polygon.is_internal(position):
+            return False
+        # rotate robot convex hull by pose orientation 
+        rotation_matrix = np.array([[np.cos(pose.orientation.z), -np.sin(pose.orientation.z)],
+                                    [np.sin(pose.orientation.z), np.cos(pose.orientation.z)]])
+        rotatex_convex_hull = [rotation_matrix @ vertex for vertex in self.robot_convex_hull]
+        for i in range(len(rotatex_convex_hull)):
+            start = position + rotatex_convex_hull[i]
+            end = position + rotatex_convex_hull[(i + 1) % len(rotatex_convex_hull)]
+            if self.polygon.segment_intersects_polygon(start, end):
                 return False
         return True
 

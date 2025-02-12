@@ -2,16 +2,23 @@ from rclpy.node import Node
 from geometry_msgs.msg import Polygon, Point32
 import rclpy
 from rclpy.qos import QoSProfile, DurabilityPolicy
+
 def main():
     rclpy.init()
     node = Node("geofence_publisher")
 
     latching_qos = QoSProfile(depth=1,
             durability=DurabilityPolicy.TRANSIENT_LOCAL)
-    publisher = node.create_publisher(Polygon, "geofence", latching_qos)
+    publisher = node.create_publisher(list[Point32], 
+                                      "geofence", 
+                                      latching_qos)
 
     polygon = Polygon()
-    for p in [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)]:
+    for p in [
+        (2, 1.5, 0), 
+        (-2, 1.5, 0), 
+        (-2, -1.5, 0), 
+        (2, -1.5, 0)]:
         x_value, y_value, z_value = p
         point = Point32()
         point.x = float(x_value)  
