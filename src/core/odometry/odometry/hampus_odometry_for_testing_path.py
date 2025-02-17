@@ -13,29 +13,21 @@ from geometry_msgs.msg import TransformStamped
 from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
-from sensor_msgs.msg import Imu
 
-def quaternion_from_yaw(x, y, yaw):
+def quaternion_from_yaw(x,y,yaw):
     """
     Convert yaw angle to quaternion, for 2D rotation only.
     """
-    return [0.0,  # x
-            0.0,  # y
+    return [0.0,                  # x
+            0.0,                  # y
             math.sin(yaw / 2.0),  # z
             math.cos(yaw / 2.0)]  # w
-
-
-def quaternion_to_yaw(x, y, z, w):
-    """Convert quaternion to yaw angle."""
-    siny_cosp = 2 * (w * z + x * y)
-    cosy_cosp = 1 - 2 * (y * y + z * z)
-    return math.atan2(siny_cosp, cosy_cosp)
-
 
 class Odometry(Node):
 
     def __init__(self):
         super().__init__('odometry')
+        print("Inne odom2")
 
         # Initialize the transform broadcaster
         self._tf_broadcaster = TransformBroadcaster(self)
@@ -45,16 +37,15 @@ class Odometry(Node):
         # Store the path here
         self._path = Path()
 
-        # Subscribe to encoder & imu topic and call callback function on each recieved message
+        self.callbacknr = 0
+
+        # Subscribe to encoder topic and call callback function on each recieved message
         self.create_subscription(
             Encoders, '/motor/encoders', self.encoder_callback, 10)
-        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
 
         # 2D pose
         self._x = 0.0
         self._y = 0.0
-        self._yaw_encoder = 0.0
-        self._yaw_imu = 0.0
         self._yaw = 0.0
 
     def encoder_callback(self, msg: Encoders):
@@ -65,11 +56,12 @@ class Odometry(Node):
         Your task is to update the odometry based on the encoder data in 'msg'. You are allowed to add/change things outside this function.
 
         Keyword arguments:
-        msg -- An encoders ROS message. To see more information about it
+        msg -- An encoders ROS message. To see more information about it 
         run 'ros2 interface show robp_interfaces/msg/Encoders' in a terminal.
         """
 
         # The kinematic parameters for the differential configuration
+        self.callbacknr +=1
         dt = 50 / 1000
         ticks_per_rev = 48 * 64
         wheel_radius = 0.04921  # TODO: Fill in
@@ -85,53 +77,26 @@ class Odometry(Node):
         vel_l = dist_l / dt
         vel_r = dist_r / dt
 
-        vel = (vel_l + vel_r) / 2
+        vel = (vel_l+vel_r)/2
         omega = (vel_r - vel_l) / base
+
+        self._yaw = self._yaw + omega * dt
+        self._yaw = math.atan2(math.sin(self._yaw), math.cos(self._yaw))
+        self.average_yaw = self._yaw - omega*dt/2
+
+        self._x = self._x + vel * dt * math.cos(self.average_yaw) 
+        self._y = self._y + vel * dt * math.sin(self.average_yaw) 
         
-
-
-        #Dynamic weighting
-        if abs(omega) > 0.5: #if sharp turn -> trust Imu
-            alpha = 0.65
-            imu_alpha = 0.75
-        else: #else ablance and smooth fusion
-            alpha = 0.82
-            imu_alpha = 0.9
-
-        # Updating yaw from encoder
-        self._yaw_encoder = self._yaw_encoder + omega * dt
-        self._yaw_encoder = math.atan2(math.sin(self._yaw_encoder), math.cos(self._yaw_encoder))
-
-        #Imu has a very high update rate so alpha should be very high. 
-        self._yaw = alpha * (self._yaw_encoder) + (1 - alpha) * self._yaw_imu
-
-        self.average_yaw = self._yaw - omega * dt / 2
-
-        self._x = self._x + vel * dt * math.cos(self.average_yaw)
-        self._y = self._y + vel * dt * math.sin(self.average_yaw)
-
-        stamp = msg.header.stamp
+        stamp = msg.header.stamp 
 
         self.broadcast_transform(stamp, self._x, self._y, self._yaw)
         self.publish_path(stamp, self._x, self._y, self._yaw)
 
-    def imu_callback(self, msg: Imu):
-        """recieves the message from Imu, converts and uppdates"""
-        q = msg.orientation
-        raw_yaw = quaternion_to_yaw(q.x, q.y, q.z, q.w)
-
-        # #ignore noise
-
-        # if abs(raw_yaw - self._yaw_imu) < 0.001:
-        #     return
-        
-        #low pass filter to smooth the Imu data
-        self._yaw_imu = self.imu_alpha * self._yaw_imu + (1-self.imu_alpha) * raw_yaw
 
     def broadcast_transform(self, stamp, x, y, yaw):
         """Takes a 2D pose and broadcasts it as a ROS transform.
 
-        Broadcasts a 3D transform with z, roll, and pitch all zero.
+        Broadcasts a 3D transform with z, roll, and pitch all zero. 
         The transform is stamped with the current time and is between the frames 'odom' -> 'base_link'.
 
         Keyword arguments:
@@ -140,11 +105,12 @@ class Odometry(Node):
         y -- y coordinate of the 2D pose
         yaw -- yaw of the 2D pose (in radians)
         """
-
+        print("get_clock now")
+        print(self.get_clock().now().to_msg())
+        print("Encoder stamped")
+        print(stamp)
         t = TransformStamped()
-
-        ## I, Hampus, changed to et_clock().now() because stamp does not correspond with the current time
-        t.header.stamp = self.get_clock().now().to_msg()  # stamp
+        t.header.stamp = stamp
         t.header.frame_id = 'odom'
         t.child_frame_id = 'base_link'
 
@@ -195,7 +161,6 @@ class Odometry(Node):
         self._path.poses.append(pose)
 
         self._path_pub.publish(self._path)
-
 
 def main():
     rclpy.init()

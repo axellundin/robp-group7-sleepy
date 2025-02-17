@@ -19,6 +19,7 @@ from tf2_ros.transform_listener import TransformListener
 from tf2_geometry_msgs import Pose, do_transform_pose
 from .ransac import RANSACPlaneDetector as RSPD
 from .DBSCAN import better_DBSCAN
+from geometry_msgs.msg import PoseStamped
 
 import ctypes
 import struct
@@ -47,6 +48,8 @@ class Detection(Node):
 
     def __init__(self):
         super().__init__('detection')
+
+        print("started")
 
         self.detected_objects_publisher = self.create_publisher(
             DetectedMsg,
@@ -84,6 +87,9 @@ class Detection(Node):
         if self.time_it_times<=0:
             time_it_enable = False
 
+        self.objects = []
+        self.boxes = [] 
+
         # here start the show-----------------------------------------------------------------
 
         # faster pc to munpy
@@ -106,12 +112,14 @@ class Detection(Node):
         cluster = self.cluster_points(points, colors)
         self.deal_with_clustered_points(cluster)
 
-        self.objects = []
-        self.boxes = [] 
 
         msg = DetectedMsg() 
         msg.objects = self.objects
         msg.boxes = self.boxes
+        print("published once")
+        print(msg)
+        self.detected_objects_publisher.publish(msg)
+        print("finish one round")
 
         self.time_it_times -= 1
 
@@ -179,13 +187,6 @@ class Detection(Node):
         return points, colors
 
     @time_it
-    def debug_points(self, points):
-        avg_x = np.mean(points[:, 0]) 
-        avg_y = np.mean(points[:, 1]) 
-        avg_z = np.mean(points[:, 2])  
-        print(f"Average X: {avg_x}, Average Y: {avg_y}, Average Z: {avg_z}")
-
-    @time_it
     def filter_points(self, points, colors, min_height = 0.1):
         filtered_points = points[points[:, 1] <= min_height]
         filtered_colors = colors[points[:, 1] <= min_height]
@@ -220,6 +221,7 @@ class Detection(Node):
 
     @time_it
     def deal_with_clustered_points(self, cluster):
+        
         if not cluster:
             self.get_logger().info("No clusters found. Returning without processing.")
             return
@@ -248,20 +250,55 @@ class Detection(Node):
                 # cx is right, cy is down, cz is far from camera 
                 # nz is biggest vertical to camera
 
-                for i, plane in enumerate(planes):
-                    # print(f"平面 {i+1} 的参数：{plane}")
-                    # print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")
-                    pose, center, normal = self.plane_to_pose(plane)
-                    
-                    self.publish_transform(f"box_face_{i}", pose)
-
+                if len(planes) == 2:
+                    center_list = []
+                    normal_list = []
+                    for i, plane in enumerate(planes):
+                        # print(f"平面 {i+1} 的参数：{plane}")
+                        # print(f"平面 {i+1} 的内点数量：{inliers[i].shape[0]}")
+                        pose, center, normal = self.plane_to_pose(plane)
+                        center_list.append(center)
+                        normal_list.append(normal)
+                        # self.publish_transform(f"box_face_{i}", pose)
+                    pose = self.calc_plane_center(center_list[0],normal_list[0],center_list[1],normal_list[1])
+                    self.publish_transform(f"box_center",pose)
+                    self.boxes.append(pose)
+                else:
+                    for i, plane in enumerate(planes):
+                        pose, center, normal = self.plane_to_pose(plane)
+                        self.publish_transform(f"box_{i}",pose)
+                        self.boxes.append(pose)                   
 
             else:                
-                pose = Pose()
-                pose.position.x = avg_position[0]
-                pose.position.y = avg_position[1]
-                pose.position.z = avg_position[2]
+                pose = PoseStamped()
+                pose.header.stamp = self.get_clock().now().to_msg()
+                pose.header.frame_id = "camera_depth_optical_frame"
+                pose.pose.position.x = avg_position[0]
+                pose.pose.position.y = avg_position[1]
+                pose.pose.position.z = avg_position[2]
                 self.publish_transform(f"obj_{cluster_id}", pose)
+                self.objects.append(pose)
+
+    def calc_plane_center(self, center1,normal1,center2,normal2):
+        # we just take 0 as x and 2(z) as y and the real y is fixed
+        A1, B1 = normal1[2], -normal1[0]
+        C1 = A1*center1[0] + B1*center1[2]
+        A2, B2 = normal2[2], -normal2[0]
+        C2 = A2*center2[0] + B2*center2[2]
+
+        A = np.array([[A1, B1], [A2, B2]]) 
+        B = np.array([C1, C2])  
+
+        intersection = np.linalg.solve(A, B)
+
+        pose = PoseStamped()
+        pose.header.stamp = self.get_clock().now().to_msg()
+        pose.header.frame_id = "camera_depth_optical_frame"
+        pose.pose.position.x = intersection[0]
+        pose.pose.position.y = center1[1]
+        pose.pose.position.z = intersection[1]
+
+        return pose
 
     def plane_to_pose(self,plane_params):
         center = plane_params[:3] 
@@ -279,17 +316,17 @@ class Detection(Node):
         
         quaternion = quaternion_from_euler(roll, pitch, yaw)
 
-        # 创建 Pose 消息
-        pose = Pose()
-        pose.position.x = center[0]
-        pose.position.y = center[1]
-        pose.position.z = center[2]
+        pose = PoseStamped()
+        pose.header.stamp = self.get_clock().now().to_msg()
+        pose.header.frame_id = "camera_depth_optical_frame"
+        pose.pose.position.x = center[0]
+        pose.pose.position.y = center[1]
+        pose.pose.position.z = center[2]
         
-        # 设置旋转四元数
-        pose.orientation.x = quaternion[0]
-        pose.orientation.y = quaternion[1]
-        pose.orientation.z = quaternion[2]
-        pose.orientation.w = quaternion[3]
+        pose.pose.orientation.x = quaternion[0]
+        pose.pose.orientation.y = quaternion[1]
+        pose.pose.orientation.z = quaternion[2]
+        pose.pose.orientation.w = quaternion[3]
         
         return pose, center, normal
     
@@ -330,14 +367,14 @@ class Detection(Node):
             transform.header.frame_id = father_frame_id
             transform.child_frame_id = child_frame_id
 
-            transform.transform.translation.x = pose.position.x
-            transform.transform.translation.y = pose.position.y
-            transform.transform.translation.z = pose.position.z
+            transform.transform.translation.x = pose.pose.position.x
+            transform.transform.translation.y = pose.pose.position.y
+            transform.transform.translation.z = pose.pose.position.z
 
-            transform.transform.rotation.x = pose.orientation.x
-            transform.transform.rotation.y = pose.orientation.y
-            transform.transform.rotation.z = pose.orientation.z
-            transform.transform.rotation.w = pose.orientation.w
+            transform.transform.rotation.x = pose.pose.orientation.x
+            transform.transform.rotation.y = pose.pose.orientation.y
+            transform.transform.rotation.z = pose.pose.orientation.z
+            transform.transform.rotation.w = pose.pose.orientation.w
 
             # 发布变换
             self.tf_broadcaster.sendTransform(transform)

@@ -1,4 +1,6 @@
 import numpy as np
-for i in range(20):
-    print(i)
+x = [1, 2, 3 ,4]
+for i in range(len(x)):
+    if i == len(x)-1:
+        print(x[i])
 print(np.max([-0.2,-3]))

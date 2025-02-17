@@ -26,12 +26,15 @@ endif()
 # Generate the interfaces
 find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GeofenceCompliance.srv"
   "action/MoveTo.action"
   "action/PathPlanner.action"
   "msg/DetectedMsg.msg"
+  "action/MoveToPickup.action"
+  DEPENDENCIES nav_msgs
   DEPENDENCIES geometry_msgs 
   DEPENDENCIES std_msgs
 )

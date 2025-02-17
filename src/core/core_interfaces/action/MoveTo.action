@@ -1,5 +1,5 @@
 # Goal
-geometry_msgs/PoseStamped way_point
+nav_msgs/Path path
 bool enforce_orientation
 bool stop_at_goal
 ---

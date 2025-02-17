@@ -1,6 +1,6 @@
 from core_interfaces.srv import GeofenceCompliance
 from std_msgs.msg import Header
-# from ..polygon import LocalPolygon
+from navigation.polygon import LocalPolygon
 from geometry_msgs.msg import Polygon, Point32
 import rclpy
 from geometry_msgs.msg import PoseStamped
@@ -38,7 +38,8 @@ class GeofenceComplianceService(Node):
     def geofence_callback(self, polygon):
         self.get_logger().info('Geofence received: %s' % polygon)
         self.geofence = polygon
-        self.polygon = LocalPolygon(self.geofence.points)
+        verticies = [np.array([point.x, point.y]) for point in self.geofence.points]
+        self.polygon = LocalPolygon(verticies)
 
     def check_geofence_compliance(self, pose):
         if self.geofence is None:

@@ -27,6 +27,11 @@ class MapGenerator(Node):
 
     def detected_callback(self, msg: DetectedMsg):
         self.get_logger().info('Received detected objects')
+        for i, object in enumerate(msg.objects):
+            self.get_logger().info(f'Object {i}')
+            self.get_logger().info(f'x: {object.pose.position.x}')
+            self.get_logger().info(f'y: {object.pose.position.y}')
+            self.get_logger().info(f'z: {object.pose.position.z}')
         if self.objects != msg.objects or self.boxes != msg.boxes:
             self.has_changes = True
         self.objects = msg.objects

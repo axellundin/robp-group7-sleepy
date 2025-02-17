@@ -9,16 +9,16 @@ def main():
 
     latching_qos = QoSProfile(depth=1,
             durability=DurabilityPolicy.TRANSIENT_LOCAL)
-    publisher = node.create_publisher(list[Point32], 
+    publisher = node.create_publisher(Polygon, 
                                       "geofence", 
                                       latching_qos)
 
     polygon = Polygon()
     for p in [
-        (2, 1.5, 0), 
-        (-2, 1.5, 0), 
-        (-2, -1.5, 0), 
-        (2, -1.5, 0)]:
+        (1.8, 1.2, 0), 
+        (-1.8, 1.2, 0), 
+        (-1.8, -1.2, 0), 
+        (1.8, -1.2, 0)]:
         x_value, y_value, z_value = p
         point = Point32()
         point.x = float(x_value)  
