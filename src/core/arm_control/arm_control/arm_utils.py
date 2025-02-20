@@ -71,7 +71,7 @@ def compute_jacobian(joint_angles, d0, d1, d2, d4):
     
     return jacobian
 
-def inverse_kinematics(joint_angles, target_pose, d0, d1, d2, d4, max_iterations=1000, tolerance=1e-3):
+def inverse_kinematics(joint_angles, target_pose, d0, d1, d2, d4, max_iterations=10000, tolerance=1e-3):
     """
     Solve inverse kinematics using the Jacobian pseudo-inverse method
     Args:
@@ -81,52 +81,60 @@ def inverse_kinematics(joint_angles, target_pose, d0, d1, d2, d4, max_iterations
     Returns:
         (success, joint_angles): tuple containing success flag and final joint angles
     """
-    # Initialize variables with explicit float type
     current_joints = np.array(joint_angles, dtype=np.float64)
-    alpha = 0.01  # Smaller step size for better stability
+    alpha = 0.5 # Step size
     
-    # Joint limits
+
     joint_limits = [
-        (-np.pi/2, np.pi/2),      # Joint 1
-        (-np.pi/2, np.pi/2),      # Joint 2
+        (-np.pi * 120 / 180 , np.pi * 240 / 120),      # Joint 1
+        (-np.pi / 2, np.pi/4),        # Joint 2 (adjusted for -np.pi/2 offset)
         (-np.pi/2, np.pi/2),      # Joint 3
-        (-np.pi/2, np.pi/2),      # Joint 4
-        (-np.pi/2, np.pi/2),      # Joint 5
+        (-np.pi/2, np.pi/2),          # Joint 4 (wider range for wrist)
+        (-np.pi * 120 / 180 , np.pi * 240 / 120),      # Joint 5
     ]
+
+    # # Original joint limits
+    # joint_limits = [
+    #     (-np.pi/2, np.pi/2),      # Joint 1
+    #     (-np.pi/2, np.pi/2),      # Joint 2
+    #     (-np.pi/2, np.pi/2),      # Joint 3
+    #     (-np.pi/2, np.pi/2),      # Joint 4
+    #     (-np.pi/2, np.pi/2),      # Joint 5
+    # ]
     
     for iteration in range(max_iterations):
-        # Get current end effector pose
         current_pose = get_end_effector_pose(current_joints, d0, d1, d2, d4)
         
-        # Calculate pose error
+        # Position error
         pos_error = target_pose[0:3, 3] - current_pose[0:3, 3]
         
-        # Calculate orientation error using skew-symmetric matrix
+        # Orientation error
         R_current = current_pose[0:3, 0:3]
         R_target = target_pose[0:3, 0:3]
         R_error = R_target @ R_current.T
         
-        # Convert to skew-symmetric form
+        # Convert to axis-angle representation
         rot_error = np.zeros(3)
-        # rot_error[0] = R_error[2, 1] - R_error[1, 2]
-        # rot_error[1] = R_error[0, 2] - R_error[2, 0]
-        # rot_error[2] = R_error[1, 0] - R_error[0, 1]
-        # rot_error *= 0.5  # Scale factor to improve convergence
+        rot_error[0] = R_error[2, 1] - R_error[1, 2]
+        rot_error[1] = R_error[0, 2] - R_error[2, 0]
+        rot_error[2] = R_error[1, 0] - R_error[0, 1]
+        rot_error *= 0.5 * 0
         
-        # Combine errors with different weights
+        # Combined error vector with different weights
         pos_gain = 1.0
-        rot_gain = 0.3  # Lower gain for orientation to prioritize position
-        error = np.concatenate([pos_error, rot_error])
+        rot_gain = 0.3
+        error = np.concatenate([pos_gain * pos_error, rot_gain * 0 * rot_error])
         
-        # Check if we've reached the target
-        if np.linalg.norm(pos_error) < tolerance:
+        # Check both position and orientation convergence
+        if np.linalg.norm(pos_error) < tolerance and np.linalg.norm(rot_error) < tolerance * 10:
             return True, current_joints
         
         # Calculate Jacobian
-        J = compute_jacobian(joint_angles, d0, d1, d2, d4)
+        J = compute_jacobian(current_joints, d0, d1, d2, d4)
         
         # Add damping for numerical stability
-        lambda_ = 0.01
+        cond_number = np.linalg.cond(J)
+        lambda_ = 0.001 if cond_number < 50 else 0.01  # Increase λ for ill-conditioned Jacobians
         J_pinv = J.T @ np.linalg.inv(J @ J.T + lambda_ * np.eye(6))
         
         # Calculate joint adjustments
@@ -139,15 +147,30 @@ def inverse_kinematics(joint_angles, target_pose, d0, d1, d2, d4, max_iterations
         
         # Check if we're making progress
         if np.linalg.norm(new_joints - current_joints) < 1e-6:
+            print("Reason: No progress, iteration: ", iteration)
+            print("Current joint angles: ", current_joints)
+            print("Error: ", error, "norm: ", np.linalg.norm(error))
+            print("Pos error: ", pos_error, "norm: ", np.linalg.norm(pos_error))
+            print("Rot error: ", rot_error, "norm: ", np.linalg.norm(rot_error))
+            print("Target pose: ", target_pose)
+            print("Current pose: ", current_pose)
+            print("J: ", J)
+            print("conditioning number: ", np.linalg.cond(J))
             return False, current_joints
         
         current_joints = new_joints
-        
-        # Update robot configuration for next iteration
         joint_angles = current_joints.tolist()
-        dh_params = get_dh_params(joint_angles, d0, d1, d2, d4)
     
     # If we reach here, we didn't converge
+    print("Reason: Max iterations reached, iteration: ", max_iterations)
+    print("Current joint angles: ", current_joints)
+    print("Error: ", error, "norm: ", np.linalg.norm(error))
+    print("Pos error: ", pos_error, "norm: ", np.linalg.norm(pos_error))
+    print("Rot error: ", rot_error, "norm: ", np.linalg.norm(rot_error))
+    print("Target pose: ", target_pose)
+    print("Current pose: ", current_pose)
+    print("J: ", J)
+    print("conditioning number: ", np.linalg.cond(J))
     return False, current_joints
 
 def get_joint_position(joint_angles, d0, d1, d2, d4, joint_idx):
@@ -165,7 +188,7 @@ def encoder_to_angle(encoder_value):
     return (encoder_value - 12000) / 18000 * np.pi
 
 def angle_to_encoder(angle):
-    return 12000 - angle / (np.pi) * 18000 
+    return 12000 + angle / (np.pi) * 18000 
 
 def manipulator_encoders_to_angles(encoder_values, joint_cfgs):
     angles = []

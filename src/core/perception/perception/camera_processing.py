@@ -163,8 +163,8 @@ class Detection(Node):
         def convert_color_to_rgb(colors):
             rgb_colors = np.empty((colors.shape[0], 3), dtype=np.uint8)
             for idx, c in enumerate(colors):
-                s = struct.pack('>f', c)  # 将浮点数打包
-                i = struct.unpack('>l', s)[0]  # 解包为整数
+                s = struct.pack('>f', c)  
+                i = struct.unpack('>l', s)[0] 
                 pack = ctypes.c_uint32(i).value
                 rgb_colors[idx, 0] = (pack >> 16) & 255
                 rgb_colors[idx, 1] = (pack >> 8) & 255
@@ -390,18 +390,17 @@ def create_pointcloud2(points, colors, frame_id= None, stamp = None):
     for i in range(num_points):
         x, y, z = points[i]
         
-        r, g, b = (colors[i] * 255).astype(np.uint8)  # 假设 colors 是 [0, 1] 范围的浮点数
+        r, g, b = (colors[i] * 255).astype(np.uint8)  
         
-        rgb = (r << 16) | (g << 8) | b  # RGB 转换为单个整数
+        rgb = (r << 16) | (g << 8) | b  
 
         pointcloud_data.append(struct.pack('fffI', x, y, z, rgb))
 
-    # 将所有点的数据合并为一个字节数组
     pointcloud_data = b''.join(pointcloud_data)
 
     # create pointcloud msg
     header = std_msgs.msg.Header()
-    header.stamp = stamp  # 当前时间戳
+    header.stamp = stamp  
     header.frame_id = frame_id
     pointcloud_msg = pc2.create_cloud_xyz32(header, points)
     pointcloud_msg.header = header

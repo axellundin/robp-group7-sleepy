@@ -38,57 +38,58 @@ class SendGoalClient(Node):
         """
         This function is called to generate a list of hardcoded goals.
         """
-        # request_msg = MoveTo.Goal()
-        # goal_list = Path()
-        # goal_list.header.frame_id = "map"
-        # goal_list.header.stamp = self.get_clock().now().to_msg()
-        # points = 12
-        # angle_inc = 2*np.pi/points
-        # for i in range(points):
-        #     angle = -np.pi/2 +i*angle_inc
-        #     goal_msg = PoseStamped()
-        #     goal_msg.header.frame_id = "map"
-        #     goal_msg.header.stamp = self.get_clock().now().to_msg()
-        #     goal_msg.pose.position.x = 0.3*np.cos(angle)
-        #     goal_msg.pose.position.y =0.3*(np.sin(angle)+1)
-        #     goal_msg.pose.orientation.z = 0.0 
-        #     goal_msg.pose.orientation.w = 1.0
-        #     goal_list.poses.append(goal_msg)
-        # request_msg.path = goal_list
-        # request_msg.enforce_orientation = True
-        # request_msg.stop_at_goal = True
-        # self._send_goal(request_msg, self.goal_response_callback)
-
-        """The following is a path (zigzag) made by yassir to evaluate odometry"""
+        "circle path is active"
         request_msg = MoveTo.Goal()
         goal_list = Path()
         goal_list.header.frame_id = "map"
         goal_list.header.stamp = self.get_clock().now().to_msg()
-        
-        # Alternating left/right turns
-        waypoints = [
-            (0.5, 0.0), 
-            (1.0, 0.5),  
-            (1.5, 0.0),  
-            (2.0, 0.5),  
-            (2.5, 0.0),  
-            (3.0, 0.5)  
-        ]
-
-        for x, y in waypoints:
+        points = 12
+        angle_inc = 2*np.pi/points
+        for i in range(points):
+            angle = -np.pi/2 +i*angle_inc
             goal_msg = PoseStamped()
             goal_msg.header.frame_id = "map"
             goal_msg.header.stamp = self.get_clock().now().to_msg()
-            goal_msg.pose.position.x = x
-            goal_msg.pose.position.y = y
-            goal_msg.pose.orientation.z = 0.0
+            goal_msg.pose.position.x = 0.3*np.cos(angle)
+            goal_msg.pose.position.y =0.3*(np.sin(angle)+1)
+            goal_msg.pose.orientation.z = 0.0 
             goal_msg.pose.orientation.w = 1.0
             goal_list.poses.append(goal_msg)
-        
         request_msg.path = goal_list
         request_msg.enforce_orientation = True
         request_msg.stop_at_goal = True
         self._send_goal(request_msg, self.goal_response_callback)
+
+        # """The following is a path (zigzag) made by yassir to evaluate odometry"""
+        # request_msg = MoveTo.Goal()
+        # goal_list = Path()
+        # goal_list.header.frame_id = "map"
+        # goal_list.header.stamp = self.get_clock().now().to_msg()
+        
+        # # Alternating left/right turns
+        # waypoints = [
+        #     (0.5, 0.0), 
+        #     (1.0, 0.5),  
+        #     (1.5, 0.0),  
+        #     (2.0, 0.5),  
+        #     (2.5, 0.0),  
+        #     (3.0, 0.5)  
+        # ]
+
+        # for x, y in waypoints:
+        #     goal_msg = PoseStamped()
+        #     goal_msg.header.frame_id = "map"
+        #     goal_msg.header.stamp = self.get_clock().now().to_msg()
+        #     goal_msg.pose.position.x = x
+        #     goal_msg.pose.position.y = y
+        #     goal_msg.pose.orientation.z = 0.0
+        #     goal_msg.pose.orientation.w = 1.0
+        #     goal_list.poses.append(goal_msg)
+        
+        # request_msg.path = goal_list
+        # request_msg.enforce_orientation = True
+        # request_msg.stop_at_goal = True
+        # self._send_goal(request_msg, self.goal_response_callback)
 
 
 

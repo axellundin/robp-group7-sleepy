@@ -72,7 +72,7 @@ def interpolate_positions(start_pos, end_pos, start_quat=None, end_quat=None, nu
         # Fallback to previous behavior if no orientations provided
         direction = end_pos - start_pos
         control_1 = start_pos + direction * 0.3
-        control_2 = start_pos + direction * 0.7
+        control_2 = start_pos + direction * 0.7 + np.array([0.0, 0.0, 0.1])  # Add vertical offset
     
     # Sample points along the Bezier curve
     positions = sample_bezier_curve(start_pos, control_1, control_2, end_pos, num_points)

@@ -10,8 +10,13 @@ from tf2_ros import Buffer, TransformListener, TransformException
 import tf2_geometry_msgs
 from sensor_msgs.msg import JointState
 from arm_control.interpolate import *
+from arm_control.rrt import * 
+from arm_control.kinematics import Kinematics
+from arm_control.gridmap import Gridmap
 import numpy as np
 from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Int16MultiArray
+import time
 
 class MoveArmActionServer(Node):
     def __init__(self):
@@ -22,6 +27,13 @@ class MoveArmActionServer(Node):
         
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=True)
+
+        # Create a publisher to /multi_servo_cmd_sub 
+        self.multi_servo_cmd_pub = self.create_publisher(
+            Int16MultiArray,
+            '/multi_servo_cmd_sub',
+            10
+        )
 
         # Create the action server
         self._action_server = ActionServer(
@@ -47,8 +59,44 @@ class MoveArmActionServer(Node):
             {'limits': [0, 24000], 'offset': 0},  # Joint 4
             {'limits': [0, 24000], 'offset': 0},  # Joint 5
         ]
-        
+        self.kinematics = Kinematics()
+        self.gridmap = Gridmap(resolution=0.01,
+                            x_min=-0.5, 
+                               x_max=0.5, 
+                               y_min=-0.5, 
+                               y_max=0.5, 
+                               z_min=-0.5, 
+                               z_max=0.5)
+        self.joint_limits = np.array([
+            [-np.pi * 120 / 180, np.pi * 120 / 180], 
+            [-np.pi * 30 / 180, np.pi * 90 / 180], 
+            [-np.pi * 60 / 180, np.pi * 120 / 180], 
+            [-np.pi * 60 / 180, np.pi * 120 / 180], 
+            [-np.pi * 120 / 180, np.pi * 120 / 180]
+        ])
+        self.gridmap.load_gridmap("103")
+        self.goal_pose_error = 0.2
+
         self.get_logger().info('Move To Pickup Action Server has been started')
+    
+    def pose_goal_error(self, pose, goal):
+        positional_error = np.linalg.norm(pose[:3] - goal[:3]) 
+        orientation_error = 0
+        return np.linalg.norm([positional_error, orientation_error])
+    
+    def generate_trajectory(self, start, goal):
+        rrt = RRT(self.joint_limits, 
+                start, 
+                goal, 
+                self.gridmap.collision_free, 
+                self.get_end_effector_pose, 
+                self.pose_goal_error, 
+                goal_threshold=0.02, 
+                step_size=0.2,
+                max_iterations=50000)
+        success, goal_angles = rrt.run()
+        
+        return success, rrt.nodes, rrt.parents, goal_angles
 
     async def wait_for_message(self, topic_name, msg_type, callback_group=None):
         """Wait for a message on the specified topic."""
@@ -101,6 +149,10 @@ class MoveArmActionServer(Node):
                 self.destroy_subscription(subscription)
             return None
 
+
+    def get_end_effector_pose(self, joint_angles):
+        return self.kinematics.get_joint_position(joint_angles, 6)
+
     async def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
         try:
@@ -121,8 +173,9 @@ class MoveArmActionServer(Node):
                     rclpy.time.Time(seconds=0)
                 )
             except TransformException as e:
-                self.get_logger().error(f'Transform error: {str(e)}')
+                self.get_logger().error(f'Transform error 1: {str(e)}')
                 result.success = False
+                goal_handle.abort()
                 return result
             
             # Convert the object pose to the arm_base_link frame
@@ -131,13 +184,14 @@ class MoveArmActionServer(Node):
             # Get the transform from arm_base_link to end_effector frame
             try:
                 transform = self.tf_buffer.lookup_transform(
-                    'end_effector',
                     'arm_base_link',
+                    'end_effector',
                     rclpy.time.Time(seconds=0)
                 )
             except TransformException as e:
-                self.get_logger().error(f'Transform error: {str(e)}')
+                self.get_logger().error(f'Transform error 2: {str(e)}')
                 result.success = False
+                goal_handle.abort()
                 return result
             
 
@@ -150,56 +204,57 @@ class MoveArmActionServer(Node):
             if joint_values_msg is None:
                 self.get_logger().error('No joint values message received')
                 result.success = False
+                goal_handle.abort()
                 return result
 
             current_joint_encoder_values = joint_values_msg.position[1:][::-1]
 
-            current_joint_angles = manipulator_encoders_to_angles(current_joint_encoder_values, self.joint_cfgs)
-            end_effector_pose = get_end_effector_pose(current_joint_angles, self.d0, self.d1, self.d2, self.d4)
-        
-            # Get the trajectory to the object pose
-            # Get start pose of the end effector in the arm_base_link frame
-            start_pose = np.array([end_effector_pose[0,3],
-                                end_effector_pose[1,3],
-                                end_effector_pose[2,3]])
-            start_quat = Rotation.from_euler('xyz', [0, 0, 0], degrees=True).as_quat()
-            end_quat = Rotation.from_euler('xyz', [0, 0, 0], degrees=True).as_quat()
-            num_points = 50
-            local_pose = np.array([local_pose.position.x, 
-                                   local_pose.position.y, 
-                                   local_pose.position.z])
-            trajectory_pos, trajectory_orient = interpolate_positions(start_pose, local_pose, start_quat, end_quat, num_points)
-            
-            # Move the arm to the object pose
-            joint_angles = current_joint_angles
-            print(f"Current joint angles: {joint_angles}")
-            print(f"End effector pose: {end_effector_pose}")
-            for pos, orient in zip(trajectory_pos, trajectory_orient): 
-                pose = np.eye(4)
-                pose[0,3] = pos[0]
-                pose[1,3] = pos[1]
-                pose[2,3] = pos[2]
-                pose[0:3, 0:3] = Rotation.from_quat(orient).as_matrix()
-                print(f"Pose: {pose}")
-                current_joint_angles = manipulator_encoders_to_angles(current_joint_encoder_values, self.joint_cfgs)
-                end_effector_pose = get_end_effector_pose(current_joint_angles, self.d0, self.d1, self.d2, self.d4)
-                print(f"End effector pose: {end_effector_pose}")
-                success, joint_angles = inverse_kinematics(joint_angles, pose, self.d0, self.d1, self.d2, self.d4)
-                if not success:
-                    self.get_logger().error('Failed to invert kinematics')
-                    result.success = False
-                    return result
-                encoder_values = manipulator_angles_to_encoders(joint_angles, self.joint_cfgs)  
-                print(f"Encoder values: {encoder_values}")
+            current_joint_angles = self.kinematics.manipulator_encoders_to_angles(current_joint_encoder_values)
+            # end_effector_pose = get_end_effector_pose(current_joint_angles, self.d0, self.d1, self.d2, self.d4)
+            # end_effector_pose = self.kinematics.fw_kinematics(current_joint_angles)
 
+            end_effector_pose = self.kinematics.get_joint_position(current_joint_angles, 6)
+            goal = np.array([local_pose.position.x, local_pose.position.y, local_pose.position.z])
+            print(f"Start: {end_effector_pose}")
+            print(f"Transform: {transform}")
+            print(f"Goal: {goal}")
+            time.sleep(2)
+            success, nodes, parents, goal_angles = self.generate_trajectory(current_joint_angles, goal)
+            
+            if not success:
+                self.get_logger().error('Failed to generate trajectory')
+                result.success = False
+                goal_handle.abort()
+                return result
+            
+            encoder_values = self.kinematics.manipulator_angles_to_encoders(goal_angles)
+            self.get_logger().info(f"Encoder values: {np.array2string(np.array(encoder_values), precision=1)}")
+            msg = Int16MultiArray() 
+            msg.data = [ 
+                -1,
+                int(encoder_values[4]),
+                int(encoder_values[3]),
+                int(encoder_values[2]),
+                int(encoder_values[1]),
+                int(encoder_values[0]), 
+                2000, 
+                2000, 
+                2000, 
+                2000, 
+                2000, 
+                2000
+            ]
+            self.get_logger().info(f"I want to publish encoder values: {np.array2string(np.array(msg.data), precision=1)}")
+            # self.multi_servo_cmd_pub.publish(msg)
             # Here you would implement the actual arm movement logic
             # For now, we'll just accept all trajectories as successful
             goal_handle.succeed()
-            
+            # result = True 
         except Exception as e:
-            raise e
+            # raise e
             print(f"Error: {e}")
             goal_handle.abort()
+            raise e
             
         return result
 

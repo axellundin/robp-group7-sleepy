@@ -37,6 +37,7 @@ setup(
             'geofence_compliance = navigation.geofence_compliance:main',
             'path_planner = navigation.path_planner:main',
             'geofence_publisher = navigation.geofence_publisher:main',
+            'grid_map_creator = navigation.grid_map_creator:main',
         ],
     },
 )

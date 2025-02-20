@@ -8,6 +8,7 @@ from arm_control.arm_utils import (
     manipulator_encoders_to_angles,
     get_joint_position,
 )
+from arm_control.kinematics import Kinematics
 import numpy as np
 
 class ArmJointTFPublisher(Node):
@@ -26,7 +27,6 @@ class ArmJointTFPublisher(Node):
             10
         )
         print("Subscribed to servo positions")
-        
         # DH parameters 
         self.d0 = 0
         self.d1 = 0.001 * 101 # mm -> m
@@ -34,6 +34,8 @@ class ArmJointTFPublisher(Node):
         self.d3 = 0 
         self.d4 = 0.001 * 168 
         
+        self.kinematics = Kinematics()
+
         # Joint configurations 
         self.joint_cfgs = [
             {'limits': [0, 24000], 'offset': 0},  # Joint 1
@@ -63,14 +65,17 @@ class ArmJointTFPublisher(Node):
         # Publish TF for each joint
         for i in range(len(self.frame_names)):
             # Get transformation matrix for current joint
-            transform = get_joint_position(
-                joint_angles, 
-                self.d0, 
-                self.d1, 
-                self.d2, 
-                self.d4, 
-                i + 1
-            )
+            if i==5: 
+                print(f"Joint {i+1}: frame_id: {self.frame_names[i]}")
+            transform = self.kinematics.get_joint_position(joint_angles, i+1)
+            # transform = get_joint_position(
+            #     joint_angles, 
+            #     self.d0, 
+            #     self.d1, 
+            #     self.d2, 
+            #     self.d4, 
+            #     i + 1
+            # )
             
             # Create and fill TransformStamped message
             t = TransformStamped()

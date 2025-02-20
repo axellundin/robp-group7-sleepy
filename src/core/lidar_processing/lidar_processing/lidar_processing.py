@@ -22,6 +22,7 @@ class lidar_processing(Node):
 
     def __init__(self):
         super().__init__('lidar_processing')
+        print("inne i lidar")
 
         self.accumulated_points = []
         self.N = 10

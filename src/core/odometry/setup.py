@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'odometry = odometry.hampus_odometry_for_testing_path:main'
+            'odometry = odometry.original_odometry:main'
         ],
     },
 )

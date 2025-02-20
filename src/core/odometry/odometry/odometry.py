@@ -94,7 +94,7 @@ class Odometry(Node):
         if abs(omega) > 0.5: #if sharp turn -> trust Imu
             alpha = 0.65
             imu_alpha = 0.75
-        else: #else ablance and smooth fusion
+        else: #else a blanced and smooth fusion
             alpha = 0.82
             imu_alpha = 0.9
 
