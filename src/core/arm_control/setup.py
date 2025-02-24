@@ -22,7 +22,8 @@ setup(
         'console_scripts': [
             'move_arm_hardcoded = arm_control.move_arm_hardcoded:main',
             'arm_joint_tf_pub = arm_control.arm_joint_tf_pub:main', 
-            'move_to_pickup = arm_control.move_to_pickup:main'
+            'rrt_pickup = arm_control.move_to_pickup:main',
+            'ik_pickup = arm_control.move_to_pickup_old:main',
         ],
     },
 )

@@ -39,6 +39,7 @@ class SendGoalClient(Node):
         This function is called to generate a list of hardcoded goals.
         """
         "circle path is active"
+        print("circle path is active")
         request_msg = MoveTo.Goal()
         goal_list = Path()
         goal_list.header.frame_id = "map"
@@ -61,6 +62,7 @@ class SendGoalClient(Node):
         self._send_goal(request_msg, self.goal_response_callback)
 
         # """The following is a path (zigzag) made by yassir to evaluate odometry"""
+        # print("zigzag")
         # request_msg = MoveTo.Goal()
         # goal_list = Path()
         # goal_list.header.frame_id = "map"
@@ -69,7 +71,7 @@ class SendGoalClient(Node):
         # # Alternating left/right turns
         # waypoints = [
         #     (0.5, 0.0), 
-        #     (1.0, 0.5),  
+        #     (1.0, 0.5),
         #     (1.5, 0.0),  
         #     (2.0, 0.5),  
         #     (2.5, 0.0),  

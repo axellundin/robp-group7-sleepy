@@ -34,20 +34,19 @@ class ArmJointTFPublisher(Node):
         self.d3 = 0 
         self.d4 = 0.001 * 168 
         
-        self.kinematics = Kinematics()
+        self.joint_limits = np.array([
+            [-np.pi * 120 / 180, np.pi * 120 / 180], 
+            [-np.pi * 30 / 180, np.pi * 90 / 180], 
+            [-np.pi * 60 / 180, np.pi * 120 / 180], 
+            [-np.pi * 60 / 180, np.pi * 120 / 180], 
+            [-np.pi * 120 / 180, np.pi * 120 / 180]
+        ])
 
-        # Joint configurations 
-        self.joint_cfgs = [
-            {'limits': [0, 24000], 'offset': 0},  # Joint 1
-            {'limits': [0, 24000], 'offset': 0},  # Joint 2
-            {'limits': [0, 24000], 'offset': 0},  # Joint 3
-            {'limits': [0, 24000], 'offset': 0},  # Joint 4
-            {'limits': [0, 24000], 'offset': 0},  # Joint 5
-        ]
+        self.kinematics = Kinematics(self.joint_limits)
         
         # Frame names
         self.frame_names = [
-            # 'joint0',
+            'joint0',
             'joint1',
             'joint2',
             'joint3',
@@ -60,22 +59,12 @@ class ArmJointTFPublisher(Node):
         # Convert encoder values to angles
         print("Received servo positions")
         print(msg.position)
-        joint_angles = manipulator_encoders_to_angles(msg.position[::-1], self.joint_cfgs)
-
+        joint_angles = self.kinematics.manipulator_encoders_to_angles(msg.position[1:][::-1])
+        print("joint_angles: ", joint_angles)
         # Publish TF for each joint
         for i in range(len(self.frame_names)):
             # Get transformation matrix for current joint
-            if i==5: 
-                print(f"Joint {i+1}: frame_id: {self.frame_names[i]}")
-            transform = self.kinematics.get_joint_position(joint_angles, i+1)
-            # transform = get_joint_position(
-            #     joint_angles, 
-            #     self.d0, 
-            #     self.d1, 
-            #     self.d2, 
-            #     self.d4, 
-            #     i + 1
-            # )
+            transform = self.kinematics.get_joint_position(joint_angles, i)
             
             # Create and fill TransformStamped message
             t = TransformStamped()

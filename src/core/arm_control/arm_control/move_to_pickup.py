@@ -44,21 +44,13 @@ class MoveArmActionServer(Node):
             callback_group=self.callback_group
         )
 
-         # DH parameters 
+        # DH parameters 
         self.d0 = 0
         self.d1 = 0.001 * 101 # mm -> m
         self.d2 = 0.001 * 95 
         self.d3 = 0 
         self.d4 = 0.001 * 168 
         
-        # Joint configurations 
-        self.joint_cfgs = [
-            {'limits': [0, 24000], 'offset': 0},  # Joint 1
-            {'limits': [0, 24000], 'offset': 0},  # Joint 2
-            {'limits': [0, 24000], 'offset': 0},  # Joint 3
-            {'limits': [0, 24000], 'offset': 0},  # Joint 4
-            {'limits': [0, 24000], 'offset': 0},  # Joint 5
-        ]
         self.kinematics = Kinematics()
         self.gridmap = Gridmap(resolution=0.01,
                             x_min=-0.5, 
@@ -149,7 +141,6 @@ class MoveArmActionServer(Node):
                 self.destroy_subscription(subscription)
             return None
 
-
     def get_end_effector_pose(self, joint_angles):
         return self.kinematics.get_joint_position(joint_angles, 6)
 
@@ -219,6 +210,7 @@ class MoveArmActionServer(Node):
             print(f"Transform: {transform}")
             print(f"Goal: {goal}")
             time.sleep(2)
+            
             success, nodes, parents, goal_angles = self.generate_trajectory(current_joint_angles, goal)
             
             if not success:
