@@ -370,6 +370,221 @@
 
 
 
+# #!/usr/bin/env python
+
+# import math
+# import numpy as np
+# from math import atan2
+# import rclpy
+# from rclpy.node import Node
+
+# from tf2_ros import TransformBroadcaster
+# from geometry_msgs.msg import TransformStamped, Quaternion
+# from robp_interfaces.msg import Encoders
+# from nav_msgs.msg import Path, Odometry
+# from geometry_msgs.msg import PoseStamped, Twist
+# from sensor_msgs.msg import Imu
+
+
+# def quaternion_from_euler(roll, pitch, yaw):
+#     """Convert Euler angles to quaternion."""
+#     qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(roll / 2) * math.sin(pitch / 2) * math.sin(yaw / 2)
+#     qy = math.cos(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2)
+#     qz = math.cos(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2) - math.sin(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2)
+#     qw = math.cos(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.sin(pitch / 2) * math.sin(yaw / 2)
+#     return [qx, qy, qz, qw]
+
+
+# class Odometry(Node):
+
+#     def __init__(self):
+#         super().__init__('odometry')
+
+#         # Initialize the transform broadcaster
+#         self._tf_broadcaster = TransformBroadcaster(self)
+
+#         # Initialize the path publisher
+#         self._odom_pub = self.create_publisher(Odometry, '/odom', 10) 
+#         self._path_pub = self.create_publisher(Path, 'path', 10)
+#         self._pose_pub = self.create_publisher(PoseStamped, 'robot_current_pose', 10)
+
+#         # Store the path here
+#         self._path = Path()
+
+#         # Subscribe to encoder and IMU topic
+#         self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 10)
+#         self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
+
+#         # Initialize pose variables
+#         self._x = 0.0
+#         self._y = 0.0
+#         self._yaw = 0.0
+
+#         # IMU handling
+#         self.q = Quaternion()
+#         self.init = True
+#         self.zero_value = 0
+
+#         # Velocity tracking
+#         self._prev_x = 0.0
+#         self._prev_y = 0.0
+#         self._prev_yaw = 0.0
+#         self._prev_time = None 
+
+#     def encoder_callback(self, msg: Encoders):
+#         """Process encoder readings to update odometry."""
+
+#         if self._prev_time is None:
+#             self._prev_time = msg.header.stamp
+#             return  # Skip first iteration (no delta time available)
+
+#         # Compute time difference (dt) from message timestamps
+#         current_time = msg.header.stamp
+#         dt = (current_time.sec - self._prev_time.sec) + (current_time.nanosec - self._prev_time.nanosec) * 1e-9
+#         self._prev_time = current_time
+
+#         if dt <= 0:
+#             return
+
+#         # Define kinematic parameters
+#         ticks_per_rev = 48 * 64
+#         wheel_radius = 0.04921
+#         base = 0.32  # Wheelbase distance
+
+#         # Compute wheel displacement
+#         delta_ticks_left = msg.delta_encoder_left
+#         delta_ticks_right = msg.delta_encoder_right
+#         k = (2 * math.pi) / ticks_per_rev
+#         D = (wheel_radius / 2) * k * (delta_ticks_right + delta_ticks_left)
+#         
+#         # Update pose
+#         self._x += D * math.cos(self._yaw)
+#         self._y += D * math.sin(self._yaw)
+
+#         if self.init:
+#             self.zero_value = -self.get_yaw(self.q) - math.pi / 2
+#             self.init = False
+#         else:
+#             self._yaw = -self.get_yaw(self.q) - self.zero_value  # Update yaw from IMU
+        
+        
+#         # Compute velocity
+#         vx = (self._x - self._prev_x) / dt
+#         vy = (self._y - self._prev_y) / dt
+#         w = (self._yaw - self._prev_yaw) / dt
+
+#         self._prev_x = self._x
+#         self._prev_y = self._y
+#         self._prev_yaw = self._yaw
+
+#         stamp = msg.header.stamp
+
+#         self.broadcast_transform(stamp, self._x, self._y, self._yaw)
+#         self.publish_path(stamp, self._x, self._y, self._yaw)
+#         self.publish_odometry(stamp, self._x, self._y, self._yaw, vx, vy, w)  # Publish odom
+
+#     def imu_callback(self, msg):
+#         """Update quaternion from IMU."""
+#         self.q = msg.orientation
+
+#     def broadcast_transform(self, stamp, x, y, yaw):
+#         """Broadcast odometry transform."""
+#         t = TransformStamped()
+#         t.header.stamp = stamp
+#         t.header.frame_id = 'odom'
+#         t.child_frame_id = 'base_link'
+
+#         t.transform.translation.x = x
+#         t.transform.translation.y = y
+#         t.transform.translation.z = 0.0
+
+#         q = quaternion_from_euler(0.0, 0.0, yaw)
+#         t.transform.rotation.x = q[0]
+#         t.transform.rotation.y = q[1]
+#         t.transform.rotation.z = q[2]
+#         t.transform.rotation.w = q[3]
+
+#         self._tf_broadcaster.sendTransform(t)
+
+#     def publish_path(self, stamp, x, y, yaw):
+#         """Publish robot path."""
+#         self._path.header.stamp = stamp
+#         self._path.header.frame_id = 'odom'
+
+#         pose = PoseStamped()
+#         pose.header = self._path.header
+#         pose.pose.position.x = x
+#         pose.pose.position.y = y
+#         pose.pose.position.z = 0.01  # 1 cm above ground
+
+#         q = quaternion_from_euler(0.0, 0.0, yaw)
+#         pose.pose.orientation.x = q[0]
+#         pose.pose.orientation.y = q[1]
+#         pose.pose.orientation.z = q[2]
+#         pose.pose.orientation.w = q[3]
+
+#         self._path.poses.append(pose)
+
+#         self._path_pub.publish(self._path)
+#         self._pose_pub.publish(pose)
+
+#     def get_yaw(self, q):
+#         """Extract yaw from quaternion."""
+#         return atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))
+    
+    
+#     def publish_odometry(self, stamp, x, y, yaw, vx, vy, w):
+#         """Publish odometry message to `/odom`."""
+#         odom_msg = Odometry()
+#         odom_msg.header.stamp = stamp
+#         odom_msg.header.frame_id = "odom"
+#         odom_msg.child_frame_id = "base_link"
+
+#         # Position
+#         odom_msg.pose.pose.position.x = x
+#         odom_msg.pose.pose.position.y = y
+#         odom_msg.pose.pose.position.z = 0.0
+
+#         q = quaternion_from_euler(0.0, 0.0, yaw)
+#         odom_msg.pose.pose.orientation.x = q[0]
+#         odom_msg.pose.pose.orientation.y = q[1]
+#         odom_msg.pose.pose.orientation.z = q[2]
+#         odom_msg.pose.pose.orientation.w = q[3]
+
+#         # Velocity
+#         odom_msg.twist.twist.linear.x = vx
+#         odom_msg.twist.twist.linear.y = vy
+#         odom_msg.twist.twist.angular.z = w
+
+#         self._odom_pub.publish(odom_msg)
+
+
+
+# def main():
+#     rclpy.init()
+#     node = Odometry()  # Create the node
+#     try:
+#         rclpy.spin(node)  # Keep it running until shutdown
+#     except KeyboardInterrupt:
+#         pass
+#     node.destroy_node()  # Clean up resources properly
+#     rclpy.shutdown()  # Shutdown ROS 2
+
+
+
+# if __name__ == '__main__':
+#     main()
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python
 
 import math
@@ -384,6 +599,9 @@ from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Imu
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+
 
 
 def quaternion_from_euler(roll, pitch, yaw):
@@ -399,6 +617,7 @@ class Odometry(Node):
 
     def __init__(self):
         super().__init__('odometry')
+        print("Läs kommentaren bredvid variabeln lazy!!!!!!//Yassir")
 
         # Initialize the transform broadcaster
         self._tf_broadcaster = TransformBroadcaster(self)
@@ -407,12 +626,20 @@ class Odometry(Node):
         self._path_pub = self.create_publisher(Path, 'path', 10)
         self._pose_pub = self.create_publisher(PoseStamped, 'robot_current_pose', 10)
 
+        # Init. tick resetter
+        #self.reset_pub = self.create_publisher(Encoders, '/reset_accumulated_ticks', 10)
+
         # Store the path here
         self._path = Path()
 
+        group = ReentrantCallbackGroup()
+
         # Subscribe to encoder and IMU topic
-        self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 10)
-        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
+        self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 100, callback_group=group)
+        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 100, callback_group=group)
+
+        # Timer to uppdate odom at constant rate
+        self.create_timer(0.05, self.odometry_update, callback_group=group)
 
         # Initialize pose variables
         self._x = 0.0
@@ -423,9 +650,63 @@ class Odometry(Node):
         self.q = Quaternion()
         self.init = True
         self.zero_value = 0
+        self.last_yaw = 0.0
+        self.last_yaw_tmp = 0.0
+
+        self.last_accumulated_ticks_left = 0
+        self.last_accumulated_ticks_right = 0
+
+        self.delta_accumulated_ticks_left = 0
+        self.delta_accumulated_ticks_right = 0
+
+        self.last_encoder_stamp = None
+
+        self.encoder_reset = False
+        
+        self.encoder_const_left = 0
+        self.encoder_const_right = 0
+
+        self.update_delta_encoder_left_sum = 0
+        self.update_delta_encoder_right_sum = 0
+
+
 
     def encoder_callback(self, msg: Encoders):
+        """stores the latest accumulated ticks"""
+
+        if self.last_encoder_stamp is None:
+            self.last_encoder_stamp = msg.header.stamp
+            self.last_accumulated_ticks_left = msg.encoder_left
+            self.last_accumulated_ticks_right = msg.encoder_right
+            return
+    
+        t_new = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        t_old = self.last_encoder_stamp.sec + self.last_encoder_stamp.nanosec * 1e-9
+        dt = t_new - t_old
+        if dt == 0:
+            return 
+
+        self.delta_accumulated_ticks_left = msg.encoder_left - self.last_accumulated_ticks_left
+        self.delta_accumulated_ticks_right = msg.encoder_right - self.last_accumulated_ticks_right
+        
+        self.update_delta_encoder_left_sum += self.delta_accumulated_ticks_left
+        self.update_delta_encoder_right_sum += self.delta_accumulated_ticks_right
+
+
+
+        self.last_accumulated_ticks_left = msg.encoder_left
+        self.last_accumulated_ticks_right = msg.encoder_right
+        self.last_encoder_stamp = msg.header.stamp
+
+        
+        
+
+    def odometry_update(self):
         """Process encoder readings to update odometry."""
+        self.get_logger().info("funkar")
+
+        if self.last_encoder_stamp is None:
+            return
 
         # Define kinematic parameters
         dt = 50 / 1000  # 50 ms
@@ -434,30 +715,47 @@ class Odometry(Node):
         base = 0.31  # Wheelbase distance
 
         # Compute wheel displacement
-        delta_ticks_left = msg.delta_encoder_left
-        delta_ticks_right = msg.delta_encoder_right
+        
         k = (2 * math.pi) / ticks_per_rev
-        D = (wheel_radius / 2) * k * (delta_ticks_right + delta_ticks_left)
-        angular_w = wheel_radius * k * 20 * (delta_ticks_right - delta_ticks_left) / base
-        d_theta = angular_w * dt
-
+        lazy = 0.5 #den bör vara 0.6 (funkar bäst), men egentligen 0.5 är rimligast. Utan ICP så ska man ha lazy = 1!
+        D = (wheel_radius*lazy) * k * (self.update_delta_encoder_right_sum + self.update_delta_encoder_left_sum)
+        self.update_delta_encoder_left_sum = 0
+        self.update_delta_encoder_right_sum = 0
+        
         # Update pose
         self._x += D * math.cos(self._yaw)
         self._y += D * math.sin(self._yaw)
 
         if self.init:
-            self.zero_value = -self.get_yaw(self.q) - math.pi / 2
+            self.zero_value = self.get_yaw(self.q)
             self.init = False
         else:
-            self._yaw = -self.get_yaw(self.q) - self.zero_value  # Update yaw from IMU
+            bias = 0.00005
+            new_yaw = self.get_yaw(self.q) - self.zero_value
 
-        stamp = msg.header.stamp
+            #self.get_logger()Imu.info(f"{new_yaw=}")
+            yaw_increment = (new_yaw - self.last_yaw_tmp) + bias
+            self.last_yaw_tmp = new_yaw
 
-        self.broadcast_transform(stamp, self._x, self._y, self._yaw)
-        self.publish_path(stamp, self._x, self._y, self._yaw)
+            if np.abs(yaw_increment) > 0.001:
+                self._yaw -= yaw_increment  # Update yaw from IMU
+                self.last_yaw = new_yaw
+            # else: 
+            #     self.accumulated_yaw_error += yaw_increment 
+            #     self.num_accumulated += 1  
+
+
+        self.broadcast_transform(self.last_encoder_stamp, self._x, self._y, self._yaw)
+        self.publish_path(self.last_encoder_stamp, self._x, self._y, self._yaw)
+
+        # #Reset tick accumulator
+        # reset_msg = Encoders()
+        # reset_msg.delta_encoder_left = 0
+        # reset_msg.delta_encoder_right = 0
+        # self.reset_pub.publish(reset_msg)
 
     def imu_callback(self, msg):
-        """Update quaternion from IMU."""
+        """ Update quaternion from IMU. """
         self.q = msg.orientation
 
     def broadcast_transform(self, stamp, x, y, yaw):
@@ -509,10 +807,16 @@ class Odometry(Node):
 def main():
     rclpy.init()
     node = Odometry()
+
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+
     try:
-        rclpy.spin(node)
+        executor.spin()  # Allow multiple callbacks to run concurrently
     except KeyboardInterrupt:
         pass
+
+    node.destroy_node()
     rclpy.shutdown()
 
 

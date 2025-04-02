@@ -100,17 +100,17 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        #camera_launch,
-        arm_camera_launch,
+        # camera_launch,
+        # arm_camera_launch,
         lidar_launch,
         phidgets_launch,
         static_tf_launch,
         # odometry_node,
-        joy_node, 
-        teleop_node, 
+        # joy_node, 
+        # teleop_node, 
         simple_move_node, 
         micro_ros_node, 
-        joystick_arm_control, 
+        #joystick_arm_control, 
         # lidar_processing_node, 
         # camera_processing_node
     ])  

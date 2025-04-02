@@ -1,0 +1,8 @@
+nav_msgs/Path path
+bool enforce_orientation
+bool allow_reverse
+bool stop_at_goal
+float32 max_speed
+float32 max_turn_speed
+---
+bool success

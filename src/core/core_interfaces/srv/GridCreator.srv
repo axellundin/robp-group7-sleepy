@@ -1,0 +1,5 @@
+string file_name
+int64 resolution
+int64 padding
+---
+nav_msgs/OccupancyGrid grid

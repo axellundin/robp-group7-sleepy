@@ -1,84 +1,222 @@
 #!/usr/bin/env python
 
-import math
-
-import numpy as np
-
 import rclpy
 from rclpy.node import Node
-
-from tf2_ros import TransformBroadcaster
-
-from geometry_msgs.msg import TransformStamped
 from robp_interfaces.msg import Encoders
-from nav_msgs.msg import Path
+import math
 from geometry_msgs.msg import PoseStamped
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+from tf2_ros import TransformBroadcaster
+from nav_msgs.msg import Path
+from tf2_ros import TransformStamped
+import time as std_time
+from _thread import start_new_thread
 from sensor_msgs.msg import Imu
+import math
 
 
-def quaternion_from_yaw(x, y, yaw):
-    """
-    Convert yaw angle to quaternion, for 2D rotation only.
-    """
-    return [0.0,  # x
-            0.0,  # y
-            math.sin(yaw / 2.0),  # z
-            math.cos(yaw / 2.0)]  # w
 
-
-def quaternion_to_yaw(x, y, z, w):
-    """Convert quaternion to yaw angle."""
-    siny_cosp = 2 * (w * z + x * y)
-    cosy_cosp = 1 - 2 * (y * y + z * z)
-    return math.atan2(siny_cosp, cosy_cosp)
-
-
-class Odometry(Node):
-
+class OdometryTest(Node):
     def __init__(self):
-        super().__init__('odometry')
+        super().__init__('odometry_test')
+        self.get_logger().info('imu_tool')
 
-        # Initialize the transform broadcaster
-        self._tf_broadcaster = TransformBroadcaster(self)
+        self.accumulated_ticks_left = 0
+        self.accumulated_ticks_right = 0
+        group = ReentrantCallbackGroup()
+        group2 =   MutuallyExclusiveCallbackGroup()
+
+
+        self.create_subscription(
+            Encoders, 
+            '/motor/encoders', 
+            self.encoder_callback, 
+            100, 
+            callback_group=group) 
+        
+        self.create_subscription(
+            Imu,
+            '/imu/data', 
+            self.imu_callback,
+            10,
+            callback_group=group
+        )
+
+        
+         # Initialize the transform broadcaster
+        self.tf_broadcaster = TransformBroadcaster(self)
 
         # Initialize the path publisher
-        self._path_pub = self.create_publisher(Path, 'path', 10)
-        # Store the path here
-        self._path = Path()
+        self.path_pub = self.create_publisher(Path, 
+                                               'path', 
+                                               10)
+        
+        self.Q = []
+        self.path = Path()
+        self.path.header.frame_id = 'odom'
 
-        # Subscribe to encoder & imu topic and call callback function on each recieved message
-        self.create_subscription(
-            Encoders, '/motor/encoders', self.encoder_callback, 10)
-        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
+        self.accumulated_delta_ticks_left = 0 
+        self.accumulated_delta_ticks_right = 0 
+        self.accumulated_dt = 0 
 
-        # 2D pose
-        self._x = 0.0
-        self._y = 0.0
-        self._yaw_encoder = 0.0
-        self._yaw_imu = 0.0
-        self._yaw = 0.0
+        self.last_ticks_left = None 
+        self.last_ticks_right = None
+        self.last_stamp = None
+        self.x = 0.0
+        self.y = 0.0
+        self.theta = 0.0
 
-    def encoder_callback(self, msg: Encoders):
-        """Takes encoder readings and updates the odometry.
+        self.executor = None
+        self.create_timer(0.1, self.update_pose, callback_group=group2)
+        # start_new_thread(self.manual_timer, ())
 
-        This function is called every time the encoders are updated (i.e., when a message is published on the '/motor/encoders' topic).
+    # def manual_timer(self): 
+    #     while self.alive: 
+    #         self.update_pose()
+    #         self.executor.spin_once(timeout_sec=0.05)
 
-        Your task is to update the odometry based on the encoder data in 'msg'. You are allowed to add/change things outside this function.
+        self.imu_yaw = None
+        self.zero_value = None
 
-        Keyword arguments:
-        msg -- An encoders ROS message. To see more information about it
-        run 'ros2 interface show robp_interfaces/msg/Encoders' in a terminal.
-        """
+    def encoder_callback(self, msg):
+        """Accumulate encoder ticks from each message."""
+        # self.get_logger().info('encoder')
 
+        ticks_left = msg.encoder_left 
+        ticks_right = msg.encoder_right  
+
+        # Only runs once, does not add a delta to the queue 
+        if self.last_stamp is None: 
+            self.last_stamp = msg.header.stamp 
+            self.last_ticks_left = ticks_left  
+            self.last_ticks_right = ticks_right 
+            return 
+        
+        t_new = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        t_old = self.last_stamp.sec + self.last_stamp.nanosec * 1e-9
+        dt = t_new - t_old
+        if dt == 0: 
+            return 
+
+        delta_ticks_left = ticks_left - self.last_ticks_left 
+        delta_ticks_right = ticks_right - self.last_ticks_right 
+
+        self.last_stamp = msg.header.stamp 
+        self.last_ticks_left = ticks_left  
+        self.last_ticks_right = ticks_right 
+
+        self.accumulated_delta_ticks_left += delta_ticks_left 
+        self.accumulated_delta_ticks_right += delta_ticks_right
+        self.accumulated_dt += dt 
+
+        # self.Q.append([delta_ticks_left, delta_ticks_right, dt, msg.header.stamp])
+
+    def imu_callback(self, msg):
+        # self.get_logger().info('imu')
+
+        self.imu_yaw = self.get_yaw(msg.orientation)
+    
+    def get_yaw(self, q):
+        """Extract yaw from quaternion."""
+        return math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))
+
+
+
+    def update_pose(self): 
+        """ Integrates all values in the queue and publishes the updated pose. """ 
+        time = None 
+        # Q_copy = self.Q.copy()
+        # self.Q = []
+        # # print(f"Length of Q: {len(Q_copy)}")
+        # if len(Q_copy) == 0: 
+        #     return
+        
+        # accumulated_delta_ticks_left = 0 
+        # accumulated_delta_ticks_right = 0 
+        # accumulated_dt = 0 
+
+        # for T in Q_copy: 
+        #     ticks_left, ticks_right, dt, time = T
+        #     accumulated_delta_ticks_left += ticks_left
+        #     accumulated_delta_ticks_right += ticks_right
+        #     accumulated_dt += dt 
+
+        accumulated_delta_ticks_left = self.accumulated_delta_ticks_left
+        accumulated_delta_ticks_right = self.accumulated_delta_ticks_right 
+        accumulated_dt = self.accumulated_dt  
+        time = self.last_stamp
+        
+        if accumulated_dt == 0: 
+            return 
+        
+        self.accumulated_delta_ticks_left = 0  
+        self.accumulated_delta_ticks_right = 0 
+        self.accumulated_dt = 0 
+        
+        delta_x, delta_y, delta_theta = self.compute_pose_delta(accumulated_delta_ticks_left, accumulated_delta_ticks_right, accumulated_dt)
+        if self.imu_yaw is None:
+            return  # Wait for IMU data
+        
+        if self.zero_value is None:
+            self.zero_value = self.imu_yaw
+            return
+
+        
+        self.theta = math.atan2(math.sin(self.imu_yaw - self.zero_value),
+                        math.cos(self.imu_yaw - self.zero_value))
+
+        #delta_y is redundant, delta_x is the distance.
+        self.x += delta_x * math.cos(self.theta)
+        self.y += delta_x * math.sin(self.theta)
+        # print(f'Publishing pose: x={self.x:.3f}, y={self.y:.3f}, theta={self.theta:.3f}')
+        time = self.get_clock().now().to_msg()
+        # self.publish_path(time, self.x, self.y, self.theta)
+        self.broadcast_transform(time, self.x, self.y, self.theta)
+
+    def publish_path(self, time, x, y, theta):
+        """ Publishes the updated pose. """
+        pose = PoseStamped()
+        pose.header.stamp = time
+
+        pose.header.frame_id = 'odom'
+        pose.pose.position.x = x
+        pose.pose.position.y = y
+
+        q = quaternion_from_euler(0.0, 0.0, theta)
+        pose.pose.orientation.x = q[0]
+        pose.pose.orientation.y = q[1]
+        pose.pose.orientation.z = q[2]
+        pose.pose.orientation.w = q[3]
+
+        self.path.poses.append(pose)
+        self.path_pub.publish(self.path)
+
+    def broadcast_transform(self, stamp, x, y, theta):
+        """Broadcast odometry transform."""
+        t = TransformStamped()
+        t.header.stamp = stamp
+        t.header.frame_id = 'odom'
+        t.child_frame_id = 'base_link'
+
+        t.transform.translation.x = x
+        t.transform.translation.y = y
+        t.transform.translation.z = 0.0
+
+        q = quaternion_from_euler(0.0, 0.0, theta)
+        t.transform.rotation.x = q[0]
+        t.transform.rotation.y = q[1]
+        t.transform.rotation.z = q[2]
+        t.transform.rotation.w = q[3]
+
+        self.tf_broadcaster.sendTransform(t)
+
+    def compute_pose_delta(self, delta_ticks_left, delta_ticks_right, dt):
+        """ Computes the change in pose from the encoder ticks and time step """
         # The kinematic parameters for the differential configuration
-        dt = 50 / 1000
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.04921  # TODO: Fill in
-        base = 0.3  # TODO: Fill in
-
-        # Ticks since last message
-        delta_ticks_left = msg.delta_encoder_left
-        delta_ticks_right = msg.delta_encoder_right
+        wheel_radius = 0.04921  # TODO: Calibrate
+        base = 0.309  # TODO: Calibrate
 
         dist_l = 2 * math.pi * wheel_radius * delta_ticks_left / ticks_per_rev
         dist_r = 2 * math.pi * wheel_radius * delta_ticks_right / ticks_per_rev
@@ -89,105 +227,29 @@ class Odometry(Node):
         vel = (vel_l + vel_r) / 2
         omega = (vel_r - vel_l) / base
 
-        # Updating yaw from encoder
-        self._yaw_encoder = self._yaw_encoder + omega * dt
-        self._yaw_encoder = math.atan2(math.sin(self._yaw_encoder), math.cos(self._yaw_encoder))
+        delta_theta = omega * dt 
+        delta_x = vel * dt 
+        delta_y = vel * dt 
+        return delta_x, delta_y, delta_theta 
 
-        # Simple fuse of Imu and encoder
-        self._yaw = (self._yaw_encoder + self._yaw_imu) / 2
-
-        self.average_yaw = self._yaw - omega * dt / 2
-
-        self._x = self._x + vel * dt * math.cos(self._yaw_encoder)#self.average_yaw)
-        self._y = self._y + vel * dt * math.sin(self._yaw_encoder)#self.average_yaw)
-
-        stamp = msg.header.stamp
-
-        self.broadcast_transform(stamp, self._x, self._y, self._yaw)
-        self.publish_path(stamp, self._x, self._y, self._yaw)
-
-    def imu_callback(self, msg: Imu):
-        """recieves the message from Imu, converts and uppdates"""
-        q = msg.orientation
-        self._yaw_imu = quaternion_to_yaw(q.x, q.y, q.z, q.w)
-
-    def broadcast_transform(self, stamp, x, y, yaw):
-        """Takes a 2D pose and broadcasts it as a ROS transform.
-
-        Broadcasts a 3D transform with z, roll, and pitch all zero.
-        The transform is stamped with the current time and is between the frames 'odom' -> 'base_link'.
-
-        Keyword arguments:
-        stamp -- timestamp of the transform
-        x -- x coordinate of the 2D pose
-        y -- y coordinate of the 2D pose
-        yaw -- yaw of the 2D pose (in radians)
-        """
-
-        t = TransformStamped()
-
-        ## I, Hampus, changed to et_clock().now() because stamp does not correspond with the current time
-        t.header.stamp = self.get_clock().now().to_msg()  # stamp
-        t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
-
-        # The robot only exists in 2D, thus we set x and y translation
-        # coordinates and set the z coordinate to 0
-        t.transform.translation.x = x
-        t.transform.translation.y = y
-        t.transform.translation.z = 0.0
-
-        # For the same reason, the robot can only rotate around one axis
-        # and this why we set rotation in x and y to 0 and obtain
-        # rotation in z axis from the message
-        q = quaternion_from_yaw(0.0, 0.0, yaw)
-        t.transform.rotation.x = q[0]
-        t.transform.rotation.y = q[1]
-        t.transform.rotation.z = q[2]
-        t.transform.rotation.w = q[3]
-
-        # Send the transformation
-        self._tf_broadcaster.sendTransform(t)
-
-    def publish_path(self, stamp, x, y, yaw):
-        """Takes a 2D pose appends it to the path and publishes the whole path.
-
-        Keyword arguments:
-        stamp -- timestamp of the transform
-        x -- x coordinate of the 2D pose
-        y -- y coordinate of the 2D pose
-        yaw -- yaw of the 2D pose (in radians)
-        """
-
-        self._path.header.stamp = stamp
-        self._path.header.frame_id = 'odom'
-
-        pose = PoseStamped()
-        pose.header = self._path.header
-
-        pose.pose.position.x = x
-        pose.pose.position.y = y
-        pose.pose.position.z = 0.01  # 1 cm up so it will be above ground level
-
-        q = quaternion_from_yaw(0.0, 0.0, yaw)
-        pose.pose.orientation.x = q[0]
-        pose.pose.orientation.y = q[1]
-        pose.pose.orientation.z = q[2]
-        pose.pose.orientation.w = q[3]
-
-        self._path.poses.append(pose)
-
-        self._path_pub.publish(self._path)
-
+def quaternion_from_euler(roll, pitch, yaw):
+    """Convert Euler angles to quaternion."""
+    qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(roll / 2) * math.sin(pitch / 2) * math.sin(yaw / 2)
+    qy = math.cos(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2)
+    qz = math.cos(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2) - math.sin(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2)
+    qw = math.cos(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.sin(pitch / 2) * math.sin(yaw / 2)
+    return [qx, qy, qz, qw]
 
 def main():
     rclpy.init()
-    node = Odometry()
+    node = OdometryTest()
+    ex = MultiThreadedExecutor()
+    ex.add_node(node)
+    node.executor = ex
     try:
-        rclpy.spin(node)
+        ex.spin()
     except KeyboardInterrupt:
         pass
-
     rclpy.shutdown()
 
 

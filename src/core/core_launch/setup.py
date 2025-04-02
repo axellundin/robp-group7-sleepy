@@ -23,6 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'brain_collection_phase = core_launch.brain_collection_phase:main',
+            'bt_brain_collection_phase = core_launch.brain_collection_phase_bt:main',
         ],
     },
 ) 

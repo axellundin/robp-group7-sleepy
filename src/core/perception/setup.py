@@ -21,9 +21,12 @@ setup(
     entry_points={
         'console_scripts': [
             'camera_processing = perception.camera_processing:main',
-            'ransac = perception.ransac:main', 
+            'cptestor = perception.camera_processing_testor:main',
+            'ransac = perception.RANSAC:main', 
             'map_gen = perception.generate_map:main',
-            'DBSCAN = perception.DBSCAN:main'
+            'DBSCAN = perception.DBSCAN:main',
+            'mapg = perception.map_generator:main',
+            'mapt = perception.map_testor:main',
         ],
     },
 )

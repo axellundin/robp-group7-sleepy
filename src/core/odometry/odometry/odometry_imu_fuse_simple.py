@@ -89,14 +89,13 @@ class Odometry(Node):
         vel = (vel_l + vel_r) / 2
         omega = (vel_r - vel_l) / base
 
-
-        #Dynamic weighting
-        if abs(omega) > 0.5: #if sharp turn -> trust Imu
-            alpha = 0.0
-            imu_alpha = 1
-        else: #else ablance and smooth fusion
-            alpha = 0
-            imu_alpha = 1
+        # # Dynamic weighting
+        # if abs(omega) > 0.5: #if sharp turn -> trust Imu
+        #     alpha = 0.0
+        #     imu_alpha = 1
+        # else: #else ablance and smooth fusion
+        #     alpha = 0
+        #     imu_alpha = 1
 
         # Updating yaw from encoder
         self._yaw_encoder = self._yaw_encoder + omega * dt

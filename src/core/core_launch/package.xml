@@ -7,7 +7,7 @@
   <maintainer email="axellundin@gmail.com">sleepy</maintainer>
   <license>TODO: License declaration</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
+  <!-- <buildtool_depend>ament_python</buildtool_depend> -->
 
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>

@@ -1,0 +1,4 @@
+float32 height #should be the height of scan, at least bigger than 0, and this height is smaller when obj is high above the ground, 0.08 is almost the ground 
+string target_frame # target frame like map maybe?
+---
+geometry_msgs/Point[] points # result lidar-like scan points from camera

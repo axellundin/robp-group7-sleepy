@@ -20,7 +20,12 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'odometry = odometry.original_odometry:main'
-        ],
+            'simple_odometry = odometry.hampus_odometry_for_testing_path:main',
+            'imu_odometry = odometry.original_odometry:main',
+            'tick_accumulator = odometry.tick_accumulator:main',
+            'odometry_test = odometry.odometry_test:main',
+            'yassirodom = odometry.yassirsodometry:main', 
+            'odometry = odometry.odometry:main'
+       ],
     },
 )

@@ -1,0 +1,6 @@
+geometry_msgs/PoseStamped pose
+std_msgs/Float32 alpha 
+std_msgs/Float32 phi 
+---
+bool success
+string message

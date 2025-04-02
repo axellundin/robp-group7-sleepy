@@ -1,5 +1,8 @@
 import numpy as np
 
+def wrap_to_pi(angle):
+    return (angle + np.pi) % (2 * np.pi) - np.pi
+
 class Kinematics:
     def __init__(self, joint_limits):
         self.d0 = 0
@@ -33,7 +36,7 @@ class Kinematics:
             [0, 0, 0, 1]
         ])
 
-    def analytical_solution(self, rho, z, theta, phi):
+    def analytical_solution(self, rho, z, theta, phi, alpha):
         """ 
         Analytical solution for the inverse kinematics of the manipulator
         Args:
@@ -44,16 +47,38 @@ class Kinematics:
         Returns:
             joint_angles: list of joint angles [theta0, theta1, theta2, theta3, theta4]
         """
-        zp = z + self.d4
-        L = np.sqrt(rho**2 + zp**2)
+        print("rho: ", rho, "z: ", z, "theta0: ", theta, "phi: ", phi, "alpha: ", alpha)
+        zp = z + self.d4 * np.cos(alpha)
+        print("zp: ", zp)
+        r = rho - self.d4 * np.sin(alpha)
+        L = np.sqrt(r**2 + zp**2)
         beta = -np.arccos( (self.d1**2 + L**2 - self.d2**2) / (2 * L * self.d1) )
+        # print("beta: ", beta)
+        flag = np.sign(1- L / self.d2 * np.cos(beta))
+        theta1 = -np.pi/2  + np.arctan2(zp, r) - beta
+        theta2 = np.pi * (flag > 0) + flag * np.arcsin( L / self.d2 * np.sin(beta) )
+        theta3 = np.pi - theta1 + theta2 + alpha
+        theta4 = phi + theta 
 
-        theta1 = np.pi/2 - (np.arctan2(zp, rho) - beta)
-        theta2 = - np.arcsin( L / self.d2 * np.sin(beta) )
-        theta3 = np.pi/2 + theta + theta2
-        theta4 = phi - theta 
- 
-        return [theta, theta1, theta2, theta3, theta4]
+        angles = [theta, theta1, theta2, theta3, theta4]
+        clipped_angles = []
+
+        for i, a in enumerate(angles): 
+            angle = wrap_to_pi(a)
+            if angle > self.joint_limits[i][1]: 
+                print("joint ", i, "angle ", angle, "clipped to ", self.joint_limits[i][1])
+                angle = self.joint_limits[i][1] 
+            elif angle < self.joint_limits[i][0]: 
+                print("joint ", i, "angle ", angle, "clipped to ", self.joint_limits[i][0])
+                angle = self.joint_limits[i][0] 
+            clipped_angles.append(angle)
+        
+        return clipped_angles
+    
+    def cartesian_to_cylindrical(self, x, y, z):
+        rho = np.sqrt(x**2 + y**2)
+        theta = np.arctan2(y, x)
+        return rho, z, theta
         
 
     def compute_jacobian(self, joint_angles):

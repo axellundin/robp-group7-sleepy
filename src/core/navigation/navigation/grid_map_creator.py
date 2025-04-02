@@ -1,28 +1,30 @@
 import rclpy
 from rclpy.node import Node
-from navigation.polygon import LocalPolygon
+from nav_msgs.msg import OccupancyGrid
+from core_interfaces.srv import GridCreator
 import numpy as np
+from shapely.geometry import Point, Polygon
 
 import os
 class grid_map_creator(Node):
 
     def __init__(self):
         super().__init__('grid_map_creator')
-        print("inne grid_map_creator 3")
+        print("inne grid_map_creator 7")
+        self.grid_gen_srv = self.create_service(GridCreator, "fill_in_workspace", self.fill_in_workspace)
         self.origin = None
-        self.resolution = 5
-        self.padding = 10
+        self.resolution = None
+        self.padding = None
         self.grid = None
-        self.workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_2.tsv"
-        self.fill_in_workspace()
-        self.grid_pub = self.create_publisher(np.ndarray, '/occupancy_grid', 10)
-        self.grid_pub.publish(self.grid)
+        self.workspace_file = None
+        
 
-
-    def fill_in_workspace(self):
-
+    def fill_in_workspace(self, request, response):
+        self.padding = request.padding
+        self.resolution = request.resolution
+        file = request.file_name
         read_start_row = 0 
-        file_path = os.path.expanduser(self.workspace_file)
+        file_path = os.path.expanduser(file)
         while True:
             try:
                 data = np.loadtxt(file_path, delimiter="\t", skiprows=read_start_row)
@@ -35,30 +37,63 @@ class grid_map_creator(Node):
         max_y = np.max(data[:,1])
         min_y = np.min(data[:,1])
 
-        cell_nr_x_dir = int(np.round((max_x-min_x)/self.resolution, 0))
-        cell_nr_y_dir = int(np.round((max_y-min_y)/self.resolution, 0))
+        nr_cells_x_dir = np.ceil(np.abs(max_x-min_x)/self.resolution)
+        nr_cells_y_dir = np.ceil(np.abs(max_y-min_y)/self.resolution)
 
-        self.grid = np.zeros((cell_nr_y_dir, cell_nr_x_dir))
+        polygon = Polygon(data)
 
-        self.origin = (-min_x, -min_y)
-        for row in range(len(data)):
-            for column in range(2):
-                data[row, column] = data[row, column]-self.padding*data[row, column]/np.abs(data[row, column])
+        inner_polygon = polygon.buffer(-self.padding, join_style=2)
 
-        polygon = LocalPolygon(data)
 
-        for x in range(int(min_x), int(max_x)):
-            for y in range(int(min_y), int(max_y)):
-                if polygon.is_internal(np.array([x, y])) == False:
-                    self.grid[int((y-min_y)/self.resolution), int((x-min_x)/self.resolution)] = -1
+        self.grid = np.zeros((int(nr_cells_y_dir), int(nr_cells_x_dir)), dtype=np.int8)
+        self.grid -=1
+        rows = self.grid.shape[0]
+        cols = self.grid.shape[1]
+        rest_x = (np.abs(max_x-min_x)-(cols-1)*self.resolution)/(cols-1)
+        rest_y = (np.abs(max_y-min_y)-(rows-1)*self.resolution)/(rows-1)
+        for i in range(rows):
+            for j in range(cols):
 
-        np.save("saved_grid.npy", self.grid)
+                p = Point(min_x+0.001+j*(self.resolution+rest_x), min_y+0.001+i*(self.resolution+rest_y))
+                
+                if inner_polygon.contains(p):
+                    self.grid[i, j] = 0
+
+        self.origin = [-min_x/self.resolution, -min_y/self.resolution]
+        msg = self.publish_grid_map()
+        response.grid = msg
+        print("Grid shape")
+        print(self.grid.shape)
+        return response
+
+    def publish_grid_map(self):
+
+        msg = OccupancyGrid()
+
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = "map" 
+
+        msg.info.resolution = float(self.resolution)
+        msg.info.width = self.grid.shape[1]
+        msg.info.height = self.grid.shape[0]
+
+        msg.info.origin.position.x = float(self.origin[0])
+        msg.info.origin.position.y = float(self.origin[1])
+        msg.info.origin.position.z = 0.0
+        msg.info.origin.orientation.w = 1.0  
+
+        msg.data = self.grid.flatten().tolist()
+
+        return msg
+
+
 
 def main():
     rclpy.init()
     node = grid_map_creator()
     try:
         rclpy.spin(node)
+        node.destroy_node()
     except KeyboardInterrupt:
         pass
 

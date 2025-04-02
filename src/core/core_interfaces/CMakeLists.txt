@@ -27,16 +27,31 @@ endif()
 find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GeofenceCompliance.srv"
+  "srv/YoloImageDetect.srv" 
   "action/MoveTo.action"
+  "srv/GridCreator.srv"
+  "srv/MoveTo.srv"
   "action/PathPlanner.action"
   "msg/DetectedMsg.msg"
+  "msg/YoloClassifiedObject.msg" 
+  "msg/PointcloudDetectedObj.msg"
   "action/MoveToPickup.action"
+  "srv/Pickup.srv"
+  "srv/MoveArm.srv"
+  "srv/MoveToObject.srv"
+  "srv/Place.srv"
+  "srv/PointcloudDetect.srv"
+  "srv/LidarDetect.srv"
+  "srv/LidarlikeFromCamera.srv"
   DEPENDENCIES nav_msgs
   DEPENDENCIES geometry_msgs 
-  DEPENDENCIES std_msgs
+  DEPENDENCIES std_msgs 
+  DEPENDENCIES sensor_msgs
 )
 
 ament_package()

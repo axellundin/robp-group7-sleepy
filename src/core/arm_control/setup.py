@@ -24,6 +24,12 @@ setup(
             'arm_joint_tf_pub = arm_control.arm_joint_tf_pub:main', 
             'rrt_pickup = arm_control.move_to_pickup:main',
             'ik_pickup = arm_control.move_to_pickup_old:main',
+            'simple_move = arm_control.simple_move:main',
+            'pickup_service = arm_control.pickup_service:main',
+            'arm_cv_testing = arm_control.arm_cv_testing:main',
+            'box_detection = arm_control.test_box_detection:main',
+            'box_position_pub = arm_control.box_position_pub:main',
+            'place_service = arm_control.place_service:main',
         ],
     },
 )

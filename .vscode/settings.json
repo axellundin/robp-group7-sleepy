@@ -13,7 +13,8 @@
         "/home/sleepy/robp-group7-sleepy/install/robp_interfaces/lib/python3.12/site-packages",
         "/home/sleepy/robp-group7-sleepy/build/arm_servos_pubs_subs",
         "/home/sleepy/robp-group7-sleepy/install/arm_servos_pubs_subs/lib/python3.12/site-packages",
-        "/opt/ros/jazzy/lib/python3.12/site-packages"
+        "/opt/ros/jazzy/lib/python3.12/site-packages",
+        "./build/perception/perception"
     ],
     "cmake.sourceDirectory": "/home/sleepy/robp-group7-sleepy/src/micro_ros_setup",
     "git.ignoreLimitWarning": true

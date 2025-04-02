@@ -17,7 +17,24 @@ class ArmJointTFPublisher(Node):
         
         # Initialize TF2 broadcaster
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
+        self.static_broadcaster = tf2_ros.StaticTransformBroadcaster(self)
         
+        # Create static transform for camera
+        static_transform = TransformStamped()
+        static_transform.header.stamp = self.get_clock().now().to_msg()
+        static_transform.header.frame_id = 'joint5'
+        static_transform.child_frame_id = 'arm_camera'
+        static_transform.transform.translation.x = 0.045
+        static_transform.transform.translation.y = 0.0
+        static_transform.transform.translation.z = 0.045
+        static_transform.transform.rotation.w = 0.7071068
+        static_transform.transform.rotation.x = 0.0
+        static_transform.transform.rotation.y = 0.0
+        static_transform.transform.rotation.z = 0.7071068
+        
+        # Broadcast the static transform
+        self.static_broadcaster.sendTransform(static_transform)
+
         # Subscribe to servo positions
         print("Subscribing to servo positions")
         self.subscription = self.create_subscription(
@@ -68,7 +85,10 @@ class ArmJointTFPublisher(Node):
             
             # Create and fill TransformStamped message
             t = TransformStamped()
-            t.header.stamp = msg.header.stamp
+
+            # t.header.stamp = msg.header.stamp
+            t.header.stamp = self.get_clock().now().to_msg()
+
             t.header.frame_id = 'arm_base_link'
             t.child_frame_id = self.frame_names[i]
             

@@ -22,6 +22,7 @@ class simple_move(Node):
         self.subscription
 
         self._pub = self.create_publisher(DutyCycles, '/motor/duty_cycles', 10)
+        #self.bias = 0.004
 
     def joy_stick_calback(self, msg):
         motor_msg = DutyCycles()
@@ -30,7 +31,13 @@ class simple_move(Node):
         duty_cycle_max = 0.5
 
         motor_msg.duty_cycle_right =  duty_cycle_max * np.max([-1 ,np.min([1, msg.linear.x + msg.angular.z] )]) 
+        
         motor_msg.duty_cycle_left = duty_cycle_max *  np.max([-1,np.min([1, msg.linear.x-msg.angular.z] )] )
+        # if motor_msg.duty_cycle_left > 0:
+        #     motor_msg.duty_cycle_left += self.bias
+        # elif motor_msg.duty_cycle_left < 0:
+        #     motor_msg.duty_cycle_left -= self.bias
+            
         print("Höger")
         print(motor_msg.duty_cycle_right)
         print("Vänster:")

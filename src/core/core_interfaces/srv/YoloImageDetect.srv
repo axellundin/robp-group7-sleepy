@@ -1,0 +1,5 @@
+string camera_name #should be arm_camera or rgbd_camera
+string target_frame #should be end_effector map odom base_link lidar_link camera_link camera_depth_optical_frame camera_color_optical_frame
+---
+YoloClassifiedObject[] objects
+string[] category_list #list【category_num】 can return u string category
