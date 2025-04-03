@@ -52,10 +52,10 @@ class MapGenerator(Node):
         self.subscription 
 
     def final_detect_callback(self,request,response):
-        def publish_transform(self, child_frame_id, pose, father_frame_id = 'map'):
+        def publish_transform(child_frame_id, pose, father_frame_id = 'map'):
             transform = TransformStamped()
 
-            transform.header.stamp = self.stamp
+            transform.header.stamp = self.get_clock().now()
 
             transform.header.frame_id = father_frame_id
             transform.child_frame_id = child_frame_id

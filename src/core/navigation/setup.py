@@ -68,7 +68,7 @@ setup(
             'explorer = navigation.explorer:main',
             'pick_up = navigation.pick_up:main',
             'odom_calibration = navigation.odometry_calibration_client:main',
-            'Working_explorer = navigation.Working_explorer_3,3min:main',
+            'Working_explorer = navigation.Working_explorer_3_3min:main',
         ],
     },
 )

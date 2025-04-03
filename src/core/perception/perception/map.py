@@ -478,7 +478,7 @@ class MapNode(Node):
             cloest_distance = 0.2
             matched_index = None
             for i, m in enumerate(self.required_map):
-                distance = np.sqrt((r.center_point.pose.position.x - m[0])**2 + (r.center_point.pose.position.y - m[1]))
+                distance = np.sqrt((r.center_point.pose.position.x - m[1])**2 + (r.center_point.pose.position.y - m[2])**2)
                 if distance <cloest_distance:
                     cloest_distance = distance
                     matched_index = i
