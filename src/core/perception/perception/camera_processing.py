@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import math
-from math import atan2, sqrt
+from math import atan2, sqrt, pi
 import time
 import numpy as np
 
@@ -25,12 +25,14 @@ from .RANSAC import RANSACPlaneDetector as RSPD
 from .DBSCAN import better_DBSCAN
 from geometry_msgs.msg import PoseStamped, Point,PointStamped
 from .quaternion_from_euler import quaternion_from_euler
+from .RANSAClinedetector import RANSACLineDetector
 
 import ctypes
 import struct
 from core_interfaces.srv import PointcloudDetect
 from core_interfaces.msg import PointcloudDetectedObj
 from core_interfaces.srv import LidarlikeFromCamera
+from core_interfaces.srv import CameraDetect
 
 time_it_enable = False
 
@@ -68,12 +70,16 @@ class Detection(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
         # Initialize the publisher
-        self.pointcloud_pub = self.create_publisher(
-            PointCloud2, '/camera/camera/depth/color/ds_pointcloud', 10)
+        self.pointcloud_pub1 = self.create_publisher(
+            PointCloud2, '/camera/camera/depth/color/obj_pointcloud', 10)
+        self.pointcloud_pub2 = self.create_publisher(
+            PointCloud2, '/camera/camera/depth/color/lidarlike_pointcloud', 10)
         
         self.srv = self.create_service(PointcloudDetect, 'pointcloud_detect', self.pointcloud_detect_callback)
 
         self.srv = self.create_service(LidarlikeFromCamera, "lidarlike_from_camera", self.pointcloud_to_lidarlike_callback)
+
+        self.srv = self.create_service(CameraDetect, "camera_detect", self.camera_detect_callback)
 
         # Subscribe to point cloud topic and call callback function on each received message
         self.create_subscription(
@@ -131,7 +137,7 @@ class Detection(Node):
 
         #create pc for publishing 
         pointcloud2 = create_pointcloud2(points, colors, "camera_depth_optical_frame", self.stamp)
-        self.pointcloud_pub.publish(pointcloud2)
+        self.pointcloud_pub1.publish(pointcloud2)
 
         cluster = self.cluster_points(points, colors)
         self.deal_with_clustered_points(cluster)
@@ -167,7 +173,7 @@ class Detection(Node):
                 newp.z = transformed_point_stamped.point.z
                 transformed_points.append(newp)
             return transformed_points
-        
+
         assert self.pointcloud!=None,"pointcloud detect error, no pointcloud msg is published, plz run 'camera_on'"
         assert isinstance(request.height,float),"request type error, height is not a float32"
 
@@ -207,6 +213,95 @@ class Detection(Node):
         
         return response
 
+    def camera_detect_callback(self, request, response):
+        def list_to_response(objects, boxes):
+            response = CameraDetect.Response()
+            for posestamped in objects:
+                assert isinstance(posestamped,PoseStamped), "pose in obj is not a posestamped"
+                detectedobj=PointcloudDetectedObj()
+                detectedobj.category="item"
+                detectedobj.pose=posestamped
+                response.objects.append(detectedobj)
+            for posestamped in boxes:
+                assert isinstance(posestamped,PoseStamped), "pose in box is not a posestamped"
+                detectedbox=PointcloudDetectedObj()
+                detectedbox.category="box"
+                detectedbox.pose=posestamped
+                response.objects.append(detectedbox)
+            # print(response)
+            return response
+        
+        def transform_points_to_frame(points, transform, stamp):
+            """
+            transform a group of points together
+            """
+            transformed_points = []
+            for point in points:
+                p = Point()
+                p.x = point[0]
+                p.y = point[1]
+                p.z = point[2]
+                p_stamped = PointStamped()
+                p_stamped.header.stamp = stamp
+                p_stamped.header.frame_id = "lidar_link" 
+                p_stamped.point = p  
+                transformed_point_stamped = tf2_geometry_msgs.do_transform_point(p_stamped, transform)
+                newp = Point()
+                newp.x = transformed_point_stamped.point.x
+                newp.y = transformed_point_stamped.point.y
+                newp.z = transformed_point_stamped.point.z
+                transformed_points.append(newp)
+            return transformed_points
+
+        assert self.pointcloud!=None,"pointcloud detect error, no pointcloud msg is published, plz run 'camera_on'"
+        self.get_logger().info("camera detecting ------------")
+
+        self.stamp = self.pointcloud.header.stamp
+        _time = rclpy.time.Time.from_msg(self.pointcloud.header.stamp)
+
+        self.objects = []
+        self.boxes = [] 
+
+        # faster to numpy
+        points, colors = self.pointcloud_to_points_and_colors_optimized(self.pointcloud)
+
+       # faster downsample
+        points, colors = self.voxel_grid_downsample_optimized(points,colors, 0.01)
+
+        points_upground, colors_upground = self.filter_points(points, colors, min_height = 0.08, max_height = 0.04)
+        cluster = self.cluster_points(points_upground, colors_upground)
+        self.deal_with_clustered_objs(cluster)
+
+        pointcloud2obj = create_pointcloud2(points_upground, colors_upground, "camera_depth_optical_frame", self.stamp)
+        self.pointcloud_pub1.publish(pointcloud2obj)
+
+        points_likelidar, colors_likelidar = self.filter_points(points, colors, min_height = request.height + 0.015, max_height = request.height - 0.015)
+        cluster = self.cluster_points(points_likelidar, colors_likelidar)
+        self.deal_with_clustered_box(cluster)
+
+        pointcloud2box = create_pointcloud2(points_likelidar, colors_likelidar, "camera_depth_optical_frame", self.stamp)
+        self.pointcloud_pub2.publish(pointcloud2box)
+
+        transformed_objects = self.transform_list(self.objects,_time,request.target_frame)
+        transformed_boxes = self.transform_list(self.boxes,_time,request.target_frame)
+        response = list_to_response(transformed_objects,transformed_boxes)
+        
+        tf_future = self.tf_buffer.wait_for_transform_async(
+            target_frame=request.target_frame,
+            source_frame="camera_depth_optical_frame",
+            time=_time,
+        )
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+        try:
+            t = self.tf_buffer.lookup_transform(request.target_frame,  
+                                                        "camera_depth_optical_frame",
+                                                        _time)  
+        except:
+            self.get_logger().error(f"cannot transform to {request.target_frame} from 'lidar_link' with lookup time: {_time}")
+
+        response.points = transform_points_to_frame(points_likelidar, t, self.stamp)
+
+        return response
 
     @time_it
     def pointcloud_to_points_and_colors_optimized(self, msg):
@@ -286,7 +381,7 @@ class Detection(Node):
         
         return sorted_clusters
 
-    @time_it
+    #abandoned
     def deal_with_clustered_points(self, cluster):
         def calc_plane_center(center1,normal1,center2,normal2):
             # we just take 0 as x and 2(z) as y and the real y is fixed
@@ -395,6 +490,142 @@ class Detection(Node):
                 self.objects.append(pose)
 
     @time_it
+    def deal_with_clustered_objs(self, cluster):
+        if not cluster:
+            self.get_logger().info("No clusters found. Returning without processing.")
+            return
+        
+        for cluster_id, cluster_data in cluster.items():
+            points = cluster_data['points']
+            colors = cluster_data['colors']
+
+            avg_position = np.mean(points, axis=0)
+            avg_color = np.mean(colors, axis=0)
+          
+            if len(points) > 90:
+                # self.get_logger().info(f"obj clustering function skip one detected box, point_num: {len(points)}")
+                pass
+            elif len(points) > 14:
+                pose = PoseStamped()
+                pose.header.stamp = self.stamp
+                pose.header.frame_id = "camera_depth_optical_frame"
+                pose.pose.position.x = avg_position[0]
+                pose.pose.position.y = avg_position[1]
+                pose.pose.position.z = avg_position[2]
+                self.get_logger().info(f"find obj_{cluster_id}")
+                self.publish_transform(f"obj_{cluster_id}", pose)
+                self.objects.append(pose)
+            else:
+                self.get_logger().info("too little points clustered, ignore once")
+
+    @time_it
+    def deal_with_clustered_box(self, cluster):
+        if not cluster:
+            self.get_logger().info("No clusters found. Returning without processing.")
+            return
+        
+        for cluster_id, cluster_data in cluster.items():
+            points = cluster_data['points']
+            colors = cluster_data['colors']
+            points2d = points[:, [0, 2]]
+          
+            if len(points2d) > 30:
+                line_detector = RANSACLineDetector(ransac_n=2, max_dst=0.01, max_trials=200, stop_inliers_ratio=0.9)
+                line_set, line_inliers_set, remains = line_detector.ransac_line_detection(points2d)
+                
+                # line with more inliers
+                max_inliers = -1
+                best_line = None
+                best_inliers = None
+                
+                for index, line in enumerate(line_set):
+                    inliers = line_inliers_set[index]
+                    if len(inliers) > max_inliers:
+                        max_inliers = len(inliers)
+                        best_line = line
+                        best_inliers = inliers
+                
+            
+                p1, p2 = best_line  # line parameters are two points (p1, p2)
+                # direction vector
+                direction_vector = p2 - p1
+                direction_vector_norm = np.linalg.norm(direction_vector)
+                direction_vector_normalized = direction_vector / direction_vector_norm
+                if direction_vector_normalized[1] < 0:
+                    direction_vector_normalized = -direction_vector_normalized
+                
+                # prependicular vector
+                perpendicular_vector = np.array([-direction_vector_normalized[1], direction_vector_normalized[0]])
+                if perpendicular_vector[1] < 0:
+                    perpendicular_vector = -perpendicular_vector
+
+                # center point 
+                center_point = np.mean(best_inliers, axis=0)
+
+                # find edge points
+                projections = np.dot(best_inliers - p1, direction_vector_normalized)
+                min_projection_index = np.argmin(projections)
+                max_projection_index = np.argmax(projections)
+                min_point = best_inliers[min_projection_index]
+                max_point = best_inliers[max_projection_index]
+
+                # length
+                line_length = np.linalg.norm(max_point - min_point)
+
+                # 打印相关信息
+                # self.get_logger().info(f"Cluster {cluster_id}")
+                # self.get_logger().info(f"  Direction vector: {direction_vector}")
+                # self.get_logger().info(f"  Perpendicular vector: {perpendicular_vector}")
+                # self.get_logger().info(f"  Line center: {center_point}")
+                # self.get_logger().info(f"Line length: {line_length}")
+
+                if 0.1 <= line_length <= 0.3:
+                    if 0.1 <= line_length <= 0.2: # box line 16
+                        box_center = center_point + 0.12 * perpendicular_vector  
+                        box_orientation = direction_vector_normalized  
+                        self.get_logger().info(f"Box center: {box_center}")
+                        self.get_logger().info(f"Box orientation: {box_orientation}")
+                    
+                    elif 0.2 <= line_length <= 0.3: # box line 24
+                        box_center = center_point + 0.08 * perpendicular_vector  
+                        box_orientation = direction_vector_normalized 
+                        self.get_logger().info(f"Box center: {box_center}")
+                        self.get_logger().info(f"Box orientation: {box_orientation}")
+                    
+                    roll = 0.0
+                    pitch = -atan2(box_orientation[1], box_orientation[0]) 
+                    if pitch > pi/2:
+                        pitch -= pi
+                    elif pitch < -pi/2:
+                        pitch += pi
+                    yaw = 0.0  
+                    quaternion = quaternion_from_euler(roll, pitch, yaw)
+
+                    pose = PoseStamped()
+                    pose.header.stamp = self.stamp
+                    pose.header.frame_id = "camera_depth_optical_frame"
+                    pose.pose.position.x = box_center[0]
+                    pose.pose.position.y = 0.05
+                    pose.pose.position.z = box_center[1]
+                    
+                    pose.pose.orientation.x = quaternion[0]
+                    pose.pose.orientation.y = quaternion[1]
+                    pose.pose.orientation.z = quaternion[2]
+                    pose.pose.orientation.w = quaternion[3]
+
+                    self.get_logger().info("find one box")
+                    self.publish_transform("box", pose)
+                    self.boxes.append(pose)
+
+                else:
+                    self.get_logger().warning(f"Error: Detected line length {line_length} does not match expected box dimensions (10-30).")
+                    return  
+                    
+            else:
+                # self.get_logger().info(f"box clustering function skip detected obj, point_num: {len(points)}")
+                pass
+
+    @time_it
     def voxel_grid_downsample_optimized(self, points, colors, voxel_size=0.02):
         voxel_indices = np.floor(points / voxel_size).astype(np.int32)
         
@@ -434,20 +665,20 @@ class Detection(Node):
             self.tf_broadcaster.sendTransform(transform)
             self.get_logger().info(f"Dynamic transform published: {child_frame_id}")
 
-    def transform_list(self, list: list[PoseStamped], to_frame, from_frame="camera_depth_optical_frame"):
+    def transform_list(self, list: list[PoseStamped], transform_time, to_frame, from_frame="camera_depth_optical_frame"):
         new_list=[]
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame,
             source_frame=from_frame,
-            time=self.time_request,
+            time=transform_time,
         )
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
         try:
             transform = self.tf_buffer.lookup_transform(to_frame,  
                                                         from_frame,
-                                                        self.time_request)  
+                                                        transform_time)  
         except:
-            self.get_logger().error(f"cannot transform to {to_frame} from {from_frame} with lookup time: {self.time_request}")
+            self.get_logger().error(f"cannot transform to {to_frame} from {from_frame} with lookup time: {transform_time}")
         for posestamped in list:
             transformed_pose=tf2_geometry_msgs.do_transform_pose(posestamped.pose, transform)
             transformed_posestamped = PoseStamped()

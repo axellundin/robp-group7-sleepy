@@ -46,8 +46,8 @@ class SimpleMove(Node):
             1, 
             callback_group=group
         )
-        self.max_joint_diff = 500
-        self.joint_movement_time = 1500
+        self.max_joint_diff = 800
+        self.joint_movement_time = 1000
         
         self.get_logger().info('SimpleMove node initialized')
 
@@ -63,7 +63,7 @@ class SimpleMove(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(encoder_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=1):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=0.5):
                 # Send again 
                 self.publisher.publish(msg)
                 latest_command = self.get_clock().now()

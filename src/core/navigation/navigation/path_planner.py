@@ -42,6 +42,7 @@ class path_planner:
 
         #Loop until queue is empty
         while queue:
+            #print(f"Inne i A star while loop: len queue: {len(queue)}")
 
             #Retrieve the node at the front of the queue
             current_node = queue.pop(0)

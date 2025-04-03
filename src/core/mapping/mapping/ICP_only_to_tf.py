@@ -231,8 +231,8 @@ class IcpMappingNode(Node):
             self.publish_icp_transform(self.latest_correction, msg)
             return
         # if self.count == 5:
-        new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(0, 255, 0))  # green
-        self.new_scan_pub.publish(new_msg)
+        # new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(0, 255, 0))  # green
+        # self.new_scan_pub.publish(new_msg)
 
 
         # ICP Convergence threshold
@@ -251,19 +251,13 @@ class IcpMappingNode(Node):
         # self.get_logger().info(f"ICP inlier RMSE: {icp_result.inlier_rmse}")
         # print(f"ICP inlier RMSE: {icp_result.inlier_rmse}")
         self.get_logger().info(f'inlier: {icp_result.inlier_rmse}, fitness: {icp_result.fitness}',)
-        if icp_result.inlier_rmse > 0.04 or icp_result.fitness < 0.5:
+        if icp_result.inlier_rmse > 0.01 or icp_result.fitness < 0.6:
             #self.get_logger().warn("ICP registration did not match well, skipping update.")
             self.icp_publish_counter += 1
             if self.icp_publish_counter % 1 == 0:
                 self.publish_icp_transform(self.latest_correction, msg)
             return
-        self.count = self.count + 1
 
-        
-        # if self.count == 5:
-        new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(255, 0, 0))  # green
-        self.new_scan_icp_pub.publish(new_msg)
-        self.get_logger().info("uppdate")
         # Update the correction transform
         #self.latest_correction = np.dot(icp_result.transformation, self.latest_correction)
         self.latest_correction = icp_result.transformation
@@ -279,7 +273,12 @@ class IcpMappingNode(Node):
         # Publish the correction transform to `/tf` instead of `/icp_transform`
         self.icp_publish_counter += 1
         if self.icp_publish_counter % 1 == 0:
+            self.get_logger().info("uppdate")
             self.publish_icp_transform(self.latest_correction, msg)
+            self.count = self.count + 1
+            if self.count == 5:
+                new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(255, 0, 0))  #red
+                self.new_scan_icp_pub.publish(new_msg)
 
     def transform_to_matrix(self, tf_msg):
         """Converts a ROS2 TransformStamped to a 4x4 transformation matrix."""
@@ -308,7 +307,7 @@ class IcpMappingNode(Node):
 
         t.transform.translation.x = transform[0, 3]
         t.transform.translation.y = transform[1, 3]
-        t.transform.translation.z = 0.0  # Assume 2D
+        t.transform.translation.z = 0.0  # 2D
 
         r = R.from_matrix(transform[0:3, 0:3])
         quat = r.as_quat()

@@ -64,6 +64,57 @@ class YoloImageDetectClient(Node):
         else:
             self.get_logger().error('Failed to receive response.')
 
+class FinalDetectClient(Node):
+    def __init__(self):
+        super().__init__('final_detect_client')
+
+        self.client = self.create_client(YoloImageDetect, 'final_detect')
+
+        while not self.client.wait_for_service(timeout_sec=10):
+            self.get_logger().info('Service not available, waiting again...')
+
+    def send_request(self):
+        request = YoloImageDetect.Request()
+        request.camera_name = "rgbd_camera"
+        request.target_frame = "map"
+
+        future = self.client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+
+        if future.result() is not None:
+            response = future.result()
+            self.get_logger().info(f"Received response: {len(response.objects)} objects detected.")
+
+            for i, obj in enumerate(response.objects):
+                pose = obj.center_point
+                category = obj.category
+                print(f"Object {i + 1}:")
+                print(f"  Category: {category}")
+                x_m = (pose.pose.position.x)
+                y_m = (pose.pose.position.y)
+                z_m = (pose.pose.position.z)
+                print(f"  Position: {x_m} m, {y_m} m, {z_m} m")
+
+                pose = obj.topleft_point
+                x_m = (pose.pose.position.x)
+                y_m = (pose.pose.position.y)
+                z_m = (pose.pose.position.z)
+                print(f"  topleft_point: {x_m} m, {y_m} m, {z_m} m")
+
+                pose = obj.bottomright_point
+                x_m = (pose.pose.position.x)
+                y_m = (pose.pose.position.y)
+                z_m = (pose.pose.position.z)
+                print(f"  bottomright_point: {x_m} m, {y_m} m, {z_m} m")
+                bridge=CvBridge()
+                if obj.image!=Image():
+                    cv_img = bridge.imgmsg_to_cv2(obj.image, desired_encoding='bgr8')
+                    cv2.imwrite('./testimage.jpg', cv_img)
+                else:
+                    pass
+        else:
+            self.get_logger().error('Failed to receive response.')
+
 class YoloImageSaverClient(Node):
     def __init__(self):
         super().__init__('yolo_image_saver_client')
@@ -100,26 +151,26 @@ class YoloImageSaverClient(Node):
 
 
 
-# this is used to test yolo, and also showing how to use yolo detector node 
-def main():
-    rclpy.init()
+# # this is used to test yolo, and also showing how to use yolo detector node 
+# def main():
+#     rclpy.init()
 
-    client = YoloImageDetectClient()
+#     client = YoloImageDetectClient()
 
-    try:
-        while rclpy.ok():
-            user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
-            if user_input == '':
-                debug_time = time.time()
-                client.send_request()
-                print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
-            rclpy.spin_once(client)  # Ensure the node remains active
+#     try:
+#         while rclpy.ok():
+#             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
+#             if user_input == '':
+#                 debug_time = time.time()
+#                 client.send_request()
+#                 print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
+#             rclpy.spin_once(client)  # Ensure the node remains active
 
-    except KeyboardInterrupt:
-        pass  # Handle the interrupt from user (Ctrl+C)
+#     except KeyboardInterrupt:
+#         pass  # Handle the interrupt from user (Ctrl+C)
 
-    client.destroy_node()
-    rclpy.shutdown()
+#     client.destroy_node()
+#     rclpy.shutdown()
 
 
 # # this is used to save images from arm camera, in order to generate dataset 
@@ -141,6 +192,29 @@ def main():
 
 #     client.destroy_node()
 #     rclpy.shutdown()
+
+
+# this is used to test final detector, node perception mapg
+def main():
+    rclpy.init()
+
+    client = FinalDetectClient()
+
+    try:
+        while rclpy.ok():
+            user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
+            if user_input == '':
+                debug_time = time.time()
+                client.send_request()
+                print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
+            rclpy.spin_once(client)  # Ensure the node remains active
+
+    except KeyboardInterrupt:
+        pass  # Handle the interrupt from user (Ctrl+C)
+
+    client.destroy_node()
+    rclpy.shutdown()
+
 
 
 if __name__ == '__main__':

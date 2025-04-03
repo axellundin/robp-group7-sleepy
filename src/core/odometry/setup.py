@@ -25,7 +25,8 @@ setup(
             'tick_accumulator = odometry.tick_accumulator:main',
             'odometry_test = odometry.odometry_test:main',
             'yassirodom = odometry.yassirsodometry:main', 
-            'odometry = odometry.odometry:main'
+            'odometry = odometry.odometry:main', 
+            'path_publisher = odometry.path_publisher:main'
        ],
     },
 )

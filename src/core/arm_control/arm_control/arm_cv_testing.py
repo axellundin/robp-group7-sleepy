@@ -36,7 +36,7 @@ class ArmCVTesting(Node):
         # Create publisher for processed images
         self.grip_publisher = self.create_publisher(
             Image,
-            'gripping',
+            '/gripping',
             10
         )
         
@@ -49,6 +49,7 @@ class ArmCVTesting(Node):
         if (self.get_clock().now() - self.last_time).to_msg().sec < self.max_rate:
             return
         self.last_time = self.get_clock().now()
+        category = None
         try:
             # Convert ROS Image message to OpenCV image
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -73,12 +74,13 @@ class ArmCVTesting(Node):
                 return
             # Select an object with category "1.0"
             object_to_grip = None
-            prohited = ["toy_white"]
+            prohited = ["box"]
             for obj in response.objects:
                 if not obj.category in prohited:
                     if obj.image == Image():
                         continue
                     object_to_grip = obj
+                    category = obj.category
                     break
             # If no object with category "1.0" is detected, then we skip gripping position detection
             if object_to_grip is None:
@@ -89,34 +91,64 @@ class ArmCVTesting(Node):
             image = object_to_grip.image
             cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
 
-            # Get the edge points 
-            edges = self.arm_camera_processing.best_edge_detection(cv_image)
-            edge_points = np.where(edges == 255) 
-            edge_points = np.array(edge_points).T
 
-            # Get the gripping positions 
-            gripping_positions, components = self.arm_camera_processing.get_gripping_position(cv_image)
+            thresh = cv2.Canny(cv_image, 100, 200)
+            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            # Get the minimum area rectangle   
+            contours = [contour for contour in contours if len(contour) > 80]
+            cv2.drawContours(cv_image, contours, -1, (0, 255, 0), 2)
+
+            # Convert all contours to convex hull of the union of all contours 
+            contours = [cv2.convexHull(np.concatenate(contours)) for contour in contours]
+
+            # Draw contour on image: 
+            cv2.drawContours(cv_image, contours, -1, (0, 0, 255), 2)
+
+            # Get the minimum area rectangle    
+            if len(contours) == 0:
+                self.get_logger().info('No contours detected, skipping gripping position detection') 
+                return
             
-            colors = [tuple(map(int, color)) for color in np.random.randint(0, 255, (len(components), 3))]
+            max_contour = max(contours, key=cv2.contourArea)
+            result = cv2.minAreaRect(max_contour)
+            box = cv2.boxPoints(result)
+            box = np.intp(box)
+            cv2.drawContours(cv_image, [box], 0, (255, 0, 0), 1)
 
-            # Create a contour image to publish 
-            # Draw the grippable components
-            grippable_edges = np.zeros_like(cv_image)
-            for i, component in enumerate(components):
-                if len(component) > 0:
-                    points = edge_points[component]
-                    grippable_edges[points[:, 0], points[:, 1]] = colors[i]
+            _, (w,h), angle = result
+            min_angle = 0
+            max_angle = 0
+            if w > h:
+                min_angle = angle + 90
+                max_angle = angle 
+            else:
+                min_angle = angle
+                max_angle = angle + 90
 
-            # bg_img = cv_image.copy()
-            bg_img = grippable_edges
-            # Draw the gripping points
-            for i, points in enumerate(gripping_positions):
-                cv2.circle(bg_img, (points[0][1], points[0][0]), 5, colors[i], -1)  # First point
-                cv2.circle(bg_img, (points[1][1], points[1][0]), 5, colors[i], -1)  # Second point
-            
+            min_angle = min_angle * np.pi / 180
+            max_angle = max_angle * np.pi / 180
+            # Wrap to -pi/2 to pi/2:
+
+            min_angle = np.arctan2(np.sin(min_angle), np.cos(min_angle))
+            max_angle = np.arctan2(np.sin(max_angle), np.cos(max_angle))
+
+            min_angle = - ((min_angle + np.pi/2) % np.pi - np.pi/2)
+            max_angle = - ((max_angle + np.pi/2) % np.pi - np.pi/2)
+            phi = 0
+
+            if category == "cube":
+                phi = min(min_angle, max_angle, key=lambda x: abs(x))
+            elif category == "toy":
+                phi = min_angle
+                
+            self.get_logger().info(f'min_angle = {min_angle * 180 / np.pi}, max_angle = {max_angle * 180 / np.pi}')
+            # phi = np.arctan2(np.sin(phi), np.cos(phi))
+            self.get_logger().info(f'category = {category}, phi = {phi * 180 / np.pi}')
+
             # Convert back to ROS Image message and publish
-            ros_image = self.bridge.cv2_to_imgmsg(bg_img, encoding='bgr8')
-            # ros_image = self.bridge.cv2_to_imgmsg(edges, encoding='8UC1')
+            ros_image = self.bridge.cv2_to_imgmsg(cv_image, encoding='bgr8')
+            #ros_image = self.bridge.cv2_to_imgmsg(thresh, encoding='8UC1')
             self.grip_publisher.publish(ros_image)
             
         except Exception as e:

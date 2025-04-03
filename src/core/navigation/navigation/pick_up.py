@@ -3,7 +3,7 @@ from rclpy.node import Node
 import numpy as np
 from nav_msgs.msg import OccupancyGrid
 from core_interfaces.srv import GridCreator
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Point
 import tf2_geometry_msgs
 from core_interfaces.srv import MoveToObject, MoveTo
 
@@ -23,6 +23,9 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 import time as std_time
 from _thread import start_new_thread
 import time
+from visualization_msgs.msg import Marker 
+from builtin_interfaces.msg import Duration
+
 
 class PickUp(Node):
     def __init__(self):
@@ -51,6 +54,11 @@ class PickUp(Node):
         self.planner = path_planner()
 
         self.start_obs_grid = None
+        self.local_occupancy_map = None
+        self.current_waypoint = None
+        self.care_about_collisions = True 
+        self.local_occupancy_update_time = None
+        self.should_move = True 
 
         group = ReentrantCallbackGroup()
         group2 = ReentrantCallbackGroup()
@@ -69,7 +77,12 @@ class PickUp(Node):
             self.get_logger().info('move service not available, waiting again...')
         
         self.pickup_service = self.create_service(MoveToObject, "move_to_object", self.move_to_object_callback, callback_group=group)
-        
+
+        self.marker_pub = self.create_publisher(Marker, '/visualization_marker', 10)
+
+        self.local_occupancy_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map', self.local_occupancy_callback, 10, callback_group=group2)
+        self.next_waypoint_sub = self.create_subscription(PoseStamped, '/next_waypoint', self.next_waypoint_callback, 10, callback_group=group2)
+
         # Creating buffer and transform listener
         buffer_size = rclpy.duration.Duration(seconds=10.0) 
         self.tf_buffer = Buffer(cache_time=buffer_size)
@@ -82,11 +95,15 @@ class PickUp(Node):
 
     # callback, moves to the desired object
     def move_to_object_callback(self, request, response):
+        self.moving_back = False
+        self.should_move = True 
         if request.target == "Go BACK":
+            self.moving_back = True
             self.get_logger().info(f'Objects left before pickup: {len(self.objects)}')
             if self.latest_object_index != None:
                 self.objects.pop(self.latest_object_index)
                 self.latest_object_index = None
+            self.publish_object_and_box_markers()
             self.get_logger().info(f'Objects left after pickup: {len(self.objects)}')
             go_back_command = self.create_go_back_command()
             success = self.move_along_path(go_back_command)
@@ -98,47 +115,124 @@ class PickUp(Node):
                 response.finished = True
             return response
         else:
-        
+            
             x, y = self.retrieve_object_position(request)
-            self.get_logger().info(f'Object position: x = {x} y = {y}')
-            x_goal, y_goal = self.retrieve_pick_up_position(x,y)
-            self.get_logger().info(f'Pick up position: x = {x_goal} y = {y_goal}')
-            angle_between_object_and_pickup = np.arctan2(y - y_goal, x - x_goal)
-            start_x, start_y = self.retrieve_robot_position()
-            self.get_logger().info(f'Robot position: x = {start_x} y = {start_y}')
-            start_x, start_y = self.convert_to_grid_coordinates(start_x, start_y)
-            self.get_logger().info(f'Robot position (after conversion): x = {start_x} y = {start_y}')
-            obs_grid = self.start_obs_grid.copy()
-            path = self.generate_path(obs_grid, start_x, start_y, x_goal, y_goal)
-            self.get_logger().info(f'Path: {path}')
-            move_command = self.create_move_command(path, angle_between_object_and_pickup)
 
-            success = self.move_along_path(move_command)
-            self.get_logger().info(f'Success with move: {success}')
-            if not success:
-                response.success = False
+            should_try_again = True 
+            while should_try_again:
+                should_try_again = False
+                self.get_logger().info(f'Object position: x = {x} y = {y}')
+                x_goal, y_goal = self.retrieve_pick_up_position(x,y)
+                self.get_logger().info(f'Pick up position: x = {x_goal} y = {y_goal}')
+                angle_between_object_and_pickup = np.arctan2(y - y_goal, x - x_goal)
+                start_x, start_y = self.retrieve_robot_position()
+                self.get_logger().info(f'Robot position: x = {start_x} y = {start_y}')
+                start_x, start_y = self.convert_to_grid_coordinates(start_x, start_y)
+                self.get_logger().info(f'Robot position (after conversion): x = {start_x} y = {start_y}')
+                obs_grid = self.start_obs_grid.copy()
+                self.insert_objects_in_map_file(obs_grid)
+                self.insert_local_objects_in_map_file(obs_grid)
+                self.grid = obs_grid.copy() 
+                path = self.generate_path(obs_grid, start_x, start_y, x_goal, y_goal)
+                self.get_logger().info(f'Path: {path}')
+                if path is None:
+                    should_try_again = True
+                    continue
+                move_command = self.create_move_command(path, angle_between_object_and_pickup)
+
+                success = self.move_along_path(move_command)
+                if not self.should_move:
+                    self.get_logger().info(f'Collision detected, trying new path!')
+                    self.should_move = True 
+                    should_try_again = True 
+                    continue
+                self.get_logger().info(f'Success with move: {success}')
+                if not success:
+                    response.success = False
+                    response.finished = False
+                    response.message = "Failed to move to object"
+                    return response
+
+                turn = self.generate_turn()
+
+                self.get_logger().info(f'Turn: {turn}')
+                turn_command = self.create_turn_command(turn)
+                self.get_logger().info(f'Turn command: {turn_command}')
+                success = self.move_along_path(turn_command)
+                if not self.should_move:
+                    self.get_logger().info(f'Collision detected, trying new path!')
+                    self.should_move = True 
+                    should_try_again = True 
+                    continue
+                self.get_logger().info(f'Success with turn: {success}')
+
+                if not success:
+                    response.success = False
+                    response.finished = False
+                    response.message = "Failed to turn to object"
+                    return response
+
+                response.success = True
                 response.finished = False
-                response.message = "Failed to move to object"
+                response.message = "Done"
                 return response
 
-            turn = self.generate_turn()
-
-            self.get_logger().info(f'Turn: {turn}')
-            turn_command = self.create_turn_command(turn)
-            self.get_logger().info(f'Turn command: {turn_command}')
-            success = self.move_along_path(turn_command)
-            self.get_logger().info(f'Success with turn: {success}')
-            if not success:
-                response.success = False
-                response.finished = False
-                response.message = "Failed to turn to object"
-                return response
-
-            response.success = True
-            response.finished = False
-            response.message = "Done"
-            return response
+    def next_waypoint_callback(self, msg):
+        self.get_logger().info(f'Next waypoint received: {msg}')
+        self.current_waypoint = msg
     
+    def insert_local_objects_in_map_file(self, grid):
+        if self.local_occupancy_update_time is None: 
+            return
+        
+        current_time = self.get_clock().now().to_msg() 
+        time_since_last_update = current_time.sec + current_time.nanosec * 1e-9 - self.local_occupancy_update_time.sec - self.local_occupancy_update_time.nanosec * 1e-9
+        if time_since_last_update > 10:
+            return
+    
+        if self.local_occupancy_map is not None:
+            grid[self.local_occupancy_map == -1] = -1
+        
+    def check_if_path_hits_obstacles(self, start_x, start_y, end_x, end_y, obstacles_grid): 
+        x_min, x_max = min(start_x, end_x), max(start_x, end_x)
+        y_min, y_max = min(start_y, end_y), max(start_y, end_y)
+        line_len = np.sqrt((start_x - end_x)**2 + (start_y - end_y)**2)
+        len_x = x_max - x_min
+        len_y = y_max - y_min
+
+        n = np.array([(end_y - start_y) / line_len, -(end_x - start_x) / line_len])
+        relevant_grid = obstacles_grid[y_min:y_max+1, x_min:x_max+1]
+        test_idx = np.where(np.abs(np.sum( [np.tile(np.arange(len_x+1), (len_y+1, 1)) * n[0], np.tile(np.arange(len_y+1), (len_x+1, 1)).T * n[1] ], axis=0 )) < 1 / 2) 
+        values = relevant_grid[test_idx] 
+        
+        if len(values) == 0:
+            return False
+        
+        return np.min(values) < 0 
+    
+    def local_occupancy_callback(self, msg):
+        self.local_occupancy_map = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
+        self.local_occupancy_update_time = msg.header.stamp
+        
+        # self.get_logger().info(f'{(self.current_waypoint is None)=}')
+        # self.get_logger().info(f'{(not self.care_about_collisions)=}')
+        # self.get_logger().info(f'{(not self.should_move)=}')
+
+        if (self.current_waypoint is None) or (not self.care_about_collisions) or (not self.should_move):
+            return
+        
+        current_pose = self.transform_to(PoseStamped().pose, "map", "base_link") 
+        start_x, start_y = self.convert_to_grid_coordinates(100 * current_pose.position.x, 100 * current_pose.position.y)
+        end_x, end_y = self.convert_to_grid_coordinates(100 * self.current_waypoint.pose.position.x, 100 * self.current_waypoint.pose.position.y)
+        collision = self.check_if_path_hits_obstacles(start_x, start_y, end_x, end_y, self.local_occupancy_map) 
+
+        if collision and not self.moving_back:
+            self.get_logger().info(f'Collision detected, path hits obstacles')
+            self.get_logger().info(f'Current waypoint: {self.current_waypoint}')
+            self.get_logger().info(f'Current pose: {current_pose}')
+            self.get_logger().info(f'Start x: {start_x}, Start y: {start_y}, End x: {end_x}, End y: {end_y}')
+            self.should_move = False
+        
     def create_go_back_command(self):
         self.get_logger().info("create_go_back_command")
         request_msg = MoveTo.Request()
@@ -184,18 +278,82 @@ class PickUp(Node):
         x, y = self.convert_to_grid_coordinates(x,y)
         return x, y
     
+    def publish_marker_for_object_or_box(self, x_center, y_center, angle, category, id):
+        marker = Marker()
+        marker.header.frame_id = "map"
+        marker.header.stamp = self.get_clock().now().to_msg()
+        if category == "box":
+            marker.ns = "boxes"
+        else:
+            marker.ns = "objects"
+        marker.id = id
+        marker.pose = PoseStamped().pose
+        point = Point()
+        point.x = x_center
+        point.y = y_center
+        point.z = 0.1
+        marker.points.append(point)
+        marker.pose.position.x = x_center
+        marker.pose.position.y = y_center
+        marker.pose.position.z = 0.1
+        marker.pose.orientation.w = 1.0
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.scale.x = 0.05
+        marker.scale.y = 0.05
+        marker.scale.z = 0.05
+        marker.color.a = 1.0
+
+        marker.lifetime = Duration(seconds=100000000)
+        if category == "cube":
+            marker.color.g = 1.0
+            marker.type = Marker.CUBE
+        elif category == "ball":
+            marker.color.r = 1.0
+            marker.type = Marker.SPHERE
+        elif category == "toy":
+            marker.color.b = 1.0
+            marker.type = Marker.CYLINDER
+        elif category == "box": 
+            marker.color.r = 0.2
+            marker.color.g = 0.2
+            marker.color.b = 0.2
+            marker.type = Marker.CUBE
+            marker.scale.x = 0.25
+            marker.scale.y = 0.15
+            marker.scale.z = 0.10
+        
+        self.marker_pub.publish(marker)
+
+    def publish_object_and_box_markers(self): 
+        label_dict = {
+            "B": "box",
+            "2": "ball",
+            "3": "toy",
+            "1": "cube"
+        }
+
+        for id, object in enumerate(self.objects): 
+            x_center, y_center, angle, category = object 
+            self.publish_marker_for_object_or_box(x_center, y_center, angle, label_dict[category], id)
+
+        for id, object in enumerate(self.boxes):
+            x_center, y_center, angle, category = object 
+            self.publish_marker_for_object_or_box(x_center, y_center, angle, label_dict[category], id)
+
     # returns the index of the nearest object in the list
     def select_object(self, list_of_ojects):
         current_x, current_y = self.retrieve_robot_position()
         self.get_logger().info('selecting the object nearest to the pose of the robot')
         best_dist = 100000000
-        best_object = None 
+        best_object_index = None 
         self.get_logger().info(str(list_of_ojects))
         for object_index in range(len(list_of_ojects)):
             dist_to_start = np.sqrt((current_x-list_of_ojects[object_index][0])**2+ (current_y-list_of_ojects[object_index][1])**2)
             if dist_to_start < best_dist:
                 best_object_index = object_index
                 best_dist = dist_to_start
+    
         return best_object_index
     
     # receives the position of the object to be picked up, returns the position from where the pickup should start
@@ -213,9 +371,56 @@ class PickUp(Node):
         x_goal, y_goal = self.convert_to_grid_coordinates(goal_point[0], goal_point[1])
         return x_goal, y_goal
 
+    def send_stop_to_move_client(self):
+        request_msg = MoveTo.Request()
+        request_msg.stop_at_goal = True
+        request_msg.path.header.frame_id = "base_link"
+        request_msg.path.header.stamp = self.get_clock().now().to_msg()
+        goal_msg = PoseStamped()
+        goal_msg.header.frame_id = "base_link"
+        goal_msg.header.stamp = self.get_clock().now().to_msg()
+        goal_msg.pose.position.x = 0.0
+        goal_msg.pose.position.y = 0.0
+        request_msg.path.poses.append(goal_msg)
+        future = self.move_client.call_async(request_msg)
+
+        while not future.done():
+            self.executor.spin_once(timeout_sec=0.1)
+
+    def move_out_from_occupied(self):
+        self.get_logger().info('try to move out from occupied')
+        unoccupied_found = False
+        current_x, current_y = self.retrieve_robot_position()
+        current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
+        test_radius = 2*self.resolution
+        test_points = [[current_x, current_y]]
+        while not(unoccupied_found):
+            latest_path_planner_grid = self.grid.copy() 
+            self.insert_objects_in_map_file(latest_path_planner_grid) 
+            self.insert_local_objects_in_map_file(latest_path_planner_grid)
+            test_points.extend(self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None, latest_path_planner_grid,test_radius, False, True, False,False,None,None,True))
+            for point in test_points:
+                if latest_path_planner_grid[point[1],point[0]] != -1:
+                    safe_point = (point[0], point[1])
+                    unoccupied_found = True
+                    move_command = self.create_move_command([safe_point], 0)
+                    move_command.enforce_orientation = False 
+                    self.move_along_path(move_command)
+                    return
+                    
+            test_radius += self.resolution
+
     # generates a path between the start and goal based on the grid map
     def generate_path(self, grid, start_x, start_y, goal_x, goal_y):
+        grid_around_start = grid[start_y-5:start_y+5, start_x-5:start_x+5]
+        self.get_logger().info(f"grid size: {grid_around_start.shape}")
+        self.get_logger().info(f"Generating path from {start_x}, {start_y} to {goal_x}, {goal_y} using grid around start: {grid_around_start}")
+        
         grid1, path_result = self.planner.A_star(grid, [start_x, start_y], [goal_x,goal_y], 1, False, 1, True)
+        self.get_logger().info(f"A star success: {path_result}")
+        if path_result == False:
+            self.move_out_from_occupied()
+            return None
         waypoints, made_it_all_the_way = self.planner.waypoint_creator(False, self.grid)
 
         self.get_logger().debug(f"grid1: {grid1}")
@@ -260,13 +465,13 @@ class PickUp(Node):
         request_msg.max_speed = 0.4
         request_msg.max_turn_speed = 0.25
         request_msg.enforce_orientation = True
-        request_msg.allow_reverse = True
+        request_msg.allow_reverse = False
         request_msg.stop_at_goal = True
         return(request_msg)
 
      # generates a turn to face the object and a forward movement to approach it closely
     def generate_turn(self):
-        goal_x, goal_y, goal_angle = self.next_object
+        goal_x, goal_y, goal_angle, _ = self.next_object
         goal_pose_base_link = PoseStamped()
         
         goal_pose_base_link.header.frame_id = "map"
@@ -282,38 +487,22 @@ class PickUp(Node):
     def create_turn_command(self, goal_pose_base_link):
         goal_pose_odom = PoseStamped()
         goal_pose_odom.pose = self.transform_to(goal_pose_base_link.pose, "odom", "base_link")
+        self.get_logger().error(f"goal_pose_odom = {goal_pose_odom.pose}")
         current_pose_odom = PoseStamped()
         current_pose_odom.pose = self.transform_to(current_pose_odom.pose, "odom", "base_link")
-
+        self.get_logger().error(f"current_pose_odom = {current_pose_odom.pose}")
         angle_between_current_pose_and_object = np.arctan2(goal_pose_odom.pose.position.y - current_pose_odom.pose.position.y, goal_pose_odom.pose.position.x - current_pose_odom.pose.position.x)
 
         pickup_distance = 0.16 
         arm_base_link_y_shift = 0.0475  
         base_link_to_pickup_radius = (pickup_distance**2 + arm_base_link_y_shift**2)**0.5
         base_link_pickup_angle = np.arctan2(arm_base_link_y_shift, pickup_distance) 
-        target_angle = angle_between_current_pose_and_object + base_link_pickup_angle  
-        # target_angle = - target_angle
+        target_angle = angle_between_current_pose_and_object + base_link_pickup_angle 
+        self.get_logger().error(f"target_angle = {target_angle}")
 
         object_pos = np.array([goal_pose_base_link.pose.position.x, goal_pose_base_link.pose.position.y])
         distance_to_object = np.linalg.norm(object_pos)
         target_pos = object_pos - object_pos / distance_to_object * base_link_to_pickup_radius 
-
-        # shift = 0.05
-        # dist = np.sqrt(goal_pose_base_link.pose.position.x**2 + goal_pose_base_link.pose.position.y**2)
-
-        # obj_orthogonal_direction = np.array([-goal_pose_base_link.pose.position.y / dist, goal_pose_base_link.pose.position.x / dist])
-        # goal_pose_base_link.pose.position.x += shift * obj_orthogonal_direction[0] 
-        # goal_pose_base_link.pose.position.y += shift * obj_orthogonal_direction[1] 
-
-        # dist = np.sqrt(goal_pose_base_link.pose.position.x**2 + goal_pose_base_link.pose.position.y**2)
-        # angle = np.arctan2(goal_pose_base_link.pose.position.y, goal_pose_base_link.pose.position.x)
-
-        # forward_move = dist - self.distance_to_object / 100
-        # # Add debug prints 
-        # self.get_logger().info(f'goal_pose_base_link.pose.position.x = {goal_pose_base_link.pose.position.x}')
-        # self.get_logger().info(f'goal_pose_base_link.pose.position.y = {goal_pose_base_link.pose.position.y}')
-        # self.get_logger().info(f'angle = {angle}')
-        # self.get_logger().info(f'dist = {dist}')
 
         request_msg = MoveTo.Request()
         goal_list = Path()
@@ -322,20 +511,16 @@ class PickUp(Node):
         goal_msg = PoseStamped()
         goal_msg.header.frame_id = "map"
         goal_msg.header.stamp = self.get_clock().now().to_msg()
-        # goal_msg.pose.position.x = forward_move * np.cos(angle)
-        # goal_msg.pose.position.y = forward_move * np.sin(angle)
-        # qw = np.cos(angle/2) 
-        # qz = np.sin(angle/2)
         goal_msg.pose.position.x = target_pos[0]
         goal_msg.pose.position.y = target_pos[1]
         qw = np.cos(target_angle/2) 
         qz = np.sin(target_angle/2)
         self.go_back_oriorientation_z = float(qz)
         self.go_back_oriorientation_w = float(qw)
-        goal_msg.pose.orientation.z = float(qz)
-        goal_msg.pose.orientation.w = float(qw)
         self.get_logger().info(f'Before transform: {goal_msg.pose}')
         goal_msg.pose = self.transform_to_map(goal_msg.pose)
+        goal_msg.pose.orientation.z = float(qz)
+        goal_msg.pose.orientation.w = float(qw)
         self.get_logger().info(f'After transform: {goal_msg.pose}')
         goal_list.poses.append(goal_msg)
         request_msg.path = goal_list
@@ -344,6 +529,7 @@ class PickUp(Node):
         request_msg.enforce_orientation = True
         request_msg.allow_reverse = False
         request_msg.stop_at_goal = True
+        request_msg.threshold = 0.03
         return request_msg
     
     def move_callback(self, future):
@@ -361,10 +547,14 @@ class PickUp(Node):
         self.get_logger().info('Waiting for move goal to be done')
 
         # self.executor.spin_until_future_complete(future)
-        while not future.done():
-            self.get_logger().info('Waiting for move goal to be done')
+        while ( not future.done() ) and self.should_move:
             self.executor.spin_once(timeout_sec=0.1)
         # future.add_done_callback(self.move_callback) 
+        if not self.should_move:
+            self.get_logger().info('Move goal cancelled due to collision detection')
+            # Send stop to move to
+            self.send_stop_to_move_client()
+            return False
         
         self.get_logger().info('Move goal done')
         result = future.result() 
@@ -424,11 +614,11 @@ class PickUp(Node):
         grid2 = grid.copy()
         for object in self.objects:
             x, y = self.convert_to_grid_coordinates(object[0],object[1])
-            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,self.padding,False,False, False,True,None,None,False)
+            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,self.padding+3,False,False, False,True,None,None,False)
             for cell in fill_in_cells:
                 grid[cell[1],cell[0]] = -1
             grid[y,x] = 90
-        half_diagonal_box = np.sqrt((24/2)**2+(15/2)**2)
+        half_diagonal_box = np.sqrt((24/2)**2+(15/2)**2) +  3
         for box in self.boxes:
             x_max, y_max = self.convert_to_grid_coordinates(box[0]+half_diagonal_box+self.padding,box[1]+half_diagonal_box+self.padding)
             x_min, y_min = self.convert_to_grid_coordinates(box[0]-half_diagonal_box-self.padding,box[1]-half_diagonal_box-self.padding)
@@ -481,13 +671,16 @@ class PickUp(Node):
         self.get_logger().info(str(data))
         for object in data:
             if object[0] == 'B':
-                self.boxes.append([float(object[1]),float(object[2]), float(object[3])])
+                self.boxes.append([float(object[1]),float(object[2]), float(object[3]),object[0]])
             else:
-                self.objects.append([float(object[1]),float(object[2]), float(object[3])])
+                self.objects.append([float(object[1]),float(object[2]), float(object[3]),object[0]])
+        self.publish_object_and_box_markers()
         self.get_logger().info('objects retrieved from file')
-        self.insert_objects_in_map_file(self.grid)
         self.start_obs_grid = self.grid.copy()
-        self.publish_grid_map(self.grid)
+        pub_map = self.grid.copy()
+        self.insert_objects_in_map_file(pub_map)
+        
+        self.publish_grid_map(pub_map)
 
     # fetch grid map
     def fetch_map(self):

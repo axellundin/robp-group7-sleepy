@@ -1,0 +1,6 @@
+string target_frame #should be end_effector map odom base_link lidar_link camera_link camera_depth_optical_frame camera_color_optical_frame
+float32 height #should be the height of scan, at least bigger than 0, and this height is smaller when obj is high above the ground, 0.08 is almost the ground 
+---
+PointcloudDetectedObj[] objects 
+geometry_msgs/Point[] points # result lidar-like scan points from camera
+

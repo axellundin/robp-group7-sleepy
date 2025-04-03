@@ -9,13 +9,15 @@ from tf2_ros.transform_listener import TransformListener
 from tf2_ros import TransformException
 import numpy as np
 from robp_interfaces.msg import DutyCycles
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Point
+from visualization_msgs.msg import Marker
 import tf2_geometry_msgs
 import time
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from navigation.move_to_logic import MovementComputation
-from _thread import start_new_thread
+from _thread import start_new_thread 
+from builtin_interfaces.msg import Duration
 
 class Move_to(Node):
 
@@ -24,6 +26,8 @@ class Move_to(Node):
         print("inne move 7")
 
         self.movement_computation = None
+        self.should_continue = True
+        self.all_done = True 
 
         group = ReentrantCallbackGroup()
         self.server = self.create_service(MoveTo, "MoveTo", self.move_callback, callback_group=group)
@@ -37,6 +41,9 @@ class Move_to(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=False)
         self.alive = True  
 
+        self.marker_pub = self.create_publisher(Marker, '/visualization_marker', 10)
+        self.next_waypoint_pub = self.create_publisher(PoseStamped, '/next_waypoint', 10)
+
         start_new_thread(self.spin_thread, ())
 
     def spin_thread(self):
@@ -44,20 +51,48 @@ class Move_to(Node):
             rclpy.spin_once(self, timeout_sec=0.001)
 
     def move_callback(self, request, response):
+        self.should_continue = False
+        while not self.all_done:
+            self.executor.spin_once(timeout_sec=0.01)
+        self.all_done = False
         #Fetching request
         pose_list = request.path.poses
         point_only_request = request.enforce_orientation
         stop_at_goal_request = request.stop_at_goal
+        dist_threshold = request.threshold
 
         last_pose = self.transform(pose_list[-1])
         dist_to_last_pose = np.sqrt(last_pose.position.x**2 + last_pose.position.y**2)
-        self.movement_computation = MovementComputation(request.max_speed, request.max_turn_speed, request.allow_reverse, dist_to_last_pose, self)
+        self.movement_computation = MovementComputation(request.max_speed, request.max_turn_speed, request.allow_reverse, dist_to_last_pose,dist_threshold, self)
 
         # determines whether reverse driving should be allowed
 
-
         for goal_pose_index in range(len(pose_list)):
-            goal_pose = pose_list[goal_pose_index]
+            goal_pose = pose_list[goal_pose_index] 
+            goal_pose.header.stamp = self.get_clock().now().to_msg()
+            self.next_waypoint_pub.publish(goal_pose)
+
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = "move_to"
+            marker.id = goal_pose_index
+            marker.type = Marker.SPHERE
+            marker.action = Marker.ADD
+            point = Point()
+            point.x = goal_pose.pose.position.x
+            point.y = goal_pose.pose.position.y
+            point.z = 0.0
+            marker.pose = goal_pose.pose
+            marker.points.append(point)
+            marker.scale.x = 0.1 
+            marker.scale.y = 0.1 
+            marker.scale.z = 0.1
+            marker.color.a = 1.0
+            marker.color.r = 1.0
+            marker.color.g = 1.0
+            marker.lifetime = Duration(seconds=0)
+
 
             point_only = True
             stop_at_goal = False
@@ -66,14 +101,31 @@ class Move_to(Node):
             if goal_pose_index == len(pose_list)-1:
                 point_only = not(point_only_request)
                 stop_at_goal = stop_at_goal_request
+        
+            if not point_only:
+                marker.type = Marker.ARROW 
+                marker.pose = PoseStamped().pose 
+                point = Point() 
+                angle_from_quaternion = np.arctan2( 2 * (goal_pose.pose.orientation.w * goal_pose.pose.orientation.z + goal_pose.pose.orientation.x * goal_pose.pose.orientation.y), 1 - 2 * (goal_pose.pose.orientation.y**2 + goal_pose.pose.orientation.z**2))
+                point.x = goal_pose.pose.position.x + 0.2 * np.cos(angle_from_quaternion)
+                point.y = goal_pose.pose.position.y + 0.2 * np.sin(angle_from_quaternion)
+                point.z = 0.0
+                marker.points.append(point)
+                marker.scale.x = 0.02
+                marker.scale.y = 0.05
+                marker.scale.z = 0.05
 
+            self.marker_pub.publish(marker)
+            
             if stop_at_goal:
                 self.movement_computation._move_state = "turn"
             else:
                 self.movement_computation._move_state = "forward"
             self.movement_computation.start_yaw_ajustment = False
-            #Loop until request is cancel or goal is achieved
-            while True:
+            #Loop until request is cancel or goal is achieved'
+
+            self.should_continue = True
+            while self.should_continue:
                 #Transforming goal pose
                 #frames = self.tf_buffer.all_frames_as_yaml()
                 #self.get_logger().info(f'Available TF frames:\n{frames}')
@@ -86,6 +138,11 @@ class Move_to(Node):
                 #Publishing velocity command 
                 self._pub_vel.publish(vel)
 
+        if not self.should_continue: 
+            response.success = False 
+            self.all_done = True
+            return response
+
         #Publishing stop velocity command if stopping at the target is requested
         if stop_at_goal:
             vel = Twist()
@@ -95,6 +152,7 @@ class Move_to(Node):
 
         response.success = True
         print("move_to finished")
+        self.all_done = True
         return response
     
     def transform(self,goal_pose):

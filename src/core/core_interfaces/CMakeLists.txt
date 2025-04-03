@@ -48,6 +48,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/PointcloudDetect.srv"
   "srv/LidarDetect.srv"
   "srv/LidarlikeFromCamera.srv"
+  "srv/CameraDetect.srv"
   DEPENDENCIES nav_msgs
   DEPENDENCIES geometry_msgs 
   DEPENDENCIES std_msgs 

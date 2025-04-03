@@ -13,6 +13,11 @@ def generate_launch_description():
         executable='odometry', 
     )
 
+    path_publisher_node = Node(
+        package='odometry', 
+        executable='path_publisher', 
+    )
+
     # # yolo_detection node 
     yolo_detectionnode = Node(
         package='yolo_detection', 
@@ -69,13 +74,14 @@ def generate_launch_description():
 
     return LaunchDescription([
         odometry_node,
+        path_publisher_node,
         arm_simple_move,
         yolo_detectionnode,
         arm_box_detector,
         arm_box_pos_pub,
         arm_place_service,
         move_to_node,
-        nav_pickup,
+        # nav_pickup,
         # arm_picku_service,
         # brain
     ])  

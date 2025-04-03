@@ -4,12 +4,18 @@ from nav_msgs.msg import OccupancyGrid
 from std_msgs.msg import Header
 import numpy as np
 import time
-from geometry_msgs.msg import Point, Pose
+from geometry_msgs.msg import Point, Pose, PoseStamped
 from core_interfaces.msg import YoloClassifiedObject, PointcloudDetectedObj
+from core_interfaces.srv import YoloImageDetect
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+from visualization_msgs.msg import Marker
+from builtin_interfaces.msg import Duration
 
 import cv2
 import os
 import math
+import csv
 
 time_it_enable = True
 def time_it(func):
@@ -54,6 +60,11 @@ class MapNode(Node):
         self.intentionpoint_dictlist = [] # every row is a dict for point in intention, key index value int, key point value posestamped, key intention value list like [1,2,3,4,5]
         self.pointcloud_msg_list = [] # inside is just msg 
         self.yolo_msg_list = [] # msg inside 
+        self.required_map = []
+
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.object_pub = self.create_publisher(Marker, 'visualization_marker2', 10)
 
         #params
         self.avoid_obj_threshold = 0.05 # if the distance between obj and obstacle is less than this threshold, we skip this obj
@@ -91,7 +102,7 @@ class MapNode(Node):
             if 0 <= gx < self.width and 0 <= gy < self.height:
                 self.cache_map[gy, gx] = 100
         
-        # self.save_map_local(self.cache_map, "cache")
+        self.save_map_local(self.cache_map, "cache")
 
     def add_pointcloud_result_v2(self, msg: list[PointcloudDetectedObj]):
         for o in msg:
@@ -105,6 +116,13 @@ class MapNode(Node):
             else:
                 # print(f"Invalid index: ({grid_x}, {grid_y}), grid point out of map")
                 pass
+
+        # # visualize
+        # for m in self.pointcloud_msg_list:
+        #     position = m.pose.pose.position
+        #     ox, oy, tx, ty, gx, gy, rx, ry = self.original_transform_grid_relative(position = position)
+        #     self.cache_map[gy, gx] = 91
+        # self.save_map_local(self.cache_map, "cache")
 
     def add_yolo_result_v2(self, msg):
         if msg is None: 
@@ -155,9 +173,16 @@ class MapNode(Node):
                 if not overlap_found:
                     no_overlap_objs.append(valid_o)  # Add valid_o to final list if no overlap found
 
-        # Step 3: Update cache map for each valid object
+        # Step 3: Update list for each valid object
         for valid_o in no_overlap_objs:
             self.yolo_msg_list.append(valid_o)
+
+        # # step 4: visualize
+        # for m in self.yolo_msg_list:
+        #     position = m.center_point.pose.position
+        #     ox, oy, tx, ty, gx, gy, rx, ry = self.original_transform_grid_relative(position = position)
+        #     self.cache_map[gy, gx] = 90
+        # self.save_map_local(self.cache_map, "cache")
 
     def add_lidarfromcam_result(self, map_points:list[Point]):
         if map_points == None:
@@ -185,13 +210,12 @@ class MapNode(Node):
 
             scan_angle_index = int((angle - min_angle) / angle_step)
             if 0 <= scan_angle_index < self.radialscan_num:
-                if distance < self.lidarfromcam_polarcoord[scan_angle_index]:
+                if distance < self.lidarfromcam_polarcoord[scan_angle_index]:###############################this is a bit wierd
                     self.lidarfromcam_polarcoord[scan_angle_index] = distance
 
         # print("Lidar Polar Coordinates: ", self.lidarfromcam_polarcoord)
 
         self.save_map_local(self.cache_map, "cache")       
-
 
     def check_if_visiable(self, point):
         """
@@ -272,7 +296,7 @@ class MapNode(Node):
                         dict.point = msg.pose
                         break  
 
-            else: # new point detected                 
+            else: # new point detected， check if in intention?              
                 for dict in self.intentionpoint_dictlist:
                     distance = np.sqrt((msg.pose.pose.position.x - dict['point'].pose.position.x)**2 + 
                                 (msg.pose.pose.position.y - dict['point'].pose.position.y)**2)
@@ -286,7 +310,7 @@ class MapNode(Node):
                     self.add_intention_v2(-1, 0, self.add_class_value, msg.pose)
                 else:
                     # print("3")
-                    self.add_intention_v2(dict['index'], 0, self.add_obj_value)
+                    self.add_intention_v2(matched_intention_dict['index'], 0, self.add_obj_value)
                 
         for dict in mappoint_dictlist_unoperated: # old points not detected 
             if self.check_if_visiable(dict['point'].pose.position):
@@ -361,9 +385,25 @@ class MapNode(Node):
         self.pointcloud_msg_list = []
         self.yolo_msg_list = []
 
-    def get_robot_pose(self):
-        self.robot_pose.position.x = 50 
-        self.robot_pose.position.y = 50
+    def get_robot_pose(self, time = None):
+        if time != None:
+            lookup_time = time
+        else:
+            lookup_time = self.get_clock().now()
+
+        tf_future = self.tf_buffer.wait_for_transform_async(
+            target_frame="map",
+            source_frame="base_link",
+            time=lookup_time,
+        )
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+        try:
+            t = self.tf_buffer.lookup_transform("map", "base_link",lookup_time)  
+        except:
+            self.get_logger().error(f"cannot transform to 'map' from 'base_link' with lookup time: {lookup_time}")
+
+        self.robot_pose.position.x = t.transform.translation.x
+        self.robot_pose.position.y = t.transform.translation.y
         self.robot_pose.orientation.z = 0
 
     def original_transform_grid_relative(self, point = None, position = None):
@@ -380,10 +420,134 @@ class MapNode(Node):
         transformed_point_y = original_point_y - self.origin[1]
         grid_x = int(transformed_point_x / self.resolution)
         grid_y = int(transformed_point_y / self.resolution)
-        relative_x = original_point_x - self.robot_pose.position.x
-        relative_y = original_point_y - self.robot_pose.position.y
+        relative_x = transformed_point_x - self.robot_pose.position.x
+        relative_y = transformed_point_y - self.robot_pose.position.y
         ox, oy, tx, ty, gx, gy, rx, ry = original_point_x, original_point_y, transformed_point_x, transformed_point_y, grid_x, grid_y, relative_x, relative_y
         return ox, oy, tx, ty, gx, gy, rx, ry
+
+    def key_strategy_lite(self):
+        process_result = []
+        box_from_pc = []
+        if self.pointcloud_msg_list == None:
+            self.pointcloud_msg_list = []
+        if self.yolo_msg_list == None:
+            self.yolo_msg_list = []
+
+        self.get_logger().warning(str(len(self.pointcloud_msg_list)))
+        self.get_logger().warning(str(len(self.yolo_msg_list)))
+
+        for o in self.pointcloud_msg_list:
+            if o.category == "box":
+                box_from_pc.append(o)
+            else:
+                cloest_distance = 0.1
+                matched_yolo_result = None
+                for p in self.yolo_msg_list:
+                    if p.category != "box": 
+                        distance = np.sqrt((p.center_point.pose.position.x - o.pose.pose.position.x)**2 + (p.center_point.pose.position.y - o.pose.pose.position.y)**2)
+                        if distance < cloest_distance:
+                            cloest_distance = distance 
+                            matched_yolo_result = p
+                            matched_yolo_result.center_point.pose = o.pose.pose
+                if matched_yolo_result != None:
+                    print(cloest_distance)
+                    self.get_logger().info(f"append one yolo result, category {matched_yolo_result.category}")
+                    process_result.append(matched_yolo_result)
+                else:
+                    self.get_logger().info("lost one obj from pointcloud because yolo didn't classify")
+        for p in self.yolo_msg_list:
+            if p.category == "box":
+                cloest_distance = 0.2
+                matched_box = None
+                for b in box_from_pc:
+                    distance = np.sqrt((p.center_point.pose.position.x - b.pose.pose.position.x)**2 + (p.center_point.pose.position.y - b.pose.pose.position.y)**2)
+                    if distance < cloest_distance:
+                        cloest_distance = distance 
+                        matched_box = p
+                        matched_box.center_point.pose = o.pose.pose
+                if matched_box != None:
+                    print(cloest_distance)
+                    self.get_logger().info(f"append one yolo result, category {matched_box.category}")
+                    process_result.append(matched_box)
+                else:
+                    self.get_logger().info("lost one box because pointcloud detection doesn't match")
+
+        self.get_logger().warning(str(len(process_result)))
+
+        for r in process_result:
+            cloest_distance = 0.2
+            matched_index = None
+            for i, m in enumerate(self.required_map):
+                distance = np.sqrt((r.center_point.pose.position.x - m[0])**2 + (r.center_point.pose.position.y - m[1]))
+                if distance <cloest_distance:
+                    cloest_distance = distance
+                    matched_index = i
+            if matched_index != None:
+                self.required_map[matched_index][1] = round(r.center_point.pose.position.x,2)
+                self.required_map[matched_index][2] = round(r.center_point.pose.position.y,2)
+            else:
+                a = [r.category,round(r.center_point.pose.position.x,2),round(r.center_point.pose.position.y,2),0]
+                self.required_map.append(a)
+
+        for i, row in enumerate(self.required_map):
+            delete_marker = Marker()
+            delete_marker.header.frame_id = "map"
+            delete_marker.header.stamp = self.get_clock().now().to_msg()
+            delete_marker.ns = "objects_or_boxes"
+            delete_marker.id = i
+            delete_marker.action = Marker.DELETE  
+            self.object_pub.publish(delete_marker)
+
+            category = row[0]
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = "objects_or_boxes"
+            marker.id = i
+            marker.pose = PoseStamped().pose
+            point = Point()
+            point.x = row[1]
+            point.y = row[2]
+            point.z = 0.0
+            marker.points.append(point)
+            marker.pose.position.x = row[1]
+            marker.pose.position.y = row[2]
+            marker.pose.position.z = 0.025
+            marker.pose.orientation.w = 1.0
+            marker.pose.orientation.x = 0.0
+            marker.pose.orientation.y = 0.0
+            marker.scale.x = 0.05
+            marker.scale.y = 0.05
+            marker.scale.z = 0.05
+            marker.color.a = 1.0
+
+            marker.lifetime = Duration(seconds=100000000)
+            if category == "cube":
+                marker.color.g = 1.0
+                marker.type = Marker.CUBE
+            elif category == "ball":
+                marker.color.r = 1.0
+                marker.type = Marker.SPHERE
+            elif category == "toy":
+                marker.color.b = 1.0
+                marker.type = Marker.CYLINDER
+            elif category == "box": 
+                marker.color.r = 0.2
+                marker.color.g = 0.2
+                marker.color.b = 0.2
+                marker.type = Marker.CUBE
+                marker.scale.x = 0.25
+                marker.scale.y = 0.15
+                marker.scale.z = 0.10
+                marker.pose.position.z = 0.05
+            
+            self.object_pub.publish(marker)
+
+        with open('/home/sleepy/robp-group7-sleepy/yolo/requiredmap.tsv', 'w', newline='') as file:
+            writer = csv.writer(file, delimiter='\t')  
+            writer.writerows(self.required_map)  
+
+        return process_result
 
 #just for visualize 
     def publish_map(self,map):
@@ -418,15 +582,18 @@ class MapNode(Node):
                     # Unknown/Empty space (black)
                     color_map[i, j] = [0, 0, 0]  # Black
                 elif value == 0:
-                    # Free space (white)
+                    # seen space (white)
                     color_map[i, j] = [255, 255, 255]  # White
                 elif value == 100:
-                    # Occupied space (red)
+                    # lidar space (red)
                     color_map[i, j] = [0, 0, 255]  # Red
                 elif value == 99:
+                    # lidarlike space 
                     color_map[i, j] = [255, 0, 0]                
-                elif value == 20:
-                    color_map[i, j] = [0, 255, 0]  # Red
+                elif value == 90:
+                    color_map[i, j] = [0, 255, 255]  # yellow
+                elif value == 91:
+                    color_map[i, j] = [255, 255, 0]  # cyan
                 elif value > 0 and value < 100:
                     # Intermediate values (green to yellow gradient)
                     green_value = int((value / 100) * 255)
@@ -442,165 +609,165 @@ class MapNode(Node):
         self.get_logger().info(f'Saved map image to {output_file}')
 
 #abandoned
-    def add_explored_area(self,min_dist = 0.25, max_dist = 1):
-        angle_of_view_rad = self.angle_of_view/2
+    # def add_explored_area(self,min_dist = 0.25, max_dist = 1):
+    #     angle_of_view_rad = self.angle_of_view/2
 
-        relative_max_dist = max_dist/self.resolution
-        relative_min_dist = min_dist/self.resolution
+    #     relative_max_dist = max_dist/self.resolution
+    #     relative_min_dist = min_dist/self.resolution
 
-        robot_x = self.robot_pose.position.x
-        robot_y = self.robot_pose.position.y
-        robot_theta = self.robot_pose.orientation.z
+    #     robot_x = self.robot_pose.position.x
+    #     robot_y = self.robot_pose.position.y
+    #     robot_theta = self.robot_pose.orientation.z
         
-        x_coords, y_coords = np.meshgrid(np.arange(self.width), np.arange(self.height))
+    #     x_coords, y_coords = np.meshgrid(np.arange(self.width), np.arange(self.height))
         
-        # move coord to get relative normalized position(index actually)
-        relative_x = x_coords - robot_x
-        relative_y = y_coords - robot_y
+    #     # move coord to get relative normalized position(index actually)
+    #     relative_x = x_coords - robot_x
+    #     relative_y = y_coords - robot_y
         
-        distances = np.sqrt(relative_x ** 2 + relative_y ** 2)
-        angles = np.arctan2(relative_y, relative_x) - robot_theta ###########is this safe? maybe?
-        angles = (angles + np.pi) % (2 * np.pi) - np.pi
+    #     distances = np.sqrt(relative_x ** 2 + relative_y ** 2)
+    #     angles = np.arctan2(relative_y, relative_x) - robot_theta ###########is this safe? maybe?
+    #     angles = (angles + np.pi) % (2 * np.pi) - np.pi
         
-        mask_within_range = (distances >= relative_min_dist) & (distances <= relative_max_dist)
-        mask_within_angle = np.abs(angles) <= angle_of_view_rad
-        combined_mask = mask_within_range & mask_within_angle
+    #     mask_within_range = (distances >= relative_min_dist) & (distances <= relative_max_dist)
+    #     mask_within_angle = np.abs(angles) <= angle_of_view_rad
+    #     combined_mask = mask_within_range & mask_within_angle
         
-        self.cache_map[combined_mask & (self.cache_map == -1)] = 0
+    #     self.cache_map[combined_mask & (self.cache_map == -1)] = 0
 
-        self.save_map_local(self.cache_map, "cache")
+    #     self.save_map_local(self.cache_map, "cache")
 
-        return self.cache_map
+    #     return self.cache_map
 
-    def add_intention(self, point, add_class_index, add_value, remove_point = None, fading = False):
-        """
-        params:
-            add class index: where to add value on the intention map, there are 5 index in the list, representing there is sth, there is class 1, there is class 2 ...., there is class 4
-            add value: the value to add 
-        """
-        if remove_point != None:
-            rx, ry = remove_point
-            self.intention_map[rx,ry] = np.array([0, 0, 0, 0, 0])
-        if fading:
-            self.intention_map -= self.fading_value  
+    # def add_intention(self, point, add_class_index, add_value, remove_point = None, fading = False):
+    #     """
+    #     params:
+    #         add class index: where to add value on the intention map, there are 5 index in the list, representing there is sth, there is class 1, there is class 2 ...., there is class 4
+    #         add value: the value to add 
+    #     """
+    #     if remove_point != None:
+    #         rx, ry = remove_point
+    #         self.intention_map[rx,ry] = np.array([0, 0, 0, 0, 0])
+    #     if fading:
+    #         self.intention_map -= self.fading_value  
         
-        x, y = point
-        self.intention_map[y, x, add_class_index] += add_value
+    #     x, y = point
+    #     self.intention_map[y, x, add_class_index] += add_value
 
-        self.intention_map[y, x, add_class_index] = np.clip(self.intention_map[y, x, add_class_index], 
-                                                      -self.intention_value_range, 
-                                                      self.intention_value_range)  
+    #     self.intention_map[y, x, add_class_index] = np.clip(self.intention_map[y, x, add_class_index], 
+    #                                                   -self.intention_value_range, 
+    #                                                   self.intention_value_range)  
 
-    def add_yolo_result(self, msg: list[YoloClassifiedObject]):
-        height_good_objs = []
-        if msg is None: 
-            return  
+    # def add_yolo_result(self, msg: list[YoloClassifiedObject]):
+    #     height_good_objs = []
+    #     if msg is None: 
+    #         return  
         
-        # Step 1: Filter out objects based on z position threshold
-        for i, m in enumerate(msg):
-            if m.center_point.pose.position.z > self.yolopoint_mapping_height_threshold:
-                continue  # Skip objects above the threshold
-            height_good_objs.append(m)
+    #     # Step 1: Filter out objects based on z position threshold
+    #     for i, m in enumerate(msg):
+    #         if m.center_point.pose.position.z > self.yolopoint_mapping_height_threshold:
+    #             continue  # Skip objects above the threshold
+    #         height_good_objs.append(m)
 
-        jump_overlap = []  # List to track overlaps
-        no_overlap_objs = []   # List to store objects after overlap handling
+    #     jump_overlap = []  # List to track overlaps
+    #     no_overlap_objs = []   # List to store objects after overlap handling
 
-        # Step 2: Handle overlap between valid objects
-        for i, valid_o in enumerate(height_good_objs):
-            if i not in jump_overlap:
-                overlap_found = False
+    #     # Step 2: Handle overlap between valid objects
+    #     for i, valid_o in enumerate(height_good_objs):
+    #         if i not in jump_overlap:
+    #             overlap_found = False
 
-                for j, other_o in enumerate(height_good_objs):
-                    if i != j and valid_o.category == other_o.category:
-                        # Calculate distance between centers
-                        distance = np.sqrt((valid_o.center_point.pose.position.x - other_o.center_point.pose.position.x) ** 2 +
-                                           (valid_o.center_point.pose.position.y - other_o.center_point.pose.position.y) ** 2)
+    #             for j, other_o in enumerate(height_good_objs):
+    #                 if i != j and valid_o.category == other_o.category:
+    #                     # Calculate distance between centers
+    #                     distance = np.sqrt((valid_o.center_point.pose.position.x - other_o.center_point.pose.position.x) ** 2 +
+    #                                        (valid_o.center_point.pose.position.y - other_o.center_point.pose.position.y) ** 2)
                         
-                        if distance < self.yolopoint_mapping_remove_overlap_threshold:
-                            # Calculate the midpoint between the two objects
-                            mid_x = (valid_o.center_point.pose.position.x + other_o.center_point.pose.position.x) / 2
-                            mid_y = (valid_o.center_point.pose.position.y + other_o.center_point.pose.position.y) / 2
+    #                     if distance < self.yolopoint_mapping_remove_overlap_threshold:
+    #                         # Calculate the midpoint between the two objects
+    #                         mid_x = (valid_o.center_point.pose.position.x + other_o.center_point.pose.position.x) / 2
+    #                         mid_y = (valid_o.center_point.pose.position.y + other_o.center_point.pose.position.y) / 2
 
-                            # Update the center point of valid_o to the midpoint
-                            valid_o.center_point.pose.position.x = mid_x
-                            valid_o.center_point.pose.position.y = mid_y
-                            no_overlap_objs.append(valid_o) 
-                            jump_overlap.append(j)  # Mark the other object for removal
-                            overlap_found = True
-                            break
+    #                         # Update the center point of valid_o to the midpoint
+    #                         valid_o.center_point.pose.position.x = mid_x
+    #                         valid_o.center_point.pose.position.y = mid_y
+    #                         no_overlap_objs.append(valid_o) 
+    #                         jump_overlap.append(j)  # Mark the other object for removal
+    #                         overlap_found = True
+    #                         break
                 
-                if not overlap_found:
-                    no_overlap_objs.append(valid_o)  # Add valid_o to final list if no overlap found
+    #             if not overlap_found:
+    #                 no_overlap_objs.append(valid_o)  # Add valid_o to final list if no overlap found
 
-        # Step 3: Update cache map for each valid object
-        for valid_o in no_overlap_objs:
-            x, y = valid_o.center_point.pose.position.x, valid_o.center_point.pose.position.y
-            x = x - self.origin[0]
-            y = y - self.origin[1]
-            nearby_points = self.find_value_in_range(self.cache_map, [20], (x, y), self.align_yolo_to_pc_radius_threshold)
-            if nearby_points:
-                # If nearby points with value 20 are found, add intention
-                self.add_intention(nearby_points[0], 1, self.add_class_value, fading=True)
+    #     # Step 3: Update cache map for each valid object
+    #     for valid_o in no_overlap_objs:
+    #         x, y = valid_o.center_point.pose.position.x, valid_o.center_point.pose.position.y
+    #         x = x - self.origin[0]
+    #         y = y - self.origin[1]
+    #         nearby_points = self.find_value_in_range(self.cache_map, [20], (x, y), self.align_yolo_to_pc_radius_threshold)
+    #         if nearby_points:
+    #             # If nearby points with value 20 are found, add intention
+    #             self.add_intention(nearby_points[0], 1, self.add_class_value, fading=True)
 
-    def add_pointcloud_result(self, msg: list[PointcloudDetectedObj]):
-        for o in msg:
-            assert isinstance(o, PointcloudDetectedObj), f"Each element in msg should be of type PointcloudDetectedObj, but got {type(o)}."
-            assert o.category in ['box', 'item'], f"Invalid category {o.category}. It should be either 'box' or 'item'."
-            x = o.pose.pose.position.x
-            y = o.pose.pose.position.y
-            grid_x = int((x - self.origin[0]) / self.resolution)
-            grid_y = int((y - self.origin[1]) / self.resolution)
+    # def add_pointcloud_result(self, msg: list[PointcloudDetectedObj]):
+    #     for o in msg:
+    #         assert isinstance(o, PointcloudDetectedObj), f"Each element in msg should be of type PointcloudDetectedObj, but got {type(o)}."
+    #         assert o.category in ['box', 'item'], f"Invalid category {o.category}. It should be either 'box' or 'item'."
+    #         x = o.pose.pose.position.x
+    #         y = o.pose.pose.position.y
+    #         grid_x = int((x - self.origin[0]) / self.resolution)
+    #         grid_y = int((y - self.origin[1]) / self.resolution)
 
-            # Check if the position is within the map boundaries
-            if 0 <= grid_x < self.cache_map.shape[1] and 0 <= grid_y < self.cache_map.shape[0]:
-                if self.cache_map[grid_y, grid_x] == 0:  # If the grid cell empty and explored
-                    nearby_values = self.find_value_in_range(self.cache_map, [100], (grid_x, grid_y), self.avoid_obj_threshold)#check if there are obstacles to mislead the pointcloud detection
-                    if not nearby_values:
-                        self.cache_map[grid_y, grid_x] = 20  # Mark the cache map
-                        self.add_intention((grid_x, grid_y), 1, self.add_obj_value)##############################
-                else:
-                    print("Position already occupied")
-            else:
-                print(f"Invalid index: ({grid_x}, {grid_y})")
+    #         # Check if the position is within the map boundaries
+    #         if 0 <= grid_x < self.cache_map.shape[1] and 0 <= grid_y < self.cache_map.shape[0]:
+    #             if self.cache_map[grid_y, grid_x] == 0:  # If the grid cell empty and explored
+    #                 nearby_values = self.find_value_in_range(self.cache_map, [100], (grid_x, grid_y), self.avoid_obj_threshold)#check if there are obstacles to mislead the pointcloud detection
+    #                 if not nearby_values:
+    #                     self.cache_map[grid_y, grid_x] = 20  # Mark the cache map
+    #                     self.add_intention((grid_x, grid_y), 1, self.add_obj_value)##############################
+    #             else:
+    #                 print("Position already occupied")
+    #         else:
+    #             print(f"Invalid index: ({grid_x}, {grid_y})")
         
-        self.save_map_local(self.cache_map, "cache")
+    #     self.save_map_local(self.cache_map, "cache")
 
-    def find_value_in_range(self, map, values, center_point, radius):
-        assert isinstance(map, np.ndarray), "The map should be a NumPy array."
-        assert isinstance(values, list), "Values should be a list or set."
+    # def find_value_in_range(self, map, values, center_point, radius):
+    #     assert isinstance(map, np.ndarray), "The map should be a NumPy array."
+    #     assert isinstance(values, list), "Values should be a list or set."
 
-        radius_in_cells = int(radius / self.resolution)
+    #     radius_in_cells = int(radius / self.resolution)
 
-        center_x, center_y = center_point
-        result_indices = []
-        # Loop through the grid and check for the value within the circular region
-        for x in range(max(0, int(center_x - radius_in_cells)), min(self.width, int(center_x + radius_in_cells + 1))):
-            for y in range(max(0, int(center_y - radius_in_cells)), min(self.height, int(center_y + radius_in_cells + 1))):
-                # Calculate the Euclidean distance from the center point
-                distance = np.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
-                if distance <= radius_in_cells and map[y, x] in values:
-                    result_indices.append((distance, (x, y))) 
+    #     center_x, center_y = center_point
+    #     result_indices = []
+    #     # Loop through the grid and check for the value within the circular region
+    #     for x in range(max(0, int(center_x - radius_in_cells)), min(self.width, int(center_x + radius_in_cells + 1))):
+    #         for y in range(max(0, int(center_y - radius_in_cells)), min(self.height, int(center_y + radius_in_cells + 1))):
+    #             # Calculate the Euclidean distance from the center point
+    #             distance = np.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
+    #             if distance <= radius_in_cells and map[y, x] in values:
+    #                 result_indices.append((distance, (x, y))) 
 
-        result_indices.sort(key=lambda item: item[0])
+    #     result_indices.sort(key=lambda item: item[0])
 
-        return [item[1] for item in result_indices]
+    #     return [item[1] for item in result_indices]
 
-    def update_map_with_intention(self):
-        for x in range(self.width):
-            for y in range(self.height):
-                intention = self.intention_map[y, x]
+    # def update_map_with_intention(self):
+    #     for x in range(self.width):
+    #         for y in range(self.height):
+    #             intention = self.intention_map[y, x]
 
-                if intention[0] > self.have_obj_threshold:
+    #             if intention[0] > self.have_obj_threshold:
                     
-                    class_over_threshold = [i for i in range(1, 5) if intention[i] > self.have_class_threshold]
+    #                 class_over_threshold = [i for i in range(1, 5) if intention[i] > self.have_class_threshold]
                     
-                    if not class_over_threshold:
-                        self.grid_map[y, x] = 20
-                    else:
-                        max_class_index = max(class_over_threshold, key=lambda i: intention[i])
-                        self.grid_map[y, x] = max_class_index + 20
-                else:
-                    continue
+    #                 if not class_over_threshold:
+    #                     self.grid_map[y, x] = 20
+    #                 else:
+    #                     max_class_index = max(class_over_threshold, key=lambda i: intention[i])
+    #                     self.grid_map[y, x] = max_class_index + 20
+    #             else:
+    #                 continue
 
 
 def main(args=None):

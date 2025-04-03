@@ -19,7 +19,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from core_interfaces.srv import MoveArm, MoveTo
 import numpy as np
 from _thread import start_new_thread
-
+import cv2
 class PickupService(Node):
     def __init__(self):
         super().__init__('pickup_service')
@@ -30,7 +30,7 @@ class PickupService(Node):
         )
         
         self.arm_camera_processing = ArmCameraProcessing()
-        self.joint_movement_time = 1500
+        self.joint_movement_time = 1000
         self.gripper_open_position = [3500, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.gripper_close_position = [11500, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.up_position = [-1, 12000, 12000, 12000, 12000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
@@ -39,7 +39,7 @@ class PickupService(Node):
         self.second_backup_viewing_position = [-1, 12000, 5000, 21000, 14000, 7500, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         
         self.current_target = self.up_position
-        self.max_joint_diff = 500
+        self.max_joint_diff = 800
         self.max_joint_diff_gripper = 1200
         self.bridge = CvBridge()
 
@@ -139,6 +139,7 @@ class PickupService(Node):
         self.get_logger().info(f'Starting small adjustment with x={x}, y={y}')
         req_msg = MoveTo.Request()
         goal_list = Path()
+        req_msg.threshold = 0.01
         goal_list.header.frame_id = "odom"
         goal_list.header.stamp = self.get_clock().now().to_msg()
     
@@ -224,11 +225,12 @@ class PickupService(Node):
                 if category in prohited:
                     continue
                 print(f"  Position: {x_m} m, {y_m} m, {z_m} m")
-                return True, x_m, y_m, z_m
-            return False, None, None, None
+                image = obj.image
+                return True, x_m, y_m, z_m, category, image
+            return False, None, None, None, None, None
         else:
             self.get_logger().error('Failed to receive response.')
-            return False, None, None, None
+            return False, None, None, None, None, None
 
     def move_arm_to_joint_values(self, joint_values):
         msg = Int16MultiArray()
@@ -238,13 +240,58 @@ class PickupService(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(joint_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=5):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=1):
                 # Send again 
                 self.joint_angles_publisher.publish(msg)
                 latest_command = self.get_clock().now()
             time.sleep(0.01)
         return True
 
+    def find_gripping_angle(self, image):
+        image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
+        thresh = cv2.Canny(image, 100, 200)
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Get the minimum area rectangle   
+        contours = [contour for contour in contours if len(contour) > 80]
+        cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
+
+        # Convert all contours to convex hull of the union of all contours 
+        contours = [cv2.convexHull(np.concatenate(contours)) for contour in contours]
+
+        # Draw contour on image: 
+        cv2.drawContours(image, contours, -1, (0, 0, 255), 2)
+
+        # Get the minimum area rectangle    
+        max_contour = max(contours, key=cv2.contourArea)
+        _,size,angle = cv2.minAreaRect(max_contour)
+        if size[0] > size[1]:
+            min_angle = angle
+            max_angle = angle + 90
+        else:
+            min_angle = angle + 90
+            max_angle = angle
+
+        w,h = size
+        min_angle = 0
+        max_angle = 0
+        if w > h:
+            min_angle = angle + 90
+            max_angle = angle 
+        else:
+            min_angle = angle
+            max_angle = angle + 90
+
+        min_angle = min_angle * np.pi / 180
+        max_angle = max_angle * np.pi / 180
+
+        # Wrap to -pi/2 to pi/2:
+        min_angle = np.arctan2(np.sin(min_angle), np.cos(min_angle))
+        max_angle = np.arctan2(np.sin(max_angle), np.cos(max_angle))
+        min_angle = - ((min_angle + np.pi/2) % np.pi - np.pi/2)
+        max_angle = - ((max_angle + np.pi/2) % np.pi - np.pi/2)    
+
+        return min_angle, max_angle
 
     def check_if_object_is_reachable(self, x_m, y_m):
         # Check if the object is reachable by the arm 
@@ -266,6 +313,8 @@ class PickupService(Node):
         # Move the arm to viewing position  
         # msg.data = self.viewing_position
         viewing_positions = [self.viewing_position, self.first_backup_viewing_position, self.second_backup_viewing_position]
+        category = None
+        image = None
         for i in range(len(viewing_positions)):
             viewing_position = viewing_positions[i]
             # self.joint_angles_publisher.publish(msg)
@@ -287,7 +336,7 @@ class PickupService(Node):
 
                     time.sleep(2)
                 
-                detected, x_m, y_m, z_m = self.send_yolo_request()
+                detected, x_m, y_m, z_m, category, image = self.send_yolo_request()
                 if not detected:
                     self.get_logger().error('Failed to detect object.')
                     if current_attempts > 2:
@@ -323,21 +372,6 @@ class PickupService(Node):
     
         z_m = -0.15
         # ----------------------------------------------------------------------------------
-
-        # # 3. Calculate the gripping orientation and position 
-        # # get the latest image from the arm camera 
-        # while self.latest_arm_image is None:
-        #     self.get_logger().info('Waiting for arm image...')
-        #     time.sleep(1)
-        
-        # img = self.latest_arm_image
-        # # process the image 
-        # gripping_positions, connected_components = self.arm_camera_processing.get_gripping_position(img)
-        # if len(gripping_positions) == 0:
-        #     self.get_logger().error('Failed to detect gripping position.')
-        #     response.success = False
-        #     response.message = 'Failed to detect gripping position.'
-        #     return response
         
         # Get the first gripping
         time.sleep(2)
@@ -349,11 +383,20 @@ class PickupService(Node):
         target.pose.position.z = z_m + 0.05
         rho = (x_m**2 + y_m**2)**0.5
         
+        phi = 0
+        if category != "ball":
+            min_angle, max_angle = self.find_gripping_angle(image)
+            if category == "cube":
+                phi = min(min_angle, max_angle, key=lambda x: abs(x))
+            elif category == "toy":
+                phi = min_angle
+
         # Publish the target pose 
         self.get_logger().info('Publishing target pose...')
         request = MoveArm.Request()
         request.pose = target
         request.alpha.data =  (1.3 - 0.2) * (rho - 0.18) / (0.35 - 0.18) + 0.2
+        request.phi.data = float(phi)
         future = self.move_arm_client.call_async(request)
         while not future.done():
             self.get_logger().info('Waiting for move arm response...')
@@ -364,6 +407,7 @@ class PickupService(Node):
         request = MoveArm.Request()
         request.pose = target
         request.alpha.data =  (1.3 - 0.2) * (rho - 0.18) / (0.35 - 0.18) + 0.2
+        request.phi.data = float(phi)
         print(f"alpha = {request.alpha.data}") 
         time.sleep(2)
         future = self.move_arm_client.call_async(request)
@@ -381,6 +425,7 @@ class PickupService(Node):
         request = MoveArm.Request()
         request.pose = target
         request.alpha.data = (1.3 - 0.2) * (rho - 0.18) / (0.35 - 0.18) + 0.2
+        request.phi.data = float(phi)
         print(f"alpha = {request.alpha.data}") 
         time.sleep(2)
         future = self.move_arm_client.call_async(request)

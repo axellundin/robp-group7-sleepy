@@ -9,7 +9,7 @@ def generate_launch_description():
     static_map_odom = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('core_launch'), 
-            'launch', 'map_odom_tf_static.py')
+            'launch', 'launch_static_tf_map_odom.py')
         ])
     )
 

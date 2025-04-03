@@ -16,6 +16,8 @@ class TickAccumulator(Node):
         self.accumulated_delta_ticks_right = 0 
         self.accumulated_dt = 0 
 
+        self.update_frequency = 30
+
         self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 100)
 
         # Publisher for accumulated ticks
@@ -50,7 +52,7 @@ class TickAccumulator(Node):
         self.accumulated_delta_ticks_right += delta_ticks_right
         self.accumulated_dt += dt 
 
-        if self.accumulated_dt > 0.05:
+        if self.accumulated_dt > 1 / self.update_frequency:
             self.publish_accumulated_ticks()
             self.accumulated_dt = 0
             self.accumulated_delta_ticks_left = 0

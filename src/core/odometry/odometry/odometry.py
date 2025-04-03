@@ -49,8 +49,9 @@ class Odometry(Node):
         self.theta += delta_theta 
         self.theta = math.atan2(math.sin(self.theta), math.cos(self.theta))
         
-        time = self.get_clock().now().to_msg()
-        self.publish_path(time, self.x, self.y, self.theta)
+        # time = self.get_clock().now().to_msg()
+        time = msg.header.stamp
+        # self.publish_path(time, self.x, self.y, self.theta)
         self.broadcast_transform(time, self.x, self.y, self.theta)
 
     def publish_path(self, time, x, y, theta):
