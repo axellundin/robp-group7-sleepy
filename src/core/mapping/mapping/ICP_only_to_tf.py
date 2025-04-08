@@ -1,3 +1,5 @@
+import sys
+print("Running with Python:", sys.executable)
 import numpy as np
 import open3d as o3d
 import rclpy
