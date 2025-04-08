@@ -80,7 +80,7 @@ def generate_launch_description():
         arm_box_detector,
         arm_box_pos_pub,
         arm_place_service,
-        move_to_node,
+        #move_to_node,
         # nav_pickup,
         # arm_picku_service,
         # brain

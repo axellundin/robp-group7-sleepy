@@ -2,7 +2,6 @@
 
 import rclpy
 from rclpy.node import Node
-from collections import deque
 from robp_interfaces.msg import Encoders
 
 class TickAccumulator(Node):

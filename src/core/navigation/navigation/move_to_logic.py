@@ -27,7 +27,7 @@ class MovementComputation:
         self._deg_tol_turn = 3 #deg
 
         #Yaw adjustment speed during turning before forward driving
-        self.min_turn = 0.14
+        self.min_turn = 0.15
         self.max_turn = np.max([max_speed_turn, self.min_turn])
         self.max_turn_threshold = np.pi/6
 

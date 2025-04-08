@@ -12,7 +12,8 @@ from tf2_ros import Buffer, TransformListener
 from tf2_geometry_msgs import do_transform_pose
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
-from arm_control.arm_camera_processing import ArmCameraProcessing
+from arm_control.arm_camera_processing import ArmCameraProcessing, BoxPositionConverter
+from arm_control.box_position_pub import quaternion_to_matrix
 import time
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -20,6 +21,9 @@ from core_interfaces.srv import MoveArm, MoveTo
 import numpy as np
 from _thread import start_new_thread
 import cv2
+from std_msgs.msg import String
+
+
 class PickupService(Node):
     def __init__(self):
         super().__init__('pickup_service')
@@ -43,6 +47,8 @@ class PickupService(Node):
         self.max_joint_diff_gripper = 1200
         self.bridge = CvBridge()
 
+        self.box_position_converter = BoxPositionConverter()
+
         self.latest_arm_image=None
         self.latest_joint_angles=None
 
@@ -50,6 +56,14 @@ class PickupService(Node):
             Image,
             "/arm_camera/image_raw",
             self.arm_image_listener_callback,
+            10
+        )
+
+        self.current_object_category = None
+        self.subscription_current_object_category = self.create_subscription(
+            String,
+            "/current_object_category",
+            self.current_object_category_callback,
             10
         )
 
@@ -108,6 +122,9 @@ class PickupService(Node):
         except Exception as e:
             self.get_logger().error(f'Executor error: {str(e)}')
 
+    def current_object_category_callback(self, msg):
+        self.current_object_category = msg.data
+
     def joint_angles_callback(self, msg):
         # self.get_logger().info('JOINT CALLBACK RECEIVED')  # Add this debug print
         self.latest_joint_angles = msg.position 
@@ -134,6 +151,12 @@ class PickupService(Node):
             pose.pose = do_transform_pose(pose.pose, transform)
             pose.header.frame_id = frame_to
         return pose
+    
+    def filter_detections(self, detections):
+        if self.current_object_category is None:
+            return [detection for detection in detections if detection.category not in ["box", "no_detection"]]
+        
+        return [detection for detection in detections if detection.category == self.current_object_category]
 
     def small_adjustment(self, x, y): 
         self.get_logger().info(f'Starting small adjustment with x={x}, y={y}')
@@ -211,6 +234,7 @@ class PickupService(Node):
             response = future.result()
             self.get_logger().info(f"Received response: {len(response.objects)} objects detected.")
 
+            # This is for debugging purposes
             for i, obj in enumerate(response.objects):
                 pose = obj.center_point
                 category = obj.category
@@ -220,17 +244,16 @@ class PickupService(Node):
                 x_m = (pose.pose.position.x)
                 y_m = (pose.pose.position.y)
                 z_m = (pose.pose.position.z)
-                prohited = ["toy_white", "toy_yellow", "box", "no_detection"]
-                print(f"category = {category}, {(category in prohited)=}")
-                if category in prohited:
-                    continue
                 print(f"  Position: {x_m} m, {y_m} m, {z_m} m")
-                image = obj.image
-                return True, x_m, y_m, z_m, category, image
-            return False, None, None, None, None, None
+
+            filtered_detections = self.filter_detections(response.objects)
+            if len(filtered_detections) == 0:
+                return False, None, None, None, None, None, None, None
+            obj = filtered_detections[0]
+            return True, obj.center_point.pose.position.x, obj.center_point.pose.position.y, obj.center_point.pose.position.z, obj.category, obj.image, obj.topleft_point.pose.position.x, obj.topleft_point.pose.position.y
         else:
             self.get_logger().error('Failed to receive response.')
-            return False, None, None, None, None, None
+            return False, None, None, None, None, None, None, None
 
     def move_arm_to_joint_values(self, joint_values):
         msg = Int16MultiArray()
@@ -247,7 +270,7 @@ class PickupService(Node):
             time.sleep(0.01)
         return True
 
-    def find_gripping_angle(self, image):
+    def find_gripping_angle_and_center(self, image):
         image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
         thresh = cv2.Canny(image, 100, 200)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -264,23 +287,17 @@ class PickupService(Node):
 
         # Get the minimum area rectangle    
         max_contour = max(contours, key=cv2.contourArea)
-        _,size,angle = cv2.minAreaRect(max_contour)
-        if size[0] > size[1]:
-            min_angle = angle
-            max_angle = angle + 90
-        else:
-            min_angle = angle + 90
-            max_angle = angle
+        center,size,angle = cv2.minAreaRect(max_contour)
 
         w,h = size
         min_angle = 0
         max_angle = 0
         if w > h:
+            min_angle = angle 
+            max_angle = angle + 90
+        else:
             min_angle = angle + 90
             max_angle = angle 
-        else:
-            min_angle = angle
-            max_angle = angle + 90
 
         min_angle = min_angle * np.pi / 180
         max_angle = max_angle * np.pi / 180
@@ -291,11 +308,33 @@ class PickupService(Node):
         min_angle = - ((min_angle + np.pi/2) % np.pi - np.pi/2)
         max_angle = - ((max_angle + np.pi/2) % np.pi - np.pi/2)    
 
-        return min_angle, max_angle
+        return min_angle, max_angle, center
 
     def check_if_object_is_reachable(self, x_m, y_m):
         # Check if the object is reachable by the arm 
-        return (0.14 < x_m < 0.20 and (y_m**2 + x_m**2)**(1/2) < 0.20)
+        return (0.14 < x_m < 0.20 and (y_m**2 + x_m**2)**(1/2) < 0.20) and (-0.8 < y_m < 0.8)
+
+    def get_object_position_from_image_pixels(self, x,y):
+        try:
+            transform_arm_base_link_to_arm_camera = self.tf_buffer.lookup_transform('arm_base_link', 'arm_camera', rclpy.time.Time())
+        except Exception as e:
+            self.get_logger().error(f"cannot transform to arm_base_link from arm_camera: {e}")
+            return None, -1
+        # Get matrix of whole transform
+        # Extract translation and rotation from transform
+        translation = transform_arm_base_link_to_arm_camera.transform.translation
+        rotation = transform_arm_base_link_to_arm_camera.transform.rotation
+        
+        # Convert quaternion to rotation matrix
+        quat = [rotation.x, rotation.y, rotation.z, rotation.w]
+        transform_matrix = quaternion_to_matrix(quat)
+        
+        # Add translation to transformation matrix
+        transform_matrix[0, 3] = translation.x
+        transform_matrix[1, 3] = translation.y
+        transform_matrix[2, 3] = translation.z
+
+        return self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.16)
 
     def pickup_callback(self, request, response):
         self.get_logger().info('Starting pickup callback')
@@ -315,15 +354,18 @@ class PickupService(Node):
         viewing_positions = [self.viewing_position, self.first_backup_viewing_position, self.second_backup_viewing_position]
         category = None
         image = None
-        for i in range(len(viewing_positions)):
-            viewing_position = viewing_positions[i]
+        top_x, top_y = None, None
+        x_m, y_m = None, None
+        test_pos_index = 0
+        while test_pos_index < len(viewing_positions):
+            viewing_position = viewing_positions[test_pos_index]
             # self.joint_angles_publisher.publish(msg)
             self.get_logger().info(f'Trying new viewing position: {viewing_position}')
             self.move_arm_to_joint_values(viewing_position)
             time.sleep(2)
 
             # Perform object detection 
-            if viewing_positions[i] != self.viewing_position: adjusted_viewing_position = True
+            if viewing_positions[test_pos_index] != self.viewing_position: adjusted_viewing_position = True
 
             current_attempts = 0
             should_change_to_default_viewing_position = False
@@ -336,7 +378,7 @@ class PickupService(Node):
 
                     time.sleep(2)
                 
-                detected, x_m, y_m, z_m, category, image = self.send_yolo_request()
+                detected, x_yolo, y_yolo, _, category, image, top_x, top_y = self.send_yolo_request()
                 if not detected:
                     self.get_logger().error('Failed to detect object.')
                     if current_attempts > 2:
@@ -349,17 +391,17 @@ class PickupService(Node):
                     current_attempts += 1 
                     continue
 
-                print(f'Object detected at {x_m} m, {y_m} m, {z_m} m')
+                print(f'Object detected at {x_yolo} m, {y_yolo} m')
                 # return response
                 # .------ Assume that the object is detected and the position is x_m, y_m, z_m in arm_base_link frame ------
-                if self.check_if_object_is_reachable(x_m, y_m):
+                if self.check_if_object_is_reachable(x_yolo, y_yolo):
                     reachable = True
                     break
 
                 self.get_logger().warning('Object is not in the correct position.')
-                success = self.small_adjustment(x_m, y_m)
+                success = self.small_adjustment(x_yolo, y_yolo)
                 should_change_to_default_viewing_position = True 
-                i = 0
+                test_pos_index = 0
                 current_attempts = 0
 
                 if not success and viewing_position == viewing_positions[-1]:
@@ -367,14 +409,30 @@ class PickupService(Node):
                     response.success = False
                     return response
 
+            test_pos_index += 1
+
             if reachable: 
                 break
     
         z_m = -0.15
         # ----------------------------------------------------------------------------------
         
+        x_m, y_m = x_yolo, y_yolo
+
+        phi = 0
+        if category != "ball":
+            min_angle, max_angle, center = self.find_gripping_angle_and_center(image)
+            if category == "cube":
+                phi = min(min_angle, max_angle, key=lambda x: abs(x))
+            elif category == "toy":
+                phi = min_angle 
+                x_m, y_m, _ = self.get_object_position_from_image_pixels(top_x + center[0], top_y + center[1])
+
+        if not self.check_if_object_is_reachable(x_m, y_m): 
+            x_m, y_m = x_yolo, y_yolo
+        
         # Get the first gripping
-        time.sleep(2)
+        time.sleep(1)
         # 4. Move the arm to above the object 
         target = PoseStamped()
         target.header.frame_id = "arm_base_link"
@@ -382,14 +440,6 @@ class PickupService(Node):
         target.pose.position.y = y_m
         target.pose.position.z = z_m + 0.05
         rho = (x_m**2 + y_m**2)**0.5
-        
-        phi = 0
-        if category != "ball":
-            min_angle, max_angle = self.find_gripping_angle(image)
-            if category == "cube":
-                phi = min(min_angle, max_angle, key=lambda x: abs(x))
-            elif category == "toy":
-                phi = min_angle
 
         # Publish the target pose 
         self.get_logger().info('Publishing target pose...')

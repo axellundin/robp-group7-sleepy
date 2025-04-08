@@ -215,18 +215,37 @@ class Detection(Node):
 
     def camera_detect_callback(self, request, response):
         def list_to_response(objects, boxes):
+            def array_to_ros2_points(array):
+                points_list = []
+                for row in array:
+                    point = Point()
+                    point.x = row[0]
+                    point.y = row[1]
+                    point.z = row[2]
+                    points_list.append(point)
+                return points_list
             response = CameraDetect.Response()
-            for posestamped in objects:
+            for row in objects:
+                posestamped = row['ps']
+                points = row['points']
+                colors = row['colors']
                 assert isinstance(posestamped,PoseStamped), "pose in obj is not a posestamped"
                 detectedobj=PointcloudDetectedObj()
                 detectedobj.category="item"
                 detectedobj.pose=posestamped
+                detectedobj.points = array_to_ros2_points(points)
+                detectedobj.colors = array_to_ros2_points(colors)
                 response.objects.append(detectedobj)
-            for posestamped in boxes:
+            for row in boxes:
+                posestamped = row['ps']
+                points = row['points']
+                colors = row['colors']
                 assert isinstance(posestamped,PoseStamped), "pose in box is not a posestamped"
                 detectedbox=PointcloudDetectedObj()
                 detectedbox.category="box"
                 detectedbox.pose=posestamped
+                detectedbox.points = array_to_ros2_points(points)
+                detectedbox.colors = array_to_ros2_points(colors)
                 response.objects.append(detectedbox)
             # print(response)
             return response
@@ -253,6 +272,8 @@ class Detection(Node):
                 transformed_points.append(newp)
             return transformed_points
 
+        start_time = time.time() 
+
         assert self.pointcloud!=None,"pointcloud detect error, no pointcloud msg is published, plz run 'camera_on'"
         self.get_logger().info("camera detecting ------------")
 
@@ -265,22 +286,38 @@ class Detection(Node):
         # faster to numpy
         points, colors = self.pointcloud_to_points_and_colors_optimized(self.pointcloud)
 
+        print("to numpy time consumption:")
+        print(time.time() - start_time)  
+        start_time = time.time() 
+
        # faster downsample
         points, colors = self.voxel_grid_downsample_optimized(points,colors, 0.01)
+
+        print("ds time consumption:")
+        print(time.time() - start_time)  
+        start_time = time.time() 
 
         points_upground, colors_upground = self.filter_points(points, colors, min_height = 0.08, max_height = 0.04)
         cluster = self.cluster_points(points_upground, colors_upground)
         self.deal_with_clustered_objs(cluster)
 
-        pointcloud2obj = create_pointcloud2(points_upground, colors_upground, "camera_depth_optical_frame", self.stamp)
-        self.pointcloud_pub1.publish(pointcloud2obj)
+        # pointcloud2obj = create_pointcloud2(points_upground, colors_upground, "camera_depth_optical_frame", self.stamp)
+        # self.pointcloud_pub1.publish(pointcloud2obj)
+
+        print("g1 time consumption:")
+        print(time.time() - start_time)  
+        start_time = time.time() 
 
         points_likelidar, colors_likelidar = self.filter_points(points, colors, min_height = request.height + 0.015, max_height = request.height - 0.015)
         cluster = self.cluster_points(points_likelidar, colors_likelidar)
         self.deal_with_clustered_box(cluster)
 
-        pointcloud2box = create_pointcloud2(points_likelidar, colors_likelidar, "camera_depth_optical_frame", self.stamp)
-        self.pointcloud_pub2.publish(pointcloud2box)
+        # pointcloud2box = create_pointcloud2(points_likelidar, colors_likelidar, "camera_depth_optical_frame", self.stamp)
+        # self.pointcloud_pub2.publish(pointcloud2box)
+
+        print("g2 time consumption:")
+        print(time.time() - start_time)  
+        start_time = time.time() 
 
         transformed_objects = self.transform_list(self.objects,_time,request.target_frame)
         transformed_boxes = self.transform_list(self.boxes,_time,request.target_frame)
@@ -300,6 +337,11 @@ class Detection(Node):
             self.get_logger().error(f"cannot transform to {request.target_frame} from 'lidar_link' with lookup time: {_time}")
 
         response.points = transform_points_to_frame(points_likelidar, t, self.stamp)
+
+
+        print("ending time consumption:")
+        print(time.time() - start_time)  
+        start_time = time.time() 
 
         return response
 
@@ -505,7 +547,7 @@ class Detection(Node):
             if len(points) > 90:
                 # self.get_logger().info(f"obj clustering function skip one detected box, point_num: {len(points)}")
                 pass
-            elif len(points) > 14:
+            elif len(points) > 6:
                 pose = PoseStamped()
                 pose.header.stamp = self.stamp
                 pose.header.frame_id = "camera_depth_optical_frame"
@@ -513,8 +555,11 @@ class Detection(Node):
                 pose.pose.position.y = avg_position[1]
                 pose.pose.position.z = avg_position[2]
                 self.get_logger().info(f"find obj_{cluster_id}")
-                self.publish_transform(f"obj_{cluster_id}", pose)
-                self.objects.append(pose)
+
+                # self.publish_transform(f"obj_{cluster_id}", pose)
+                # self.objects.append(pose)
+                self.objects.append({'ps': pose, 'points': points, 'colors': colors })
+
             else:
                 self.get_logger().info("too little points clustered, ignore once")
 
@@ -614,8 +659,9 @@ class Detection(Node):
                     pose.pose.orientation.w = quaternion[3]
 
                     self.get_logger().info("find one box")
-                    self.publish_transform("box", pose)
-                    self.boxes.append(pose)
+                    # self.publish_transform("box", pose)
+                    # self.boxes.append(pose)
+                    self.objects.append({'ps': pose, 'points': points, 'colors': colors})
 
                 else:
                     self.get_logger().warning(f"Error: Detected line length {line_length} does not match expected box dimensions (10-30).")
@@ -679,14 +725,38 @@ class Detection(Node):
                                                         transform_time)  
         except:
             self.get_logger().error(f"cannot transform to {to_frame} from {from_frame} with lookup time: {transform_time}")
-        for posestamped in list:
+        for row in list:
+            posestamped = row['ps']
+            points = row['points']
+            colors = row['colors']
             transformed_pose=tf2_geometry_msgs.do_transform_pose(posestamped.pose, transform)
             transformed_posestamped = PoseStamped()
             transformed_posestamped.header.stamp = posestamped.header.stamp 
             transformed_posestamped.header.frame_id = transform.header.frame_id 
             transformed_posestamped.pose = transformed_pose 
-            new_list.append(transformed_posestamped)
+
+            tpoints, tcolors = self.transform_points_and_colors(points, colors, transform)
+            # pointcloud = create_pointcloud2(tpoints, tcolors, "camera_depth_optical_frame", self.stamp)
+            new_list.append({'ps':transformed_posestamped, 'points': tpoints, 'colors': tcolors})
         return new_list
+    
+    def transform_points_and_colors(self, points, colors, transform):
+        transformed_points = []
+
+        for i in range(len(points)):
+            x, y, z = points[i]
+
+            point_pose = tf2_geometry_msgs.Pose()
+            point_pose.position.x = x
+            point_pose.position.y = y
+            point_pose.position.z = z
+
+            td_pointpose = tf2_geometry_msgs.do_transform_pose(point_pose, transform)
+
+            transformed_points.append([td_pointpose.position.x, td_pointpose.position.y, td_pointpose.position.z])
+
+        return transformed_points, colors
+
 
 @time_it
 def create_pointcloud2(points, colors, frame_id= None, stamp = None):

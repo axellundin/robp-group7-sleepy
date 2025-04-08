@@ -4,6 +4,6 @@ bool allow_reverse
 bool stop_at_goal
 float32 max_speed
 float32 max_turn_speed
-float32 threshold 0.05
+float32 threshold 0.04
 ---
 bool success

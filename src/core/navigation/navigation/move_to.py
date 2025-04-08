@@ -18,6 +18,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from navigation.move_to_logic import MovementComputation
 from _thread import start_new_thread 
 from builtin_interfaces.msg import Duration
+from rclpy.logging import set_logger_level
 
 class Move_to(Node):
 
@@ -28,6 +29,7 @@ class Move_to(Node):
         self.movement_computation = None
         self.should_continue = True
         self.all_done = True 
+
 
         group = ReentrantCallbackGroup()
         self.server = self.create_service(MoveTo, "MoveTo", self.move_callback, callback_group=group)
@@ -40,6 +42,7 @@ class Move_to(Node):
         self.tf_buffer = Buffer(cache_time=buffer_size)
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=False)
         self.alive = True  
+        self.last_id = 0
 
         self.marker_pub = self.create_publisher(Marker, '/visualization_marker', 10)
         self.next_waypoint_pub = self.create_publisher(PoseStamped, '/next_waypoint', 10)
@@ -51,9 +54,16 @@ class Move_to(Node):
             rclpy.spin_once(self, timeout_sec=0.001)
 
     def move_callback(self, request, response):
+        self.get_logger().debug(f"Move to callback with {request.path.poses=}")
         self.should_continue = False
+        self.last_id += 1 
+        my_id = self.last_id
+
         while not self.all_done:
             self.executor.spin_once(timeout_sec=0.01)
+        if not my_id == self.last_id:
+            self.get_logger().info(f"{"----"*100}Move to {my_id} cancelled{"----"*100}")
+            return response
         self.all_done = False
         #Fetching request
         pose_list = request.path.poses
@@ -69,6 +79,7 @@ class Move_to(Node):
 
         for goal_pose_index in range(len(pose_list)):
             goal_pose = pose_list[goal_pose_index] 
+            self.get_logger().debug(f"Using waypoint {goal_pose_index} at {goal_pose}")
             goal_pose.header.stamp = self.get_clock().now().to_msg()
             self.next_waypoint_pub.publish(goal_pose)
 
@@ -76,7 +87,7 @@ class Move_to(Node):
             marker.header.frame_id = "map"
             marker.header.stamp = self.get_clock().now().to_msg()
             marker.ns = "move_to"
-            marker.id = goal_pose_index
+            marker.id = 0
             marker.type = Marker.SPHERE
             marker.action = Marker.ADD
             point = Point()
@@ -92,7 +103,6 @@ class Move_to(Node):
             marker.color.r = 1.0
             marker.color.g = 1.0
             marker.lifetime = Duration(seconds=0)
-
 
             point_only = True
             stop_at_goal = False
@@ -122,7 +132,28 @@ class Move_to(Node):
             else:
                 self.movement_computation._move_state = "forward"
             self.movement_computation.start_yaw_ajustment = False
-            #Loop until request is cancel or goal is achieved'
+            #Loop until request is cancel or goal is achieved''
+
+            # # handle small adjustments
+            # tmp = self.transform(goal_pose)
+            # start_dist_to_goal = np.sqrt(tmp.position.x**2 + tmp.position.y**2)
+            # qx = tmp.orientation.x
+            # qy = tmp.orientation.y
+            # qz = tmp.orientation.z
+            # qw = tmp.orientation.w
+            # start_yaw=np.arctan2(2*(qw*qz+qx*qy),1-2*(qy**2+qz**2))
+            # if start_dist_to_goal <= dist_threshold and goal_pose_index == len(pose_list)-1 and point_only == True:
+            #     self.movement_computation.dist_threshold = 0.015
+            #     if start_dist_to_goal <= 0.015:
+            #         self.get_logger().warning('too close waypoint')
+            #         response.success = True
+            #         self.all_done = True
+            #         return response
+            # if start_dist_to_goal <= dist_threshold and start_yaw <= self.movement_computation.yaw_threshold and goal_pose_index == len(pose_list)-1 and point_only == False:
+            #     self.get_logger().warning('too small yaw adjustment waypoint')
+            #     response.success = True
+            #     self.all_done = True
+            #     return response
 
             self.should_continue = True
             while self.should_continue:
@@ -139,6 +170,7 @@ class Move_to(Node):
                 self._pub_vel.publish(vel)
 
         if not self.should_continue: 
+            self.get_logger().debug("Move to cancelled")
             response.success = False 
             self.all_done = True
             return response
@@ -156,7 +188,7 @@ class Move_to(Node):
         return response
     
     def transform(self,goal_pose):
-        self.get_logger().info("transforming")
+        #self.get_logger().info("transforming")
         _time = rclpy.time.Time(seconds=0)#self.get_clock().now().to_msg()#rclpy.time.Time()
 
         try:

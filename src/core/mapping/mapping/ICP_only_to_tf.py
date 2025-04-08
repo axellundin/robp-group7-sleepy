@@ -43,7 +43,7 @@ def convert_scan_to_open3d(scan_msg):
     filtered_points = points[mask]
 
     # KDTree-based neighbor filtering
-    radius = 0.2  # 20 cm neighborhood radius
+    radius = 0.03  # 20 cm neighborhood radius
     kdtree = cKDTree(filtered_points)
     to_keep = np.ones(filtered_points.shape[0], dtype=bool)
 
@@ -114,7 +114,7 @@ class IcpMappingNode(Node):
         group = ReentrantCallbackGroup()
         # Subscribe to the LiDAR scan topic
         self.subscription = self.create_subscription(
-            LaserScan, '/scan', self.scan_callback, 10, callback_group=group)
+            LaserScan, '/scan', self.scan_callback, 1, callback_group=group)
         
         self.ref_scan_pub = self.create_publisher(PointCloud2, '/reference_scan', 10)
         self.new_scan_pub = self.create_publisher(PointCloud2, '/new_scan', 10)
@@ -157,10 +157,16 @@ class IcpMappingNode(Node):
         self.reference_scan = None
         self.count = 0
         self.icp_publish_counter = 0
+        self.scan_counter = 0
+        self.pc_counter = 0
+        self.pc_buffer_size = 10
+        self.merged_pc = None
+        self.bad_match_counter = 0
 
 
     def scan_callback(self, msg):
         """Transforms new scan to map frame, performs ICP, and updates transform."""
+        self.scan_counter += 1.0
 
         if self.latest_correction is None:
             self.latest_correction = np.eye(4)
@@ -170,78 +176,68 @@ class IcpMappingNode(Node):
 
         new_scan = convert_scan_to_open3d(msg)
 
-        # rclpy.spin_once(self, timeout_sec=0.001)  # Process TF messages
-
-        # Get transform from lidar → odom (static transform)
-        # try:
-        #     tf_odom_lidar = self.tf_buffer.lookup_transform("odom", "lidar_link", rclpy.time.Time(seconds=0))
-        # except tf2_ros.LookupException:
-        #     self.get_logger().warn("TF Lookup failed: Could not get odom → lidar_link transform.")
-        #     self.publish_icp_transform(self.latest_correction if self.has_correction else np.eye(4), msg)
+        # if self.pc_counter < self.pc_buffer_size:
+        #     if self.merged_pc is None:
+        #         self.merged_pc = new_scan
+        #         self.pc_counter += 1
+        #     else:
+        #         self.merged_pc += new_scan
+        #         self.pc_counter += 1
+        #     self.publish_icp_transform(self.latest_correction, msg)
         #     return
         
-        # # rclpy.spin_once(self, timeout_sec=0.001)
+        # if self.merged_pc is None:
+        #     print("self.merged_pc is None at the start")
+        #     self.get_logger().warn("self.merged_pc is None")
+        # else:
+        #     print("safe first passage")
 
-        # try:
-        #     tf_map_odom = self.tf_buffer.lookup_transform("map", "odom", rclpy.time.Time(seconds=0))
-        #     # Convert TransformStamped to 4x4 matrix
-        #     T_map_odom = self.transform_to_matrix(tf_map_odom)
-        #     self.has_correction = True  # Mark that we have a correction
-        # except tf2_ros.LookupException:
-        #     self.get_logger().warn("TF Lookup failed: Using identity transform for map → odom.")
-        #     T_map_odom = np.eye(4)  # Identity transform if lookup fails
         
+        # self.get_logger().info(f"self.merged_pc outside merger is {self.merged_pc}")
 
-        # # Convert TransformStamped to 4x4 matrix
-        # T_odom_lidar = self.transform_to_matrix(tf_odom_lidar)
 
-        # # Compute final transform: T_map_scan = T_map_odom * T_odom_lidar
-        # T_map_scan = np.dot(T_map_odom, T_odom_lidar)
-
-        # # Single lookup: Get transform from lidar → map
-        # try:
-        #     tf_map_lidar = self.tf_buffer.lookup_transform("map", "lidar_link", rclpy.time.Time(seconds=0))
-        #     T_map_lidar = self.transform_to_matrix(tf_map_lidar)
-        #     self.has_correction = True  # Mark that we have a correction
-        # except tf2_ros.LookupException and tf2_ros.ConnectivityException:
-        #     self.get_logger().warn("TF Lookup failed: Using identity transform for map → lidar_link.")
-        #     T_map_lidar = np.eye(4)  # Use identity transform if lookup fails
-
+        
         if self.tf_buffer.can_transform("map", "lidar_link", rclpy.time.Time(seconds=0)):
             tf_map_lidar = self.tf_buffer.lookup_transform("map", "lidar_link", rclpy.time.Time(seconds=0))
             # print(tf_map_lidar)
             T_map_lidar = self.transform_to_matrix(tf_map_lidar)
         else:
             self.get_logger().warn("TF Lookup failed: skipping update")
-            self.icp_publish_counter += 1
-            if self.icp_publish_counter % 1 == 0:
+            self.icp_publish_counter += 1.0
+            if self.icp_publish_counter % 1.0 == 0.0:
                 self.publish_icp_transform(self.latest_correction, msg)
             return
             
         # Transform new scan to the map frame
         new_scan.transform(T_map_lidar)
 
-        if self.reference_scan is None:
+        if self.reference_scan is None: #or self.scan_counter % 100.0 == 0.0:
             # Store the first scan in the map frame
             self.reference_scan = new_scan
             # publishes ref scan in map frame
+            self.get_logger().info("new reference")
             ref_msg = open3d_to_pointcloud2(self.reference_scan)
             self.ref_scan_pub.publish(ref_msg)
             # Keeps publishing constant
             self.publish_icp_transform(self.latest_correction, msg)
+            # self.pc_counter = 0
+            # self.merged_pc = None
             return
-        # if self.count == 5:
-        # new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(0, 255, 0))  # green
-        # self.new_scan_pub.publish(new_msg)
+        # ref_msg = open3d_to_pointcloud2(self.reference_scan)
+        # self.ref_scan_pub.publish(ref_msg)
+        
+        # if self.count == 10:
+        new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(0, 255, 0))  # green
+        self.new_scan_pub.publish(new_msg)
 
 
         # ICP Convergence threshold
-        threshold = 0.1
+        threshold = 0.06
         # Run ICP: Align `new_scan` (source) to `accumulated_map` (target)
         icp_result = o3d.pipelines.registration.registration_icp(
-            self.reference_scan, new_scan, threshold, np.eye(4),
+            new_scan, self.reference_scan, threshold, np.eye(4),
             o3d.pipelines.registration.TransformationEstimationPointToPoint(),
-            o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=2000))
+            o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=12000))
         
         # Check if ICP was successful
         # print(icp_result.fitness)
@@ -251,10 +247,10 @@ class IcpMappingNode(Node):
         # self.get_logger().info(f"ICP inlier RMSE: {icp_result.inlier_rmse}")
         # print(f"ICP inlier RMSE: {icp_result.inlier_rmse}")
         self.get_logger().info(f'inlier: {icp_result.inlier_rmse}, fitness: {icp_result.fitness}',)
-        if icp_result.inlier_rmse > 0.01 or icp_result.fitness < 0.6:
+        if icp_result.inlier_rmse > 0.03 or icp_result.fitness < 0.8:
             #self.get_logger().warn("ICP registration did not match well, skipping update.")
-            self.icp_publish_counter += 1
-            if self.icp_publish_counter % 1 == 0:
+            self.icp_publish_counter += 1.0
+            if self.icp_publish_counter % 1.0 == 0.0:
                 self.publish_icp_transform(self.latest_correction, msg)
             return
 
@@ -271,14 +267,23 @@ class IcpMappingNode(Node):
         # self.accumulated_map = self.accumulated_map.voxel_down_sample(voxel_size=0.05)
 
         # Publish the correction transform to `/tf` instead of `/icp_transform`
-        self.icp_publish_counter += 1
-        if self.icp_publish_counter % 1 == 0:
+        self.icp_publish_counter += 1.0
+        if self.icp_publish_counter % 1.0 == 0.0:
             self.get_logger().info("uppdate")
             self.publish_icp_transform(self.latest_correction, msg)
             self.count = self.count + 1
-            if self.count == 5:
-                new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(255, 0, 0))  #red
-                self.new_scan_icp_pub.publish(new_msg)
+            # if self.count == 10:
+            # if self.merged_pc is not None:
+            new_msg = open3d_to_colored_pointcloud2(new_scan, rgb_color=(255, 0, 0))  #red
+                # print("Soemtimes it is not None at last publish")
+            # else:
+            #     print("merged is None at last publish")
+            #     print(self.merged_pc)
+            #     print("and pc counter is:")
+            #     print(self.pc_counter)
+            self.new_scan_icp_pub.publish(new_msg)
+            self.merged_pc = None
+            self.pc_counter = 0
 
     def transform_to_matrix(self, tf_msg):
         """Converts a ROS2 TransformStamped to a 4x4 transformation matrix."""
