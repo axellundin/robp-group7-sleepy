@@ -55,7 +55,7 @@ class MapGenerator(Node):
         def publish_transform(child_frame_id, pose, father_frame_id = 'map'):
             transform = TransformStamped()
 
-            transform.header.stamp = self.get_clock().now()
+            # transform.header.stamp = self.get_clock().now()
 
             transform.header.frame_id = father_frame_id
             transform.child_frame_id = child_frame_id
@@ -256,7 +256,7 @@ class MapGenerator(Node):
 
     def request_camera_srv(self):
         request = CameraDetect.Request()
-        request.height = float(0)
+        request.height = float(0.03)
         request.target_frame = "map"
         future = self.cameraclient.call_async(request)
 

@@ -205,10 +205,11 @@ class path_planner:
             self.x_values.append(current_node.x)
             self.y_values.append(current_node.y)
             current_node = current_node.parent
+        
         return self.grid, True
     
     def waypoint_creator(self, rgbd, grid):
-        print('Creating waypoints to next exploration position')
+        #print('Creating waypoints to next exploration position')
         x_values = self.x_values.copy()
         y_values = self.y_values.copy()
         waypoints = []
@@ -236,7 +237,7 @@ class path_planner:
                     if valid_waypoint == "succes":
                         next_waypoint = (x_values.pop(-1), y_values.pop(-1))
                 waypoints.append(next_waypoint)
-        print(f'Number of waypoints: {len(waypoints)}')
+        #print(f'Number of waypoints: {len(waypoints)}')
         made_it_all_the_way = True
         return waypoints, made_it_all_the_way
 

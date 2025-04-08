@@ -154,6 +154,9 @@ class YoloDetector(Node):
                 detected_object.category=cls 
                 detected_object.category_num = Int32()
                 detected_object.category_num = int(cls_num)
+                whateveriam = Point()
+                detected_object.points = [whateveriam]
+                detected_object.colors = [whateveriam]
 
                 if cropped_image is None:
                     detected_object.image =Image()
@@ -270,12 +273,12 @@ class YoloDetector(Node):
                     transform_matrix[2, 3] = translation.z
 
                     X_c, Y_c, Z_c = self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.16)
-                    X_topleft,Y_topleft,Z_topleft=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_topleft, y_topleft, z)
-                    X_bottomright,Y_bottomright,Z_bottomright=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_bottomright, y_bottomright, z)
+                    # X_topleft,Y_topleft,Z_topleft=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_topleft, y_topleft, z)
+                    # X_bottomright,Y_bottomright,Z_bottomright=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_bottomright, y_bottomright, z)
 
                     X_c2,Y_c2,Z_c2=transform_point(X_c,Y_c,Z_c,from_frame='arm_base_link',to_frame=target_frame)# take meter unit
-                    X_topleft2,Y_topleft2,Z_topleft2=transform_point(X_topleft,Y_topleft,Z_topleft,from_frame='arm_base_link',to_frame=target_frame)
-                    X_bottomright2,Y_bottomright2,Z_bottomright2=transform_point(X_bottomright,Y_bottomright,Z_bottomright,from_frame='arm_base_link',to_frame=target_frame)
+                    X_topleft2,Y_topleft2,Z_topleft2=x_topleft, y_topleft, 0
+                    X_bottomright2,Y_bottomright2,Z_bottomright2=x_bottomright, y_bottomright, 0
                 else:
                     X_c,Y_c,Z_c=from_2d_to_3d(x,y,z,camera_info["focal"],camera_info["c_x"],camera_info["c_y"])# the point in the robot camera frame，mm unit
                     X_topleft,Y_topleft,Z_topleft=from_2d_to_3d(x_topleft,y_topleft,z,camera_info["focal"],camera_info["c_x"],camera_info["c_y"])
@@ -299,6 +302,9 @@ class YoloDetector(Node):
 
             cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
             
+
+            if camera_info['frame'] == "arm_camera": 
+                cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
             debug_time=time.time()
             r = self.model(cv_image,
                            device=0,

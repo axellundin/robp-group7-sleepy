@@ -32,7 +32,6 @@ class PathPublisher(Node):
         try:
             trans = self.buffer.lookup_transform('odom', 'base_link', rclpy.time.Time())
         except Exception as ex:
-            self.get_logger().error(f'Could not transform odom to base_link: {ex}')
             return
 
         pose = PoseStamped()

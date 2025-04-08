@@ -52,7 +52,6 @@ class Explorer_node(Node):
         self.time_look_from_point_yaw_rejected = 0
         self.time_to_high_claim = 0
 
-
         self.tot_rejected_points = 0
 
         # distance requirement to the look-at point

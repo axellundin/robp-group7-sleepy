@@ -197,7 +197,7 @@ class LocalOccupancyMap(Node):
 
     def gaussian_resample(self, grid):
         img_from_grid = grid.astype(np.uint8)
-        blurred = cv2.GaussianBlur(img_from_grid, (21,21), 0)
+        blurred = cv2.GaussianBlur(img_from_grid, (17,17), 0)
         
         thres = 1
         temp_grid = blurred

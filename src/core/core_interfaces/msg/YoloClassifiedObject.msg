@@ -4,3 +4,5 @@ geometry_msgs/PoseStamped bottomright_point #position of object bottomright_poin
 string category  #name of category
 int32 category_num    
 sensor_msgs/Image image #cropped image of the object inside the box  
+geometry_msgs/Point[] points  
+geometry_msgs/Point[] colors  

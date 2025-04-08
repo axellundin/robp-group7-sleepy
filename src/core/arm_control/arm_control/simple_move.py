@@ -63,7 +63,7 @@ class SimpleMove(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(encoder_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=0.5):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=0.25):
                 # Send again 
                 self.publisher.publish(msg)
                 latest_command = self.get_clock().now()

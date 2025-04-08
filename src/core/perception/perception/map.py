@@ -4,18 +4,22 @@ from nav_msgs.msg import OccupancyGrid
 from std_msgs.msg import Header
 import numpy as np
 import time
-from geometry_msgs.msg import Point, Pose, PoseStamped
+from geometry_msgs.msg import Point, Pose, PoseStamped, TransformStamped
+from sensor_msgs.msg import PointCloud2
 from core_interfaces.msg import YoloClassifiedObject, PointcloudDetectedObj
 from core_interfaces.srv import YoloImageDetect
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from visualization_msgs.msg import Marker
 from builtin_interfaces.msg import Duration
+import tf2_geometry_msgs
 
 import cv2
 import os
 import math
 import csv
+
+from .camera_processing import create_pointcloud2
 
 time_it_enable = True
 def time_it(func):
@@ -65,6 +69,7 @@ class MapNode(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.object_pub = self.create_publisher(Marker, 'visualization_marker2', 10)
+        self.pointcloud_visualizer = self.create_publisher(PointCloud2, '/camera/camera/depth/color/detection_result_pointcloud', 10)
 
         #params
         self.avoid_obj_threshold = 0.05 # if the distance between obj and obstacle is less than this threshold, we skip this obj
@@ -426,6 +431,53 @@ class MapNode(Node):
         return ox, oy, tx, ty, gx, gy, rx, ry
 
     def key_strategy_lite(self):
+        def points_list_to_np_array(points_list):
+            points_array = []
+            for point in points_list:
+                points_array.append([point.x, point.y, point.z])
+            points_np_array = np.array(points_array)
+            return points_np_array
+        
+        def calculate_transform(pose1, pose2):
+            translation = [pose2.position.x - pose1.position.x,
+                        pose2.position.y - pose1.position.y,
+                        pose2.position.z - pose1.position.z]
+            
+            q1 = [pose1.orientation.x, pose1.orientation.y, pose1.orientation.z, pose1.orientation.w]
+            q2 = [pose2.orientation.x, pose2.orientation.y, pose2.orientation.z, pose2.orientation.w]
+            
+            q_diff = self.quaternion_multiply(q2, self.quaternion_inverse(q1))
+
+            transform = TransformStamped()
+            transform.transform.translation.x = translation[0]
+            transform.transform.translation.y = translation[1]
+            transform.transform.translation.z = translation[2]
+            
+            transform.transform.rotation.x = q_diff[0]
+            transform.transform.rotation.y = q_diff[1]
+            transform.transform.rotation.z = q_diff[2]
+            transform.transform.rotation.w = q_diff[3]
+            
+            return transform
+        
+        def transform_points_and_colors(points, colors, transform):
+            transformed_points = []
+
+            for i in range(len(points)):
+                x, y, z = points[i]
+
+                point_pose = tf2_geometry_msgs.Pose()
+                point_pose.position.x = x
+                point_pose.position.y = y
+                point_pose.position.z = z
+
+                td_pointpose = tf2_geometry_msgs.do_transform_pose(point_pose, transform)
+
+                transformed_points.append([td_pointpose.position.x, td_pointpose.position.y, td_pointpose.position.z])
+
+            return transformed_points, colors
+
+        
         process_result = []
         box_from_pc = []
         if self.pointcloud_msg_list == None:
@@ -440,7 +492,7 @@ class MapNode(Node):
             if o.category == "box":
                 box_from_pc.append(o)
             else:
-                cloest_distance = 0.1
+                cloest_distance = 0.15
                 matched_yolo_result = None
                 for p in self.yolo_msg_list:
                     if p.category != "box": 
@@ -449,8 +501,10 @@ class MapNode(Node):
                             cloest_distance = distance 
                             matched_yolo_result = p
                             matched_yolo_result.center_point.pose = o.pose.pose
+                            matched_yolo_result.points = o.points 
+                            matched_yolo_result.colors = o.colors
                 if matched_yolo_result != None:
-                    print(cloest_distance)
+                    # print(cloest_distance)
                     self.get_logger().info(f"append one yolo result, category {matched_yolo_result.category}")
                     process_result.append(matched_yolo_result)
                 else:
@@ -465,8 +519,10 @@ class MapNode(Node):
                         cloest_distance = distance 
                         matched_box = p
                         matched_box.center_point.pose = o.pose.pose
+                        matched_box.points = o.points 
+                        matched_box.colors = o.colors
                 if matched_box != None:
-                    print(cloest_distance)
+                    # print(cloest_distance)
                     self.get_logger().info(f"append one yolo result, category {matched_box.category}")
                     process_result.append(matched_box)
                 else:
@@ -483,69 +539,39 @@ class MapNode(Node):
                     cloest_distance = distance
                     matched_index = i
             if matched_index != None:
-                self.required_map[matched_index][1] = round(r.center_point.pose.position.x,2)
-                self.required_map[matched_index][2] = round(r.center_point.pose.position.y,2)
+                self.required_map[matched_index][1] = round(r.center_point.pose.position.x,3)
+                self.required_map[matched_index][2] = round(r.center_point.pose.position.y,3)
+                self.required_map[matched_index][4].append({'pose': r.center_point.pose, 'points': points_list_to_np_array(r.points), 'colors': points_list_to_np_array(r.colors)})
             else:
-                a = [r.category,round(r.center_point.pose.position.x,2),round(r.center_point.pose.position.y,2),0]
+                a = [r.category,round(r.center_point.pose.position.x,3),round(r.center_point.pose.position.y,3),0 ,[{'pose': r.center_point.pose, 'points': points_list_to_np_array(r.points), 'colors': points_list_to_np_array(r.colors)}]]
                 self.required_map.append(a)
 
+        whole_points = None
+        whole_colors = None
         for i, row in enumerate(self.required_map):
-            delete_marker = Marker()
-            delete_marker.header.frame_id = "map"
-            delete_marker.header.stamp = self.get_clock().now().to_msg()
-            delete_marker.ns = "objects_or_boxes"
-            delete_marker.id = i
-            delete_marker.action = Marker.DELETE  
-            self.object_pub.publish(delete_marker)
+            all_points = row[4][-1]['points']
+            all_colors = row[4][-1]['colors']
+            base_pose = row[4][-1]['pose']
+            for dict in row[4][-2:-11:-1]:  # enumerate
+                tf = calculate_transform(dict['pose'], base_pose)
+                tpoints, tcolors = transform_points_and_colors(dict['points'], dict['colors'], tf)
+                self.get_logger().warning(tpoints)
+                all_points = np.vstack((all_points, tpoints))
+                all_colors = np.vstack((all_colors, tcolors))
+            # assert len(all_points) == len(all_colors)
 
-            category = row[0]
-            marker = Marker()
-            marker.header.frame_id = "map"
-            marker.header.stamp = self.get_clock().now().to_msg()
-            marker.ns = "objects_or_boxes"
-            marker.id = i
-            marker.pose = PoseStamped().pose
-            point = Point()
-            point.x = row[1]
-            point.y = row[2]
-            point.z = 0.0
-            marker.points.append(point)
-            marker.pose.position.x = row[1]
-            marker.pose.position.y = row[2]
-            marker.pose.position.z = 0.025
-            marker.pose.orientation.w = 1.0
-            marker.pose.orientation.x = 0.0
-            marker.pose.orientation.y = 0.0
-            marker.scale.x = 0.05
-            marker.scale.y = 0.05
-            marker.scale.z = 0.05
-            marker.color.a = 1.0
+            whole_points = np.vstack((whole_points, all_points))
+            whole_colors = np.vstack((whole_colors, all_colors))
 
-            marker.lifetime = Duration(seconds=100000000)
-            if category == "cube":
-                marker.color.g = 1.0
-                marker.type = Marker.CUBE
-            elif category == "ball":
-                marker.color.r = 1.0
-                marker.type = Marker.SPHERE
-            elif category == "toy":
-                marker.color.b = 1.0
-                marker.type = Marker.CYLINDER
-            elif category == "box": 
-                marker.color.r = 0.2
-                marker.color.g = 0.2
-                marker.color.b = 0.2
-                marker.type = Marker.CUBE
-                marker.scale.x = 0.25
-                marker.scale.y = 0.15
-                marker.scale.z = 0.10
-                marker.pose.position.z = 0.05
-            
-            self.object_pub.publish(marker)
+        if whole_points != None:
+            pointcloud = create_pointcloud2(whole_points, whole_colors, "camera_depth_optical_frame", self.get_clock().now().to_msg())
+            self.pointcloud_visualizer.publish(pointcloud)
+        else:
+            self.get_logger().info("there is no point to visualize...")
 
         with open('/home/sleepy/robp-group7-sleepy/yolo/requiredmap.tsv', 'w', newline='') as file:
             writer = csv.writer(file, delimiter='\t')  
-            writer.writerows(self.required_map)  
+            writer.writerows([row[:4] for row in self.required_map])  
 
         return process_result
 
