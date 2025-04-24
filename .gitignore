@@ -3,3 +3,5 @@ log/*
 build/*
 install/*
 yoloenv/*
+venv-icp/*
+*.pyc
