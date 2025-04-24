@@ -24,6 +24,7 @@ setup(
             'mapping_corrected_path=mapping.corrected_path_publisher:main',
             'icp_to_tf_only=mapping.ICP_only_to_tf:main',
             'local_occupancy_map=mapping.local_occupancy_map:main',
+            'probabilistic_mapping=mapping.probabilistic_mapping:main',
         ],
     },
 )

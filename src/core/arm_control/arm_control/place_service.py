@@ -14,6 +14,7 @@ import numpy as np
 from rclpy.executors import MultiThreadedExecutor
 from core_interfaces.srv import MoveTo
 from tf2_ros import Buffer, TransformListener
+from tf2_geometry_msgs import do_transform_pose
 
 
 class PlaceService(Node):
@@ -27,6 +28,8 @@ class PlaceService(Node):
         
         # Define joint positions
         self.joint_movement_time = 1000
+        self.joint_velocity = 10
+        self.min_joint_movement_time = 500
         self.gripper_open_position = [3500, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.up_position = [-1, 12000, 12000, 12000, 12000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.place_position = [-1, 12000, 12000, 16000, 8000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
@@ -94,15 +97,31 @@ class PlaceService(Node):
             self.see_box = True
             self.box_pose = msg
 
+    def compute_joint_transition_time(self, desired_joint_values):
+        if self.latest_joint_angles is None:
+            return desired_joint_values
+        current_joint_values = self.latest_joint_angles
+        speeds = []
+        for i in range(6):
+            if desired_joint_values[i] == -1:
+                speeds.append(self.joint_movement_time)
+                continue
+            abs_diff = abs(current_joint_values[i] - desired_joint_values[i]) 
+            speeds.append(max(int(abs_diff / self.joint_velocity), self.min_joint_movement_time))
+
+        return desired_joint_values[:6] + speeds
+    
     def move_arm_to_joint_values(self, joint_values):
         msg = Int16MultiArray()
-        msg.data = joint_values
+        msg.data = self.compute_joint_transition_time(joint_values)
+
         self.joint_angles_publisher.publish(msg)
         self.get_logger().info('Moving arm to joint values...')
         latest_command = self.get_clock().now()
 
         while not self.check_joints(joint_values):
             if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=5):
+                msg.data = self.compute_joint_transition_time(joint_values)
                 self.joint_angles_publisher.publish(msg)
                 latest_command = self.get_clock().now()
             time.sleep(0.01)
@@ -172,6 +191,47 @@ class PlaceService(Node):
         result = future.result()
         self.get_logger().info(f'Move_to result: {result}')
         return result.success
+    
+    def construct_pose_in_frame(self, x, y, z, theta, frame_to, frame_from=None):
+        pose = PoseStamped() 
+        pose.header.frame_id = frame_to 
+        pose.header.stamp = self.get_clock().now().to_msg() 
+        pose.pose.position.x = x 
+        pose.pose.position.y = y  
+        pose.pose.position.z = z  
+        pose.pose.orientation.z = np.sin(theta / 2.0)
+        pose.pose.orientation.w = np.cos(theta / 2.0)
+
+        if frame_from is not None: 
+            transform = self.tf_buffer.lookup_transform(frame_to, frame_from, rclpy.time.Time(seconds=0))
+            pose.pose = do_transform_pose(pose.pose, transform)
+            pose.header.frame_id = frame_to
+        return pose
+
+    def move_to_position(self, box_pose):
+        response = MoveArm.Response()
+        x, y = box_pose.pose.position.x, box_pose.pose.position.y
+        rho = (x**2 + y**2)**0.5
+        if rho > 0.35 or max(x,-y) < 0.15 or y > 0.15: 
+            return False
+
+        # Compute alpha using formula
+        alpha = (1.3 - 0.2) * (rho - 0.14) / (0.35 - 0.14) + 0.2
+        phi = np.arctan2(-y, x)
+        # Publish the target pose 
+        self.get_logger().info('Publishing target pose...')
+        request = MoveArm.Request()
+        request.pose = box_pose
+        request.pose.pose.position.z = -0.02
+        request.alpha.data = alpha
+        request.phi.data = phi
+
+        future = self.move_arm_client.call_async(request)
+        while not future.done():
+            self.get_logger().info('Waiting for move arm response...')
+            time.sleep(0.1)
+        return True 
+        
             
     def place_callback(self, request, response):
         self.get_logger().info('Starting place callback')
@@ -191,7 +251,7 @@ class PlaceService(Node):
                         break 
                     else:
                         self.get_logger().info('No box found, trying again...')
-
+            
                 if not self.see_box: 
                     if viewing_position == self.backup_viewing_position:
                         self.get_logger().info('No box found, aborting...')
@@ -200,39 +260,49 @@ class PlaceService(Node):
                         return response
                 else: 
                     break
+            
             if self.check_if_placement_position_is_reachable(self.box_pose.pose.position.x, self.box_pose.pose.position.y):
                 break
             else:
                 self.small_adjustment(self.box_pose.pose.position.x, self.box_pose.pose.position.y)
                 self.get_logger().info('Placement position is not reachable, trying again...')
             
+        #     # Move to that position and check again. 
+        #     box_pose = self.box_pose
+        #     self.get_logger().info(f'Box position: {box_pose.pose.position}')
+
+        #     # Check if placement in reachable position
+        #     self.move_to_position(box_pose)
+            
+        #     time.sleep(2)
+        #     if self.see_box:
+        #         break 
+    
+        # while True: 
+        #     while not self.see_box:
+        #             time.sleep(0.1)
+        #     if self.check_if_placement_position_is_reachable(self.box_pose.pose.position.x, self.box_pose.pose.position.y):
+        #         break
+        #     else:
+        #         self.move_arm_to_joint_values(self.viewing_position)
+        #         while not self.see_box:
+        #             time.sleep(0.1)
+        #         self.small_adjustment(self.box_pose.pose.position.x, self.box_pose.pose.position.y)
+        #         self.get_logger().info('Placement position is not reachable, trying again...')
+        #         while not self.see_box:
+        #             time.sleep(0.1)
+
+        #         time.sleep(1)
+
         box_pose = self.box_pose
         self.get_logger().info(f'Box position: {box_pose.pose.position}')
 
         # Check if placement in reachable position
-        x, y = box_pose.pose.position.x, box_pose.pose.position.y 
-        rho = (x**2 + y**2)**0.5
-        if rho > 0.35 or max(x,-y) < 0.15 or y > 0.15: 
+        if not self.move_to_position(box_pose):
             self.get_logger().info('Placement position is not reachable, aborting...')
             self.move_arm_to_joint_values(self.up_position)
             response.success = False
             return response 
-
-        # Compute alpha using formula
-        alpha = (1.3 - 0.2) * (rho - 0.14) / (0.35 - 0.14) + 0.2
-        phi = np.arctan2(-y, x)
-        # Publish the target pose 
-        self.get_logger().info('Publishing target pose...')
-        request = MoveArm.Request()
-        request.pose = box_pose
-        request.pose.pose.position.z = -0.02
-        request.alpha.data = alpha
-        request.phi.data = phi
-
-        future = self.move_arm_client.call_async(request)
-        while not future.done():
-            self.get_logger().info('Waiting for move arm response...')
-            time.sleep(0.1)
         
         # Open gripper
         self.get_logger().info('Opening gripper...')

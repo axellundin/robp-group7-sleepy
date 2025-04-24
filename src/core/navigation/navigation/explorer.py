@@ -32,12 +32,12 @@ class Explorer_node(Node):
         self.padding = 28 #cm
         self.max_detection_range = 100 #cm
         self.max_detection_range_grid_coordinates = np.round((self.max_detection_range)/self.resolution, 0)
-        self.optimal_detection_distance = 80 #cm
+        self.optimal_detection_distance = 70 #cm
         self.camera_angle = np.pi/3
         self.approximate_area_size = 130 #cm
         self.accepted_exploration_ratio_per_area = 0.9
 
-        self.full_rotation_limit = 0.35
+        self.full_rotation_limit = 0.38
         self.nr_tries_full_rotation = 50
         self.nr_tries_full_area = 30
         self.minimum_accepted_exploration_ratio_full_rotation = 0.8
@@ -79,7 +79,7 @@ class Explorer_node(Node):
         self.look_from_points_nr_dist_rejected_threshold = 10 # itterations before increment accepted dist
         self.tot_look_from_points_nr_dist_rejected = 0
         self.look_from_points_nr_dist_rejected = 0
-        self.increment_threshold_dist_look_from_point = np.round((self.approximate_area_size/13)/self.resolution,0) # cells
+        self.increment_threshold_dist_look_from_point = np.round((self.approximate_area_size/10)/self.resolution,0) # cells
         self.look_from_points_extra_dist_threshold = self.increment_threshold_dist_look_from_point
         self.look_from_points_dist_threshold = None
 
@@ -92,10 +92,10 @@ class Explorer_node(Node):
         self.look_from_points_yaw_threshold = self.increment_threshold_yaw_look_from_point
 
         # exploration ratio requirement
-        self.nr_to_high_claim_threshold = 4 # itterations before reduce accepted exploration ratio
+        self.nr_to_high_claim_threshold = 3 # itterations before reduce accepted exploration ratio
         self.nr_to_high_claim_rejected = 0
         self.tot_nr_to_high_claim_rejected = 0
-        self.reduction_accepted_exploration_ratio  = 0.5 # cells
+        self.reduction_accepted_exploration_ratio  = 0.8 # cells
         
         approximate_circular_area_covering_entire_area = ((np.sqrt(2)*self.approximate_area_size/2)**2)*np.pi
         circular_area_covered_by_camera = np.pi*self.max_detection_range**2
@@ -112,6 +112,16 @@ class Explorer_node(Node):
         self.areas = []
 
         self.status = ""
+
+        # obstacle avoidance
+        self.local_occupancy_map = None
+        self.current_waypoint = None
+        self.care_about_collisions = True 
+        self.local_occupancy_update_time = None
+        self.should_move = True 
+        self.get_logger().debug(f"\033[93m {self.should_move=} \033[0m")
+        # DEBUG -----
+        self.collistion_check_counter = 0
         
         group2 = ReentrantCallbackGroup()
         group3 = ReentrantCallbackGroup()
@@ -121,12 +131,16 @@ class Explorer_node(Node):
         self.path_planner_grid = None
         self.safe_space_grid = None
 
+        self.explorer_grid_with_obs = None
+        self.path_planner_grid_with_obs = None
+        self.safe_space_grid_with_obs = None
+
         # creating publisher for path grid, exploration grid and area division
         self.path_grid_pub = self.create_publisher(OccupancyGrid, '/path_grid_map', 10, callback_group=group2)
         self.explore_grid_pub = self.create_publisher(OccupancyGrid, '/explore_grid_map', 10, callback_group=group3)
         self.area_grid_pub = self.create_publisher(OccupancyGrid, '/area_grid_map', 10, callback_group=group4)
-        self.local_occupancy_map_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map', self.local_occupancy_map_callback, 10, callback_group=group4)
-        # creating grid map client
+        self.local_occupancy_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map', self.local_occupancy_callback, 10, callback_group=group2)
+        self.next_waypoint_sub = self.create_subscription(PoseStamped, '/next_waypoint', self.next_waypoint_callback, 10, callback_group=group2)        # creating grid map client
         self.grid_fill_cli = self.create_client(GridCreator,"fill_in_workspace")
         while not self.grid_fill_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('grid filler service not available, waiting again...')
@@ -137,7 +151,9 @@ class Explorer_node(Node):
             self.get_logger().info('move service not available, waiting again...')
         
         # creating camera client
-        self.camera_client = self.create_client(YoloImageDetect, 'yolo_image_detect', callback_group=group2)
+        # self.camera_client = self.create_client(YoloImageDetect, 'yolo_image_detect', callback_group=group2)
+        self.camera_client = self.create_client(YoloImageDetect, 'final_detect', callback_group=group2)
+        # ros2 run perception mapg, ros2 run perception camera_processing, ros2 run yolo_detection yolo_detector, odometry, 
         self.object_pub = self.create_publisher(Marker, 'visualization_marker', 10)
 
         while not self.camera_client.wait_for_service(timeout_sec=10):
@@ -166,9 +182,6 @@ class Explorer_node(Node):
         self.origin = [flat_grid.grid.info.origin.position.x, flat_grid.grid.info.origin.position.y]
         grid = np.array(flat_grid.grid.data,dtype=np.float64).reshape((flat_grid.grid.info.height, flat_grid.grid.info.width))
         return grid
-        
-    def local_occupancy_map_callback(self, msg):
-        self.local_occupancy_map = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
 
     # Initial: divide the grid map into areas
     def divide_grid_areas(self):
@@ -236,10 +249,11 @@ class Explorer_node(Node):
             return "All explored", None, None, None, full_turn
         else:
             area = self.current_exploring_area
-
+        self.explorer_grid_with_obs = self.explorer_grid.copy()
+        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
         for row in range(area.y_start,area.y_end+1):
             for column in range(area.x_start,area.x_end+1):
-                if self.explorer_grid[row,column] < 0.1 and self.explorer_grid[row,column] > - 0.1:
+                if self.explorer_grid_with_obs[row,column] < 0.1 and self.explorer_grid_with_obs[row,column] > - 0.1:
                     unexplored_nr += 1
 
         if unexplored_nr < area.start_nr_unexplored*(1-self.accepted_exploration_ratio_per_area) or unexplored_nr == 0:
@@ -252,6 +266,12 @@ class Explorer_node(Node):
             self.look_from_points_yaw_threshold = self.look_from_points_yaw_threshold_new_area
             full_turn = False
             return "Area explored" , None, None, None, full_turn
+        
+        # inserting obstacles
+        self.explorer_grid_with_obs = self.explorer_grid.copy()
+        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.path_planner_grid_with_obs = self.path_planner_grid.copy()
+        self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
 
         if unexplored_nr > area.tot_nr_cells*self.full_rotation_limit:
             full_turn = True
@@ -263,6 +283,13 @@ class Explorer_node(Node):
             yaw = None
             if result == "Fail":
                 full_turn = False
+
+                # inserting obstacles
+                self.explorer_grid_with_obs = self.explorer_grid.copy()
+                self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+                self.path_planner_grid_with_obs = self.path_planner_grid.copy()
+                self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
+
                 result, x, y, yaw = self.generate_next_point(area,unexplored_nr)
         else:
             full_turn = False
@@ -279,6 +306,72 @@ class Explorer_node(Node):
             return "Area explored" , None, None, None, full_turn
 
         return "Not done", x, y, yaw, full_turn
+    
+    def next_waypoint_callback(self, msg):
+        self.get_logger().debug(f'Next waypoint received: x = {msg.pose.position.x}, y = {msg.pose.position.y}') 
+        self.get_logger().debug(f"States are: \033[93m {self.should_move=} \033[0m, \033[94m {self.collistion_check_counter=} \033[0m")
+        pose = PoseStamped() 
+        pose.header.frame_id = msg.header.frame_id 
+        pose.header.stamp = msg.header.stamp  
+        pose.pose = self.transform_to(msg.pose, "map", msg.header.frame_id)
+        self.current_waypoint = pose 
+
+    def insert_local_objects_in_map_file(self, grid):
+        if self.local_occupancy_update_time is None: 
+            return
+        
+        current_time = self.get_clock().now().to_msg() 
+        time_since_last_update = current_time.sec + current_time.nanosec * 1e-9 - self.local_occupancy_update_time.sec - self.local_occupancy_update_time.nanosec * 1e-9
+        if time_since_last_update > 10:
+            return
+    
+        if self.local_occupancy_map is not None:
+            grid[self.local_occupancy_map == -1] = -1
+        
+    def check_if_path_hits_obstacles(self, start_x, start_y, end_x, end_y, obstacles_grid): 
+        x_min, x_max = min(start_x, end_x), max(start_x, end_x)
+        y_min, y_max = min(start_y, end_y), max(start_y, end_y)
+        line_len = np.sqrt((start_x - end_x)**2 + (start_y - end_y)**2)
+        len_x = x_max - x_min
+        len_y = y_max - y_min
+
+        if line_len == 0: 
+            return False 
+
+        n = np.array([(end_y - start_y) / line_len, -(end_x - start_x) / line_len])
+        relevant_grid = obstacles_grid[y_min:y_max+1, x_min:x_max+1]
+        test_idx = np.where(np.abs(np.sum( [np.tile(np.arange(len_x+1), (len_y+1, 1)) * n[0], np.tile(np.arange(len_y+1), (len_x+1, 1)).T * n[1] ], axis=0 )) < 1 / 2) 
+        values = relevant_grid[test_idx] 
+        
+        if len(values) == 0:
+            return False
+        
+        return np.min(values) < 0 
+    
+    def local_occupancy_callback(self, msg):
+        self.collistion_check_counter += 1
+        self.local_occupancy_map = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
+        self.local_occupancy_update_time = msg.header.stamp
+        
+        # #self.get_logger().info(f'{(self.current_waypoint is None)=}')
+        # #self.get_logger().info(f'{(not self.care_about_collisions)=}')
+        # #self.get_logger().info(f'{(not self.should_move)=}')
+
+        if (self.current_waypoint is None) or (not self.care_about_collisions) or (not self.should_move):
+            return
+        
+        current_pose = self.transform_to(PoseStamped().pose, "map", "base_link") 
+        start_x, start_y = self.convert_to_grid_coordinates(100 * current_pose.position.x, 100 * current_pose.position.y)
+        end_x, end_y = self.convert_to_grid_coordinates(100 * self.current_waypoint.pose.position.x, 100 * self.current_waypoint.pose.position.y)
+        collision = self.check_if_path_hits_obstacles(start_x, start_y, end_x, end_y, self.local_occupancy_map) 
+
+        if collision:
+            self.get_logger().debug(f'Collision detected, path hits obstacles')
+            self.get_logger().debug(f'Current waypoint: x = {self.current_waypoint.pose.position.x}, y = {self.current_waypoint.pose.position.y}')
+            self.get_logger().debug(f'Current pose: x = {current_pose.position.x}, y = {current_pose.position.y}')
+            self.get_logger().debug(f'Start x: {start_x}, Start y: {start_y}, End x: {end_x}, End y: {end_y}')
+            self.should_move = False
+            self.get_logger().debug(f"\033[93m {self.should_move=} \033[0m")
     
     #Generates points until a sufficiently good one is found
     def generate_next_point(self,area,unexplored_nr):
@@ -322,7 +415,7 @@ class Explorer_node(Node):
         self.nr_to_high_claim_rejected = 0
         self.tot_nr_to_high_claim_rejected = 0
 
-        area_grid = self.explorer_grid[area.y_start:area.y_end+1, area.x_start:area.x_end+1]
+        area_grid = self.explorer_grid_with_obs[area.y_start:area.y_end+1, area.x_start:area.x_end+1]
         unexplored_index = np.where((area_grid!=1) & (area_grid!=-1))
         choice_index = np.random.randint(0,len(unexplored_index[0]))
         y = unexplored_index[0][choice_index]+area.y_start
@@ -369,14 +462,13 @@ class Explorer_node(Node):
         self.get_logger().info(f"rejected reasons: look-at point too far away {self.look_at_points_nr_dist_rejected} times, look-at point too large angular difference {self.look_at_points_nr_yaw_rejected} times, look-from point too far away {self.tot_look_from_points_nr_dist_rejected} times,look-from point too high yaw change {self.tot_look_from_points_nr_yaw_rejected} times")
         return "succes", accepted_x, accepted_y, accepted_yaw
             
-    
     # Creates a circle around the generated point from which the point can be seen,
     # iterates through all points on the circle until it finds a sufficiently good one,
     # then maximizes discovery from this point by rotating and filling in all grids
     # within a radius around the robot
     def check_point_profit(self,x,y,area,unexplored_nr,dist, current_yaw, yaw_change, current_x, current_y):
 
-        if self.explorer_grid[y,x] == -1 or (self.explorer_grid[y,x] == 1 and self.accepted_exploration_ratio>0.05 or dist > self.look_at_points_dist_threshold or yaw_change > self.look_at_points_yaw_threshold):
+        if self.explorer_grid_with_obs[y,x] == -1 or (self.explorer_grid_with_obs[y,x] == 1 and self.accepted_exploration_ratio>0.05 or dist > self.look_at_points_dist_threshold or yaw_change > self.look_at_points_yaw_threshold):
             self.tot_rejected_points += 1
             # ensures that the generated point is not too far from the robot's current position
             if dist > self.look_at_points_dist_threshold:
@@ -404,7 +496,7 @@ class Explorer_node(Node):
 
         if self.attempt_detect_from_current_position >= self.attempt_detect_from_current_position_threshold:
             detection_rate_limiting_factor = True
-            points_on_circle = self.circle_creator.circle_filler_angle_dependent(x,y,area,self.path_planner_grid.copy(),self.optimal_detection_distance, False, True, False,False,None,None,True)
+            points_on_circle = self.circle_creator.circle_filler_angle_dependent(x,y,area,self.path_planner_grid_with_obs.copy(),self.optimal_detection_distance, False, True, False,False,None,None,True)
             if len(points_on_circle) > self.nr_of_test_look_from_points:
                 points_test_explore_from.extend(random.sample(points_on_circle, self.nr_of_test_look_from_points))
             else:
@@ -435,7 +527,7 @@ class Explorer_node(Node):
                 yaw = np.arctan2(y-points_test_explore_from[point_on_circle_index][1],x-points_test_explore_from[point_on_circle_index][0])
                 v1 = self.camera_angle/2 + yaw
                 v2 = -self.camera_angle/2 + yaw
-                detection_edge = self.circle_creator.circle_filler_angle_dependent(points_test_explore_from[point_on_circle_index][0],points_test_explore_from[point_on_circle_index][1],area,self.explorer_grid,self.max_detection_range, False, False, True,True,v1,v2,True)
+                detection_edge = self.circle_creator.circle_filler_angle_dependent(points_test_explore_from[point_on_circle_index][0],points_test_explore_from[point_on_circle_index][1],area,self.explorer_grid_with_obs,self.max_detection_range, False, False, True,True,v1,v2,True)
 
                 if len(detection_edge) >= unexplored_nr*self.accepted_exploration_ratio:
 
@@ -490,17 +582,17 @@ class Explorer_node(Node):
         accepted_exploration_ratio = 1
         nrTry = 0
         nr_to_high_claim = 0
-        area_grid = self.path_planner_grid[area.y_start:area.y_end+1, area.x_start:area.x_end+1]
+        area_grid = self.path_planner_grid_with_obs[area.y_start:area.y_end+1, area.x_start:area.x_end+1]
         unexplored_index = np.where(area_grid!=-1)
         test_points = []
-        if self.path_planner_grid[int(area.midpoint_y),int(area.midpoint_x)] != -1 :
+        if self.path_planner_grid_with_obs[int(area.midpoint_y),int(area.midpoint_x)] != -1 :
             test_points = [[int(area.midpoint_x), int(area.midpoint_y)]]
         for i in range(self.nr_tries_full_rotation):
             choice_index = np.random.randint(0,len(unexplored_index[0]))
             y = unexplored_index[0][choice_index]+area.y_start
             x = unexplored_index[1][choice_index]+area.x_start
             test_points.append([x,y])
-        if self.path_planner_grid[int(area.midpoint_y),int(area.midpoint_x)] != -1 :
+        if self.path_planner_grid_with_obs[int(area.midpoint_y),int(area.midpoint_x)] != -1 :
             test_points.append([int(area.midpoint_x), int(area.midpoint_y)])
 
         any_point_accepted, accepted_x, accepted_y = self.check_point_profit_less_explored(test_points,area,unexplored_nr)
@@ -510,12 +602,11 @@ class Explorer_node(Node):
         
         return "Fail", None, None
         
-
     def check_point_profit_less_explored(self, test_points,area,unexplored_nr):
         accepted_exploration_ratio = self.accepted_exploration_ratio_per_area
         for point_index in range(len(test_points)):
 
-            detection_edge = self.circle_creator.circle_filler_angle_dependent(test_points[point_index][0],test_points[point_index][1],area,self.explorer_grid,self.max_detection_range, False, False, True,True,None,None,True)
+            detection_edge = self.circle_creator.circle_filler_angle_dependent(test_points[point_index][0],test_points[point_index][1],area,self.explorer_grid_with_obs,self.max_detection_range, False, False, True,True,None,None,True)
             explored_cells = len(detection_edge)
             #print(f'Point, x: {test_points[point_index][0]}, y: {test_points[point_index][1]}, ration: {explored_cells/unexplored_nr}')
             if explored_cells >= unexplored_nr*accepted_exploration_ratio:
@@ -581,7 +672,7 @@ class Explorer_node(Node):
         yaw=np.arctan2(2*(qw*qz+qx*qy),1-2*(qy**2+qz**2))
         return t.transform.translation.x*100, t.transform.translation.y*100, yaw
     
-    def transforme_to_map(self, goal_pose):
+    def transform_to_map(self, goal_pose):
         # rclpy.spin_once(self, timeout_sec=.01)
         self.executor.spin_once(timeout_sec=.01)
         time = rclpy.time.Time(seconds=0)
@@ -599,6 +690,22 @@ class Explorer_node(Node):
             return
         transformed_pose= tf2_geometry_msgs.do_transform_pose(goal_pose, t)
         return transformed_pose
+    
+    def transform_to(self, goal_pose, target_frame, source_frame):
+        time = rclpy.time.Time(seconds=0)
+
+        try:
+            t = self.tf_buffer.lookup_transform(
+            target_frame,
+            source_frame,
+            time,
+            )
+        except TransformException as ex:
+            self.get_logger().debug(
+                f'Could not transform {"map"} to {"base_link"}: {ex}')
+            return
+        transformed_pose= tf2_geometry_msgs.do_transform_pose(goal_pose, t)
+        return transformed_pose
         
     # x, y in cm
     def convert_to_grid_coordinates(self, x, y):
@@ -608,6 +715,7 @@ class Explorer_node(Node):
         return (x - self.origin[0])*self.resolution, (y - self.origin[1])*self.resolution
     
     def full_turn(self):
+        self.care_about_collisions = False
         ticks_per_revolution = 6
 
         start_time = self.get_clock().now()
@@ -628,7 +736,7 @@ class Explorer_node(Node):
             qz = np.sin(np.pi/ticks_per_revolution)
             goal_msg.pose.orientation.z = float(qz)
             goal_msg.pose.orientation.w = float(qw)
-            goal_msg.pose = self.transforme_to_map(goal_msg.pose)
+            goal_msg.pose = self.transform_to_map(goal_msg.pose)
             goal_list.poses.append(goal_msg)
             request_msg.path = goal_list
             request_msg.max_speed = 0.3
@@ -636,7 +744,7 @@ class Explorer_node(Node):
             request_msg.enforce_orientation = True
             request_msg.stop_at_goal = True
             self.get_logger().info(f'Giving the camra time to detect objects, tick nr: {tick}')
-            self.send_move_goal(request_msg)
+            _ = self.send_move_goal(request_msg)
             start_time = self.get_clock().now()
             self.send_camera_request()
             #print(f"Camera request sent. Time taken: {self.get_clock().now() - start_time} seconds.")
@@ -644,10 +752,20 @@ class Explorer_node(Node):
                 # rclpy.spin_once(self, timeout_sec=0.01)
                 self.executor.spin_once(timeout_sec=0.01)
         current_x, current_y, yaw = self.retrieve_robot_position()
+        self.care_about_collisions = True
+        # inserting obstacles
+        self.explorer_grid_with_obs = self.explorer_grid.copy()
+        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.safe_space_grid_with_obs = self.safe_space_grid.copy()
+        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
 
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid,self.max_detection_range, True, False, False,True,None,None,True)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid,self.max_detection_range, True, False, False,True,None,None,True)
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True,None,None,True)
+        for detected_cell in detection_edge:
+            self.explorer_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid_with_obs,self.max_detection_range, False, False, False,True,None,None,True)
+        for detected_cell in detection_edge:
+            self.safe_space_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
         self.publish_grid_map(self.explorer_grid,"exp")
 
     def part_turn(self, yaw):
@@ -665,7 +783,7 @@ class Explorer_node(Node):
         goal_msg.header.stamp = self.get_clock().now().to_msg()
         goal_msg.pose.position.x = 0.0
         goal_msg.pose.position.y = 0.0
-        goal_msg.pose = self.transforme_to_map(goal_msg.pose)
+        goal_msg.pose = self.transform_to_map(goal_msg.pose)
 
         qw = np.cos(yaw/2) 
         qz = np.sin(yaw/2)
@@ -679,7 +797,9 @@ class Explorer_node(Node):
         request_msg.stop_at_goal = True
         self.get_logger().info(f'goal orientation in map coordinates: qz = {goal_msg.pose.orientation.z}, qw = {goal_msg.pose.orientation.w}')
         self.get_logger().info(f'Giving the camra time to detect objects')
-        self.send_move_goal(request_msg)
+        move_result = self.send_move_goal(request_msg)
+        if not(move_result):
+            return
         start_time = self.get_clock().now()
         self.send_camera_request()
         print(f"Camera request sent. Time taken: {self.get_clock().now() - start_time} seconds.")
@@ -691,8 +811,19 @@ class Explorer_node(Node):
         v1 = self.camera_angle/2 + yaw
         v2 = -self.camera_angle/2 + yaw
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid,self.max_detection_range, True, False, False,True, v1, v2,True)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid,self.max_detection_range, True, False, False,True, v1, v2,True)
+
+        # inserting obstacles
+        self.explorer_grid_with_obs = self.explorer_grid.copy()
+        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.safe_space_grid_with_obs = self.safe_space_grid.copy()
+        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
+
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True, v1, v2,True)
+        for detected_cell in detection_edge:
+            self.explorer_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid_with_obs,self.max_detection_range, False, False, False,True, v1, v2,True)
+        for detected_cell in detection_edge:
+            self.safe_space_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
         self.publish_grid_map(self.explorer_grid,"exp")
 
     def is_safe_to_move(self):
@@ -701,8 +832,19 @@ class Explorer_node(Node):
         v1 = self.camera_angle/2 + yaw
         v2 = -self.camera_angle/2 + yaw
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid,self.max_detection_range, True, False, False,True,v1,v2,True)
-        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid,self.max_detection_range, True, False, False,True,v1,v2,True)
+
+        # inserting obstacles
+        self.explorer_grid_with_obs = self.explorer_grid.copy()
+        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.safe_space_grid_with_obs = self.safe_space_grid.copy()
+        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
+
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True,v1,v2,True)
+        for detected_cell in detection_edge:
+            self.explorer_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
+        detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.safe_space_grid_with_obs,self.max_detection_range, False, False, False,True,v1,v2,True)
+        for detected_cell in detection_edge:
+            self.safe_space_grid[detected_cell[1], detected_cell[0]] = np.float64(1.0)
         self.publish_grid_map(self.explorer_grid,"exp")
 
     def send_camera_request(self):
@@ -795,37 +937,83 @@ class Explorer_node(Node):
             self.object_pub.publish(marker)
         
     def insert_object_in_map_file(self, x_center, y_center, category):
-        self.detected_objects.append([x_center, y_center, category])
-        self.publish_detected_objects()
-
         self.get_logger().info(f'insert object in map file')
-        max_x, max_y = self.convert_to_grid_coordinates((x_center)*100+self.padding+7, (y_center)*100+self.padding+7)
-        min_x, min_y = self.convert_to_grid_coordinates((x_center)*100-self.padding-7, (y_center)*100-self.padding-7)
-        self.get_logger().info(f'x cells covered by object: {min_x} to {max_x}')
-        self.get_logger().info(f'y cells covered by object: {min_y} to {max_y}')
+
+        self.detected_objects.append([x_center, y_center, category])
+        #  self.publish_detected_objects()
+        x, y = self.convert_to_grid_coordinates(x_center * 100,y_center * 100)
         hight = self.explorer_grid.shape[0]
         width = self.explorer_grid.shape[1]
-        if min_x < width and max_x > 0 and min_y > 0 and max_y < hight:
+        half_diagonal_box = np.sqrt((24.5/2)**2+(15.5/2)**2)
+        print(111111111111111111111)
+        if 0<=x<width and 0<=y<hight:
+            print(2222222222222222222222222)
+            grid = self.path_planner_grid.copy()
+            if category != "box":
+                print(3333333333333333333333)
+                print(x)
+                print(y)
+                fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid,self.padding+3,False,False, False,True,None,None,False)
+                print(fill_in_cells)
+                for cell in fill_in_cells:
+                    self.path_planner_grid[cell[1],cell[0]] = -1
+            else:
+                fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid,half_diagonal_box+self.padding+3,False,False, False,True,None,None,False)
+                for cell in fill_in_cells:
+                    self.path_planner_grid[cell[1],cell[0]] = -1
+        else:
+            if category != "box":
+                max_x, max_y = self.convert_to_grid_coordinates((x_center)*100+self.padding+7, (y_center)*100+self.padding+7)
+                min_x, min_y = self.convert_to_grid_coordinates((x_center)*100-self.padding-7, (y_center)*100-self.padding-7)
+            else:
+                max_x, max_y = self.convert_to_grid_coordinates((x_center)*100+self.padding+half_diagonal_box+7, (y_center)*100+self.padding+half_diagonal_box+7)
+                min_x, min_y = self.convert_to_grid_coordinates((x_center)*100-self.padding-half_diagonal_box-7, (y_center)*100-self.padding-half_diagonal_box-7)
+            self.get_logger().info(f'x cells covered by object: {min_x} to {max_x}')
+            self.get_logger().info(f'y cells covered by object: {min_y} to {max_y}')
+
             for x in range(min_x, max_x):
                 for y in range(min_y, max_y):
-                    if x>0 and x<width and y>0 and y<hight:
+                    if 0<=x<width and 0<=y<hight:
                         self.path_planner_grid[y,x] = -1
         obs_grid = self.path_planner_grid.copy()
         self.publish_grid_map(obs_grid, "obs")
+
+
+    def send_stop_to_move_client(self):
+        request_msg = MoveTo.Request()
+        request_msg.stop_at_goal = True
+        request_msg.path.header.frame_id = "base_link"
+        request_msg.path.header.stamp = self.get_clock().now().to_msg()
+        goal_msg = PoseStamped()
+        goal_msg.header.frame_id = "base_link"
+        goal_msg.header.stamp = self.get_clock().now().to_msg()
+        goal_msg.pose.position.x = 0.0
+        goal_msg.pose.position.y = 0.0
+        request_msg.path.poses.append(goal_msg)
+        future = self.move_client.call_async(request_msg)
+
+        while not future.done():
+            self.executor.spin_once(timeout_sec=0.1)
 
     def move_out_from_occupied(self):
         self.get_logger().info('try to move out from occupied')
         unoccupied_found = False
         current_x, current_y, current_yaw = self.retrieve_robot_position()
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
+        self.care_about_collisions = False
         test_radius = 2*self.resolution
+
+        self.path_planner_grid_with_obs = self.path_planner_grid.copy()
+        self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
+
         while not(unoccupied_found):
-            test_points = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.path_planner_grid.copy(),test_radius, False, True, False,False,None,None,True)
+            test_points = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.path_planner_grid_with_obs.copy(),test_radius, False, True, False,False,None,None,True)
             for point in test_points:
-                if self.path_planner_grid[point[1],point[0]] != -1:
+                if self.path_planner_grid_with_obs[point[1],point[0]] != -1:
                     safe_point = (point[0], point[1])
                     unoccupied_found = True
-                    self.move([safe_point],True)
+                    _ = self.move([safe_point],True)
+                    self.care_about_collisions = True
                     return
                     
             test_radius += self.resolution
@@ -839,8 +1027,15 @@ class Explorer_node(Node):
         # rclpy.spin_until_future_complete(self, future)
         
         self.get_logger().info('Waiting for move goal to be done')
-        while not future.done():
-            self.executor.spin_once(timeout_sec=0.1) 
+        # self.executor.spin_until_future_complete(future)
+        while ( not future.done() ) and self.should_move:
+            self.executor.spin_once(timeout_sec=0.1)
+        # future.add_done_callback(self.move_callback) 
+        if not self.should_move:
+            self.get_logger().debug(f'Move goal cancelled due to collision detection, \033[93m {self.should_move=} \033[0m')
+            # Send stop to move to
+            self.send_stop_to_move_client()
+            return False
 
         self.get_logger().info('Giving the service time to finish')
         start_time = self.get_clock().now()
@@ -852,6 +1047,7 @@ class Explorer_node(Node):
         print("Väntat")
         move_result = future.result()
         print("klar")
+        return True
         
 
     def move(self, waypoints, made_it_all_the_way):
@@ -882,7 +1078,8 @@ class Explorer_node(Node):
         if made_it_all_the_way == False:
             request_msg.allow_reverse = False
         self.get_logger().info(f'sending a move command with {len(request_msg.path.poses)} waypoints')
-        self.send_move_goal(request_msg)
+        move_result = self.send_move_goal(request_msg)
+        return move_result
         
 
     def move_to_new_explore_point(self, obs_grid, goal_x, goal_y, goal_yaw, full_turn):
@@ -891,6 +1088,7 @@ class Explorer_node(Node):
         self.get_logger().info(f'current position in grid coordinates: x = {start_x} y = {start_y}')
         self.get_logger().info(f'goal position in grid coordinates: x = {goal_x} y = {goal_y}')
 
+        self.insert_local_objects_in_map_file(obs_grid)
         grid1, path_result = self.planner.A_star(obs_grid, [start_x, start_y], [goal_x,goal_y], 1, False, 1, True)
         #input(f"innan test move_out_from_occupied, path result: {path_result}")
         if path_result == False:
@@ -898,28 +1096,29 @@ class Explorer_node(Node):
             return
         #input("Efter test move_out_from_occupied")
         safe_space_grid_with_obstacles = self.safe_space_grid.copy()
+        self.insert_local_objects_in_map_file(safe_space_grid_with_obstacles)
         safe_space_grid_with_obstacles[grid1 == -1] = -1
         waypoints, made_it_all_the_way = self.planner.waypoint_creator(True, safe_space_grid_with_obstacles)
         for point in waypoints:
             x,y = point
             grid1[y,x] = 90
-        self.get_logger().info(f'unsafe waypoints: {waypoints}')
+        self.get_logger().info(f'waypoints: {waypoints}')
 
         grid1[goal_y,goal_x] = 50
         grid1[start_y,start_x] = 25
         
         self.publish_grid_map(grid1, "obs")
         #input("Push a key to move along path")
-        self.move(waypoints, made_it_all_the_way)
+        move_result = self.move(waypoints, made_it_all_the_way)
 
-
-        if made_it_all_the_way == True:
-            if full_turn:
-                self.full_turn()
+        if move_result:
+            if made_it_all_the_way == True:
+                if full_turn:
+                    self.full_turn()
+                else:
+                    self.part_turn(goal_yaw)
             else:
-                self.part_turn(goal_yaw)
-        else:
-            self.is_safe_to_move()
+                self.is_safe_to_move()
     
     def run_explorer(self):
         self.explorer_grid = self.fetch_map(0)
@@ -945,6 +1144,7 @@ class Explorer_node(Node):
                     y.append(new_y)
                     #input("Push a key to generate path")
                     obs_grid = self.path_planner_grid.copy()
+                    self.should_move = True
                     self.move_to_new_explore_point(obs_grid, new_x,new_y, new_yaw, full_turn)
 
             print(self.status)
@@ -966,8 +1166,6 @@ class Area:
         self.nr_of_explores = 0
         self.start_nr_unexplored = start_nr_unexplored
         self.tot_nr_cells = nr_cells
-
-
 
 def main():
     rclpy.init()
@@ -992,583 +1190,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import rclpy
-# from rclpy.node import Node
-# import numpy as np
-# from nav_msgs.msg import OccupancyGrid
-# from core_interfaces.srv import MoveTo
-# from core_interfaces.srv import GridCreator
-# from geometry_msgs.msg import PoseStamped
-# import tf2_geometry_msgs
-# from navigation.path_planner import path_planner
-# from navigation.circle_creator_uppdate import circle_creator
-# from core_interfaces.srv import YoloImageDetect
-# from nav_msgs.msg import Path
-# from math import cos, sin, atan2, fabs
-# from tf2_ros.buffer import Buffer
-# from tf2_ros.transform_listener import TransformListener
-# from tf2_ros import TransformException
-# from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
-# from rclpy.callback_groups import ReentrantCallbackGroup
-# import time as std_time
-
-
-# class Explorer_node(Node):
-#     def __init__(self):
-#         super().__init__('explorer')
-#         self.get_logger().info('working_explorer node 3 started')
-
-#         self.exploration_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"
-#         self.resolution = 5 #cm / cell
-#         self.padding = 28 #cm
-#         self.max_detection_range = 100 #cm
-#         self.optimal_detection_distance = 50 #cm
-#         self.approximate_area_size = 130 #cm
-#         self.start_accepted_exploration_ratio = np.min([1.0,0.54*(np.pi*self.max_detection_range**2)/(self.approximate_area_size**2)])
-#         self.explorer_grid = None
-#         self.path_planner_grid = None
-#         self.origin = None
-#         self.current_exploring_area = None
-#         self.areas = []
-
-#         self.status = ""
-#         self.planner = path_planner()
-
-#         group2 = ReentrantCallbackGroup()
-#         group3 = ReentrantCallbackGroup()
-#         group4 = ReentrantCallbackGroup()
-
-#         self.grid_fill_cli = self.create_client(GridCreator,"fill_in_workspace")
-#         self.path_grid_pub = self.create_publisher(OccupancyGrid, '/path_grid_map', 10, callback_group=group2)
-#         self.explore_grid_pub = self.create_publisher(OccupancyGrid, '/explore_grid_map', 10, callback_group=group3)
-#         self.area_grid_pub = self.create_publisher(OccupancyGrid, '/area_grid_map', 10, callback_group=group4)
-
-
-#         while not self.grid_fill_cli.wait_for_service(timeout_sec=1.0):
-#             self.get_logger().info('grid filler service not available, waiting again...')
-
-#         self.move_client = self.create_client(MoveTo,"MoveTo", callback_group=group4)
-
-#         while not self.move_client.wait_for_service(timeout_sec=1.0):
-#             self.get_logger().info('move service not available, waiting again...')
-
-#         #self.camera_client = self.create_client(YoloImageDetect, 'yolo_image_detect', callback_group=group2)
-
-#         # while not self.camera_client.wait_for_service(timeout_sec=10):
-#         #     self.get_logger().info('Service not available, waiting again...')
-        
-#         #creating buffer and transform listener
-#         buffer_size = rclpy.duration.Duration(seconds=10.0) 
-#         self.tf_buffer = Buffer(cache_time=buffer_size)
-#         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=False)
-#         std_time.sleep(1)
-
-#         self.executor = None
-#         self.circle_creator = None
-
-#     def fetch_map(self, padding):
-#         self.get_logger().info('fetching map')
-#         req = GridCreator.Request()
-#         req.padding = padding
-#         req.resolution = self.resolution
-#         req.file_name = self.exploration_workspace_file
-#         future = self.grid_fill_cli.call_async(req)
-#         # rclpy.spin_until_future_complete(self, future)
-
-#         # executor = SingleThreadedExecutor() 
-#         # executor.add_node(self) 
-#         while not future.done():
-#             self.executor.spin_once(timeout_sec=0.01)
-#         flat_grid = future.result()
-#         self.origin = [flat_grid.grid.info.origin.position.x, flat_grid.grid.info.origin.position.y]
-#         grid = np.array(flat_grid.grid.data,dtype=np.float64).reshape((flat_grid.grid.info.height, flat_grid.grid.info.width))
-        
-#         return grid
-        
-
-#     # Initial: divide the grid map into areas
-#     def divide_grid_areas(self):
-#         self.get_logger().info('dividing the grid map into areas')
-#         hight = self.explorer_grid.shape[0]*self.resolution
-#         width = self.explorer_grid.shape[1]*self.resolution
-#         hight_divider = hight//self.approximate_area_size
-#         width_divider = width//self.approximate_area_size
-#         area_hight = int(np.ceil((hight/hight_divider)/self.resolution))
-#         area_width = int(np.ceil((width/width_divider)/self.resolution))
-#         for row in range(hight_divider):
-#             for column in range(width_divider):
-
-#                 column_end_point = int(np.ceil((column+1)*area_width))
-#                 if column_end_point >= width/self.resolution:
-#                     column_end_point = int(np.ceil(width/self.resolution))-1
-
-#                 row_end_point = int(np.ceil((row+1)*area_hight))
-#                 if row_end_point >= hight/self.resolution:
-#                     row_end_point = int(np.ceil(hight/self.resolution))-1
-
-#                 midpoint_y = row*area_hight + (row_end_point-row*area_hight)/2
-#                 midpoint_x = column*area_width + (column_end_point-column*area_width)/2
-                
-#                 new_area = Area(column*area_width, row*area_hight, column_end_point, row_end_point, midpoint_x, midpoint_y)
-#                 self.areas.append(new_area)
-#         area_grid = self.explorer_grid.copy()
-#         for area in self.areas:
-#             area_grid[area.y_start,:] = 80
-#             area_grid[:,area.x_start] = 80
-#             area_grid[area.y_end,:] = 20
-#             area_grid[:,area.x_end] = 20
-#         self.publish_grid_map(area_grid, "area")
-#         self.current_exploring_area = 0
-    
-#     # Selects the area nearest to the pose of the robot
-#     def select_next_area(self):
-#         current_x, current_y, ang = self.retrieve_robot_position()
-#         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
-#         self.get_logger().info('selecting the area nearest to the pose of the robot')
-#         best_dist = 100000000
-#         best_area = None
-#         for area in self.areas:
-#             if area.explored_once == False:
-#                 dist_to_start = np.sqrt((current_x-area.midpoint_x)**2+ (current_y-area.midpoint_y)**2)
-#                 if dist_to_start < best_dist:
-#                     best_area = area
-#                     best_dist = dist_to_start
-#         return best_area
-
-#     # Called when the user wants to explore more
-#     def explore_next(self):
-#         self.get_logger().info('continues exploring')
-#         unexplored_nr = 0
-#         if self.current_exploring_area == len(self.areas):
-#             self.get_logger().info('all areas explored')
-#             return "All explored", None, None
-#         else:
-#             area = self.select_next_area()
-
-#         for row in range(area.y_start,area.y_end+1):
-#             for column in range(area.x_start,area.x_end+1):
-#                 if self.explorer_grid[row,column] < 0.1 and self.explorer_grid[row,column] > - 0.1:
-#                     unexplored_nr += 1
-#         if unexplored_nr == 0:
-#             area.explored_once = True
-#             self.current_exploring_area +=1
-#             self.get_logger().info('new area explored')
-#             return "Area explored" , None, None
-#         result, x, y = self.generate_next_point(area,unexplored_nr)
-#         area.one_point = True
-#         if result == "Fail":
-#             area.explored_once = True
-#             self.current_exploring_area +=1
-#             self.get_logger().info('new area explored, could not access all locations')
-#             return "Area explored" , None, None
-
-#         return "Not done", x, y
-    
-#     #Generates points until a sufficiently good one is found
-#     def generate_next_point(self,area,unexplored_nr):
-#         accepted_point = False
-#         accepted_exploration_ratio = self.start_accepted_exploration_ratio
-#         nrTry = 0
-#         nr_to_high_claim = 0
-#         while accepted_point == False:
-#             nrTry += 1
-#             y = np.random.randint(area.y_start, (area.y_end+1))
-#             x = np.random.randint(area.x_start, area.x_end+1)
-
-#             accepted_point, fail_reason, accepted_x, accepted_y = self.check_point_profit(x,y, accepted_exploration_ratio,area,unexplored_nr)
-#             if fail_reason == "to high claim":
-#                 nr_to_high_claim += 1
-#                 if nr_to_high_claim >1:
-#                     accepted_exploration_ratio *= 0.5
-#                 if nr_to_high_claim > 4:
-#                     return "Fail", None, None
-#         return "succes", accepted_x, accepted_y
-            
-    
-#     # Creates a circle around the generated point from which the point can be seen,
-#     # iterates through all points on the circle until it finds a sufficiently good one,
-#     # then maximizes discovery from this point by rotating and filling in all grids
-#     # within a radius around the robot
-#     def check_point_profit(self,x,y, accepted_exploration_ratio,area,unexplored_nr):
-
-#         if self.explorer_grid[y,x] == -1 or (self.explorer_grid[y,x] == 1 and accepted_exploration_ratio>0.05):
-#             return False, "on obs or free", None, None
-#         if area.one_point == False and self.path_planner_grid[int(area.midpoint_y),int(area.midpoint_x)] != -1 :
-#             points_on_circle = [[int(area.midpoint_x), int(area.midpoint_y)]]
-#         else:
-#             points_on_circle = self.circle_creator.circle_filler_angle_dependent(x,y,area,self.path_planner_grid.copy(),self.optimal_detection_distance, False, True, True,False,None,None,True)   
-
-#         for point_on_circle_index in range(len(points_on_circle)):
-
-#             detection_edge = self.circle_creator.circle_filler_angle_dependent(points_on_circle[point_on_circle_index][0],points_on_circle[point_on_circle_index][1],area,self.explorer_grid,self.max_detection_range, False, False, True,True,None,None,True)
-
-#             if len(detection_edge) >= unexplored_nr*accepted_exploration_ratio:
-
-#                 return True, None, points_on_circle[point_on_circle_index][0], points_on_circle[point_on_circle_index][1]
-
-#         return False, "to high claim", None, None
-
-#     def publish_grid_map(self, grid, type):
-
-#         msg = OccupancyGrid()
-
-#         msg.header.stamp = self.get_clock().now().to_msg()
-#         msg.header.frame_id = "map" 
-
-#         msg.info.resolution = float(self.resolution/100)
-#         msg.info.width = grid.shape[1]
-#         msg.info.height = grid.shape[0]
-
-#         msg.info.origin.position.x = -float(self.origin[0]/100)*self.resolution
-#         msg.info.origin.position.y = -float(self.origin[1]/100)*self.resolution
-#         msg.info.origin.position.z = 0.0
-#         msg.info.origin.orientation.w = 1.0  
-#         grid = np.round(grid,0).astype(np.int8)
-#         msg.data = grid.flatten().tolist()
-        
-#         if type == "obs":
-#             self.path_grid_pub.publish(msg)
-#             self.get_logger().info("path grid published")
-#         if type == "exp":
-#             self.explore_grid_pub.publish(msg)
-#             self.get_logger().info("explorer grid published")
-#         if type == "area":
-#             self.area_grid_pub.publish(msg)
-#             self.get_logger().info("area grid published")
-
-#     def retrieve_robot_position(self):
-#         # rclpy.spin_once(self, timeout_sec=.5)
-#         self.executor.spin_once(timeout_sec=.5)
-#         time = rclpy.time.Time(seconds=0)
-
-#         try:
-#             t = self.tf_buffer.lookup_transform(
-#             "map",
-#             "base_link",
-#             time,
-#             timeout=rclpy.duration.Duration(seconds=2)
-#             )
-#             self.get_logger().info(f'Retrieved transform: x={t.transform.translation.x}, y={t.transform.translation.y}')
-#         except TransformException as ex:
-#             self.get_logger().info(
-#                 f'Could not transform {"map"} to {"base_link"}: {ex}')
-#             return
-#         qx = t.transform.rotation.x
-#         qy = t.transform.rotation.y
-#         qz = t.transform.rotation.z
-#         qw = t.transform.rotation.w
-#         yaw=np.arctan2(2*(qw*qz+qx*qy),1-2*(qy**2+qz**2))
-#         return t.transform.translation.x*100, t.transform.translation.y*100, yaw
-    
-#     def transforme_to_map(self, goal_pose):
-#         # rclpy.spin_once(self, timeout_sec=.01)
-#         self.executor.spin_once(timeout_sec=.01)
-#         time = rclpy.time.Time(seconds=0)
-
-#         try:
-#             t = self.tf_buffer.lookup_transform(
-#             "map",
-#             "base_link",
-#             time,
-#             timeout=rclpy.duration.Duration(seconds=2)
-#             )
-#         except TransformException as ex:
-#             self.get_logger().info(
-#                 f'Could not transform {"map"} to {"base_link"}: {ex}')
-#             return
-#         transformed_pose= tf2_geometry_msgs.do_transform_pose(goal_pose, t)
-#         return transformed_pose
-        
-#     # x, y in cm
-#     def convert_to_grid_coordinates(self, x, y):
-#         return int(np.round((x/self.resolution)+self.origin[0],0)), int(np.round((y/self.resolution)+self.origin[1],0))
-
-#     def convert_to_real_world_coordinates(self, x, y):
-#         return (x - self.origin[0])*self.resolution, (y - self.origin[1])*self.resolution
-    
-#     def turn(self):
-#         ticks_per_revolution = 6
-
-#         start_time = self.get_clock().now()
-#         #self.send_camera_request()
-#         print(f"Camera request sent. Time taken: {self.get_clock().now() - start_time} seconds.")
-
-#         for tick in range(ticks_per_revolution - 1):
-#             request_msg = MoveTo.Request()
-#             goal_list = Path()
-#             goal_list.header.frame_id = "map"
-#             goal_list.header.stamp = self.get_clock().now().to_msg()
-#             goal_msg = PoseStamped()
-#             goal_msg.header.frame_id = "map"
-#             goal_msg.header.stamp = self.get_clock().now().to_msg()
-#             goal_msg.pose.position.x = 0.0
-#             goal_msg.pose.position.y = 0.0
-#             qw = np.cos(np.pi/ticks_per_revolution) 
-#             qz = np.sin(np.pi/ticks_per_revolution)
-#             goal_msg.pose.orientation.z = float(qz)
-#             goal_msg.pose.orientation.w = float(qw)
-#             goal_msg.pose = self.transforme_to_map(goal_msg.pose)
-#             goal_list.poses.append(goal_msg)
-#             request_msg.path = goal_list
-#             request_msg.max_speed = 0.3
-#             request_msg.max_turn_speed = 0.2
-#             request_msg.enforce_orientation = True
-#             request_msg.stop_at_goal = True
-#             self.get_logger().info(f'Giving the camra time to detect objects, tick nr: {tick}')
-#             self.send_move_goal(request_msg)
-#             start_time = self.get_clock().now()
-#             #self.send_camera_request()
-#             #print(f"Camera request sent. Time taken: {self.get_clock().now() - start_time} seconds.")
-#             while self.get_clock().now() - start_time < rclpy.duration.Duration(seconds=0.1):
-#                 # rclpy.spin_once(self, timeout_sec=0.01)
-#                 self.executor.spin_once(timeout_sec=0.01)
-
-#         #self.run_explorer()
-#     # def send_camera_request(self):
-#     #     request = YoloImageDetect.Request()
-#     #     request.camera_name = "rgbd_camera"
-#     #     request.target_frame = "map"
-
-
-#     #     future = self.camera_client.call_async(request)
-#     #     # rclpy.spin_until_future_complete(self, future)
-#     #     while not future.done():
-#     #         self.executor.spin_once(timeout_sec=0.1) 
-
-#     #     if future.result() is not None:
-#     #         response = future.result()
-#     #         self.get_logger().info(f"Received response: {len(response.objects)} objects detected.")
-
-#     #         for i, obj in enumerate(response.objects):
-#     #             pose = obj.center_point
-#     #             category = obj.category
-#     #             print(f"Object {i + 1}:")
-#     #             print(f"  Category: {category}")
-#     #             x_center = (pose.pose.position.x)
-#     #             y_center = (pose.pose.position.y)
-#     #             z_center = (pose.pose.position.z)
-#     #             print(f"  Position: {x_center} m, {y_center} m, {z_center} m")
-
-#     #             pose = obj.topleft_point
-#     #             x_tl = (pose.pose.position.x)
-#     #             y_tl = (pose.pose.position.y)
-#     #             z_tl = (pose.pose.position.z)
-#     #             print(f"  topleft_point: {x_tl} m, {y_tl} m, {z_tl} m")
-
-#     #             pose = obj.bottomright_point
-#     #             x_br = (pose.pose.position.x)
-#     #             y_br = (pose.pose.position.y)
-#     #             z_br = (pose.pose.position.z)
-#     #             print(f"  bottomright_point: {x_br} m, {y_br} m, {z_br} m")
-#     #             if category != "no_detection":
-#     #                 diagonal_dist = np.sqrt((x_br-x_tl)**2+(y_br-y_tl)**2+(z_br-z_tl)**2)
-#     #                 self.insert_object_in_map_file(diagonal_dist, x_center, y_center)
-                
-#     #     else:
-#     #         self.get_logger().error('Failed to receive response from camera.')
-
-#     # def insert_object_in_map_file(self,diagonal_dist, x_center, y_center):
-#     #     self.get_logger().info('insert object in map file')
-#     #     max_x, max_y = self.convert_to_grid_coordinates((x_center + diagonal_dist)*100+self.padding, (y_center + diagonal_dist)*100+self.padding)
-#     #     min_x, min_y = self.convert_to_grid_coordinates((x_center - diagonal_dist)*100-self.padding, (y_center - diagonal_dist)*100-self.padding)
-#     #     self.get_logger().info(f'x cells covered by object: {min_x} to {max_x}')
-#     #     self.get_logger().info(f'y cells covered by object: {min_y} to {max_y}')
-#     #     for x in range(min_x, max_x):
-#     #         for y in range(min_y, max_y):
-#     #             self.path_planner_grid[y,x] = -1
-
-#     def send_move_goal(self, goal_msg):
-#         self.get_logger().info('sending move goal')
-
-#         future = self.move_client.call_async(goal_msg)
-#         # executor = rclpy.executors.SingleThreadedExecutor()
-#         # executor.add_node(self)
-#         # rclpy.spin_until_future_complete(self, future)
-        
-#         self.get_logger().info('Waiting for move goal to be done')
-#         while not future.done():
-#             self.executor.spin_once(timeout_sec=0.1) 
-
-#         self.get_logger().info('Giving the service time to finish')
-#         start_time = self.get_clock().now()
-        
-#         while self.get_clock().now() - start_time < rclpy.duration.Duration(seconds=.05):
-#             self.executor.spin_once(timeout_sec=0.01)
-#             # rclpy.spin_once(self, timeout_sec=0.01)
-
-#         print("Väntat")
-#         move_result = future.result()
-#         print("klar")
-        
-
-#     def move(self, waypoints):
-#         request_msg = MoveTo.Request()
-#         goal_list = Path()
-#         goal_list.header.frame_id = "map"
-#         goal_list.header.stamp = self.get_clock().now().to_msg()
-#         for point in waypoints:
-#             x, y = point
-#             x, y = self.convert_to_real_world_coordinates(x,y)
-#             print("Waypoint koordinates")
-#             print(x)
-#             print(y)
-#             goal_msg = PoseStamped()
-#             goal_msg.header.frame_id = "map"
-#             goal_msg.header.stamp = self.get_clock().now().to_msg()
-#             goal_msg.pose.position.x = x/100
-#             goal_msg.pose.position.y = y/100
-#             goal_msg.pose.orientation.z = 0.0 
-#             goal_msg.pose.orientation.w = 1.0
-#             goal_list.poses.append(goal_msg)
-#         request_msg.path = goal_list
-#         request_msg.max_speed = 0.4
-#         request_msg.max_turn_speed = 0.25
-#         request_msg.enforce_orientation = False
-#         request_msg.stop_at_goal = True
-#         self.get_logger().info(f'sending a move command with {len(request_msg.path.poses)} waypoints')
-#         self.send_move_goal(request_msg)
-        
-
-#     def move_to_new_explore_point(self, obs_grid, goal_x, goal_y):
-#         start_x, start_y, ang = self.retrieve_robot_position()
-#         start_x, start_y = self.convert_to_grid_coordinates(start_x, start_y)
-#         self.get_logger().info(f'current position in grid coordinates: x = {start_x} y = {start_y}')
-#         self.get_logger().info(f'goal position in grid coordinates: x = {goal_x} y = {goal_y}')
-
-#         grid1, _ = self.planner.A_star(obs_grid, [start_x, start_y], [goal_x,goal_y], 1, False, 1, True)
-
-
-#         waypoints, made_it_all_the_way = self.planner.waypoint_creator(False, self.path_planner_grid)
-#         for point in waypoints:
-#             x,y = point
-#             grid1[y,x] = 90
-
-
-#         grid1[goal_y,goal_x] = 50
-#         grid1[start_y,start_x] = 25
-        
-#         self.publish_grid_map(grid1, "obs")
-#         #input("Push a key to move along path")
-#         self.move(waypoints)
-#         self.turn()
-    
-#     def run_explorer(self):
-
-#         while self.status != "All explored":
-#             self.status = ""
-#             x = []
-#             y = []
-
-#             if self.status != "Area explored" and self.status != "All explored":
-#                 self.status, new_x, new_y = self.explore_next()
-#                 if self.status == "Not done":
-#                     x.append(new_x)
-#                     y.append(new_y)
-#                     #input("Push a key to generate path")
-#                     obs_grid = self.path_planner_grid.copy()
-#                     self.move_to_new_explore_point(obs_grid, new_x,new_y)
-
-#             print(self.status)
-#             if len(x) != 0:
-#                 # for i in range(len(x)-1):
-#                 #     self.grid[y[i],x[i]] = 0.6
-#                 # self.grid[y[-1],x[-1]] = -0.6
-#                 # current_x, current_y, yaw = self.retrieve_robot_position()
-#                 # v1 = np.pi/6 + yaw
-#                 # v2 = -np.pi/6 + yaw
-                
-#                 detection_edge = self.circle_creator.circle_filler_angle_dependent(new_x,new_y,None,self.explorer_grid,self.max_detection_range, True, False, False,True, None, None, True)
-#                 self.publish_grid_map(self.explorer_grid,"exp")
-#                 #input("Push a key to continue exploring")
-
-    
-# #_start and _end are also included in the area
-# class Area:
-#     def __init__(self,x_start,y_start,x_end,y_end,midpoint_x,midpoint_y):
-#         self.x_start = x_start
-#         self.y_start = y_start
-#         self.x_end = x_end
-#         self.y_end = y_end
-#         self.explored_once = False
-#         self.one_point = False
-#         self.midpoint_x = midpoint_x
-#         self.midpoint_y = midpoint_y
-
-
-
-# def main():
-#     rclpy.init()
-#     node = Explorer_node()
-#     ex = MultiThreadedExecutor(num_threads=4)
-#     ex.add_node(node)
-#     node.executor = ex
-#     node.circle_creator = circle_creator(node.resolution)
-#     node.explorer_grid = node.fetch_map(0)
-#     node.divide_grid_areas()
-#     #input("Push a key to start exploration")
-#     node.path_planner_grid = node.fetch_map(node.padding)
-
-#     node.turn()
-#     current_x, current_y, yaw = node.retrieve_robot_position()
-#     v1 = np.pi/6 + yaw
-#     v2 = -np.pi/6 + yaw
-#     current_x, current_y = node.convert_to_grid_coordinates(current_x, current_y)
-#     detection_edge = node.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,node.explorer_grid,node.max_detection_range, True, False, False,True,None,None, True)
-#     node.publish_grid_map(node.explorer_grid,"exp")
-
-#     node.run_explorer()
-#     try:
-#         ex.spin()
-#         # rclpy.spin(node)
-#         node.destroy_node()
-#     except KeyboardInterrupt:
-#         pass
-
-#     rclpy.shutdown()
-
-
-# if __name__ == '__main__':
-#     main()

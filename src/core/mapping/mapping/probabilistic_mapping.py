@@ -8,33 +8,33 @@ from core_interfaces.srv import GridCreator
 import numpy as np
 from rclpy.executors import MultiThreadedExecutor
 from sensor_msgs.msg import LaserScan, PointCloud2, PointField
+from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Point, PointStamped
+from std_msgs.msg import Header
 from scipy.spatial import cKDTree
 from tf2_ros import Buffer, TransformListener
-from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 import tf2_geometry_msgs
 import sensor_msgs_py.point_cloud2 as pc2
 from nav_msgs.msg import OccupancyGrid
 import time
 import cv2 
 from _thread import start_new_thread
+from mapping.probabilistic_mapping_utils import ProbabilisticMapper
+from rclpy.qos import QoSProfile, HistoryPolicy, ReliabilityPolicy
 
-class LocalOccupancyMap(Node):
+class ProbabilisticMapping(Node):
     def __init__(self):
-        super().__init__('local_occupancy_map')
+        super().__init__('probabilistic_mapping')
+        self.map_frame = "map"
         group = ReentrantCallbackGroup()
         self.grid_fill_cli = self.create_client(GridCreator, 'fill_in_workspace', callback_group=group)
 
         self.exploration_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"        
         self.resolution = 5 #cm / cell
-        self.padding = 28 #cm
-        self.grid = None
-        self.origin = None
-        self.gaussian_kernel = None
-
-        self.decay_factor = 0.97
-        self.threshold = 40
-        self.increment = 40
+        self.padding = 28 #cm 
+        self.prob_mapper = None
+        self.is_fetching_map = False 
 
         self.fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
@@ -47,26 +47,30 @@ class LocalOccupancyMap(Node):
         self.buffer = Buffer() 
         self.tf_listener = TransformListener(self.buffer, self, spin_thread=False)
 
-        group2 = ReentrantCallbackGroup()
+        group2 = MutuallyExclusiveCallbackGroup()
 
-        self.lidar_sub = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 100, callback_group=group2)
+        qos = QoSProfile(depth=1, 
+                         history=HistoryPolicy.KEEP_LAST, 
+                         reliability=ReliabilityPolicy.BEST_EFFORT)
+         
+        self.lidar_sub = self.create_subscription(LaserScan, '/scan', self.lidar_callback, callback_group=group2, qos_profile=qos)
         self.point_cloud_publisher = self.create_publisher(PointCloud2, '/filtered_lidar_scan', 10)
         self.grid_pub = self.create_publisher(OccupancyGrid, '/local_occupancy_map', 10) 
+        self.velocity_sub = self.create_subscription(Twist, '/current_velocity', self.velocity_callback, callback_group=group2, qos_profile=qos)
+
+        self.curr_v = 0
+        self.curr_w = 0 
 
         self.last_update = self.get_clock().now()
         self.update_interval = 0.5
-        # self.create_timer(0.1, self.publish_grid_map)
-
-
-    def gaussian(self, grid, sigma=2):
-        max_len = max(grid.shape[0], grid.shape[1])
-        gaussian_kernel = np.zeros((2 * max_len,2 * max_len)) 
-        for i in range(2 * max_len):
-            for j in range(2 * max_len):
-                gaussian_kernel[i, j] = np.exp(-((i - max_len)**2 + (j - max_len)**2) / (2 * sigma**2))
-        return gaussian_kernel 
+        self.get_logger().info(f"starting local occupancy map") 
     
+    def velocity_callback(self, msg):
+        self.curr_v = msg.linear.x
+        self.curr_w = msg.angular.z
+
     def fetch_map(self):
+        self.is_fetching_map = True
         self.get_logger().info('fetching map')
         req = GridCreator.Request()
         req.padding = self.padding
@@ -80,13 +84,9 @@ class LocalOccupancyMap(Node):
         flat_grid = future.result()
         self.origin = [flat_grid.grid.info.origin.position.x, flat_grid.grid.info.origin.position.y]
         grid = np.array(flat_grid.grid.data,dtype=np.float64).reshape((flat_grid.grid.info.height, flat_grid.grid.info.width))
-        self.get_logger().info(f"got map")
+        self.get_logger().info(f"got map") 
 
-        self.gaussian_kernel = self.gaussian(grid)
-        return grid
-    
-    def convert_to_grid_coordinates(self, x, y):
-        return int(np.round((x/self.resolution)+self.origin[0],0)), int(np.round((y/self.resolution)+self.origin[1],0))
+        self.prob_mapper = ProbabilisticMapper(grid.shape, 0.01 * self.resolution, self.origin)
 
     def transform_points_to_frame(self, points, transform, stamp):
         """
@@ -119,10 +119,6 @@ class LocalOccupancyMap(Node):
         ranges = np.array(scan_msg.ranges)
         angles = scan_msg.angle_min + np.arange(len(ranges)) * scan_msg.angle_increment
 
-        valid = np.isfinite(ranges)
-        ranges = ranges[valid]
-        angles = angles[valid]
-
         # Convert to Cartesian coordinates
         x = ranges * np.cos(angles)
         y = ranges * np.sin(angles)
@@ -137,98 +133,93 @@ class LocalOccupancyMap(Node):
         # Apply region mask
         x_scaled = (points[:, 0] + a) / r
         y_scaled = (points[:, 1] + b) / q
-        mask = np.maximum(np.abs(x_scaled), np.abs(y_scaled)) >= 1
-        filtered_points = points[mask]
+        mask = np.maximum(np.abs(x_scaled), np.abs(y_scaled)) < 1
+        points[mask] = 0.01
 
-        # KDTree-based neighbor filtering
-        radius = 0.15  # 2 cm neighborhood radius
-        kdtree = cKDTree(filtered_points)
-        to_keep = np.ones(filtered_points.shape[0], dtype=bool)
+        # # Transform filtered points back to range measurements 
+        # r = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
+        ranges[mask] = 0.01
+        return ranges
 
-        for i, p in enumerate(filtered_points):
-            if not to_keep[i]:
-                continue  # Already marked for removal
-            idxs = kdtree.query_ball_point(p, r=radius)
-            idxs.remove(i)  # Don't remove itself
-            to_keep[idxs] = False  # Remove all close neighbors 
+    def lidar_callback(self, msg):
+        if self.curr_w > 0.1 or self.curr_v > 0.3:
+            return 
+        
+        filtered_ranges = self.filter_points(msg)
+        if filtered_ranges is None:
+            return
+
+        if self.prob_mapper is None:
+           if self.is_fetching_map:
+               return 
+           self.fetch_map()
+
+        self.update_grid(filtered_ranges)
+        msg.header.frame_id = self.map_frame
+        self.publish_filtered_scan(filtered_ranges, msg.header)
+
+    def publish_filtered_scan(self, filtered_ranges, header):
+        angles = np.arange(len(filtered_ranges)) * (np.pi / 180) - np.pi
+        points = np.column_stack((filtered_ranges * np.cos(angles), filtered_ranges * np.sin(angles), np.zeros(len(filtered_ranges))))
 
         # Transform points to odom frame 
         try:
-            transform = self.buffer.lookup_transform('odom', 'base_link', rclpy.time.Time())
+            transform = self.buffer.lookup_transform(self.map_frame, 'lidar_link', rclpy.time.Time())
         except Exception as e:
             self.get_logger().error(f'Transform exception: {e}')
             return None
 
-        final_points = filtered_points[to_keep]
-        final_points, final_pointslist = self.transform_points_to_frame(final_points, transform, scan_msg.header.stamp)
-        return final_points, final_pointslist
-    
-    def lidar_callback(self, msg):
-        result = self.filter_points(msg)
-        if result is None:
+        final_points, final_pointslist = self.transform_points_to_frame(points, transform, header.stamp)
+        header.frame_id = 'odom'
+        msg = pc2.create_cloud(header, self.fields, final_pointslist)
+        self.point_cloud_publisher.publish(msg)
+
+    def update_grid(self, filtered_ranges): 
+        try:
+            transform = self.buffer.lookup_transform(self.map_frame, 'lidar_link', rclpy.time.Time())
+        except Exception as e:
+            self.get_logger().error(f'Transform exception: {e}')
             return
-        _, points = result
+        x = transform.transform.translation.x 
+        y = transform.transform.translation.y  
+        qx = transform.transform.rotation.x 
+        qy = transform.transform.rotation.y  
+        qz = transform.transform.rotation.z 
+        qw = transform.transform.rotation.w 
+        theta = np.arctan2(2.0*(qw*qz + qx*qy), qw*qw + qx*qx - qy*qy - qz*qz)
+        self.prob_mapper.update_map(filtered_ranges, np.array([x,y,theta])) 
 
-        # Convert to ROS2 PointCloud2 message   
-        msg = pc2.create_cloud(msg.header, self.fields, points)
-
-        self.point_cloud_publisher.publish(msg) 
-
-        if self.grid is None:
-            self.grid = self.fetch_map()
-
-        self.update_grid(points)
-
-    def update_grid(self, points): 
-
-        self.grid = np.round(self.grid * self.decay_factor, 0).astype(np.int8)
-        
-        points_to_inflate = []
-        for point in points: 
-            x, y = self.convert_to_grid_coordinates(point[0]* 100, point[1]* 100)
-            if x < 0 or x >= self.grid.shape[1] or y < 0 or y >= self.grid.shape[0]:
-                continue
-            points_to_inflate.append((x, y))
-            self.grid[y, x] = min(self.grid[y, x] + self.increment, 100)
-
-        if self.get_clock().now() - self.last_update > rclpy.duration.Duration(seconds=self.update_interval):
+        current_time_in_seconds = self.get_clock().now().to_msg().sec 
+        last_update_in_seconds = self.last_update.to_msg().sec 
+        if current_time_in_seconds - last_update_in_seconds >= self.update_interval:
+            self.prob_mapper.compute_inflated_occupancy()
+            self.publish_grid_map()
             self.last_update = self.get_clock().now()
-            start_new_thread(self.publish_grid_map, ())
-
-    def gaussian_resample(self, grid):
-        img_from_grid = grid.astype(np.uint8)
-        blurred = cv2.GaussianBlur(img_from_grid, (15,15), 0)
-        
-        thres = 1
-        temp_grid = blurred
-        temp_grid[temp_grid > thres] = -1
-        temp_grid[temp_grid <= thres] = 0
-
-        return temp_grid
 
     def publish_grid_map(self):
-        if self.grid is None:
+        if self.prob_mapper is None:
             return
-        thresholded_grid = self.grid.copy() 
-        thresholded_grid[thresholded_grid < self.threshold] = 0 
-        thresholded_grid[thresholded_grid >= self.threshold] = 100
+        # thresholded_grid = self.prob_mapper.map
+        # thresholded_grid[thresholded_grid < -0.5] = 0 
+        # thresholded_grid[thresholded_grid >= -0.5] = 100
         
-        grid = self.gaussian_resample(thresholded_grid)
+        grid = self.prob_mapper.inflated_map.astype(np.int8)
 
         msg = OccupancyGrid()
 
         msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = "map" 
+        msg.header.frame_id = self.map_frame
 
         msg.info.resolution = float(self.resolution/100)
         msg.info.width = grid.shape[1]
         msg.info.height = grid.shape[0]
 
-        msg.info.origin.position.x = -float(self.origin[0]/100)*self.resolution
-        msg.info.origin.position.y = -float(self.origin[1]/100)*self.resolution
+        msg.info.origin.position.x = - float(self.origin[0]/100)*self.resolution
+        msg.info.origin.position.y = - float(self.origin[1]/100)*self.resolution
         msg.info.origin.position.z = 0.0
         msg.info.origin.orientation.w = 1.0  
         grid = np.round(grid,0).astype(np.int8)
+        grid[grid == 100] = -1
         msg.data = grid.flatten().tolist()
         
         self.grid_pub.publish(msg)
@@ -236,7 +227,7 @@ class LocalOccupancyMap(Node):
 
 def main():
     rclpy.init()
-    node = LocalOccupancyMap()
+    node = ProbabilisticMapping()
     ex = MultiThreadedExecutor() 
     ex.add_node(node)
     try:

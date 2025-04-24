@@ -34,7 +34,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        map_to_odom_transform,
+        #map_to_odom_transform,
         base_to_camera_transform,
         base_to_lidar_transform, 
         base_to_arm_transform

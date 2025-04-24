@@ -76,7 +76,7 @@ def generate_launch_description():
         odometry_node,
         path_publisher_node,
         arm_simple_move,
-        yolo_detectionnode,
+        # yolo_detectionnode,
         arm_box_detector,
         arm_box_pos_pub,
         arm_place_service,

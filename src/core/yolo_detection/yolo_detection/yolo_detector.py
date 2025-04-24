@@ -277,8 +277,8 @@ class YoloDetector(Node):
                     # X_bottomright,Y_bottomright,Z_bottomright=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_bottomright, y_bottomright, z)
 
                     X_c2,Y_c2,Z_c2=transform_point(X_c,Y_c,Z_c,from_frame='arm_base_link',to_frame=target_frame)# take meter unit
-                    X_topleft2,Y_topleft2,Z_topleft2=x_topleft, y_topleft, 0
-                    X_bottomright2,Y_bottomright2,Z_bottomright2=x_bottomright, y_bottomright, 0
+                    X_topleft2,Y_topleft2,Z_topleft2=max(0,x_topleft-50), max(0,y_topleft-50), 0
+                    X_bottomright2,Y_bottomright2,Z_bottomright2=min(cv_image.shape[1],x_bottomright+50), min(cv_image.shape[0],y_bottomright+50), 0
                 else:
                     X_c,Y_c,Z_c=from_2d_to_3d(x,y,z,camera_info["focal"],camera_info["c_x"],camera_info["c_y"])# the point in the robot camera frame，mm unit
                     X_topleft,Y_topleft,Z_topleft=from_2d_to_3d(x_topleft,y_topleft,z,camera_info["focal"],camera_info["c_x"],camera_info["c_y"])
@@ -288,6 +288,7 @@ class YoloDetector(Node):
                     X_topleft2,Y_topleft2,Z_topleft2=transform_point(X_topleft/1000,Y_topleft/1000,Z_topleft/1000,from_frame=camera_frame,to_frame=target_frame)
                     X_bottomright2,Y_bottomright2,Z_bottomright2=transform_point(X_bottomright/1000,Y_bottomright/1000,Z_bottomright/1000,from_frame=camera_frame,to_frame=target_frame)
 
+                # self.get_logger().warning(f"2d x: {x}, 3d x: {X_c}, transformed 3d x {X_c2}")
 
                 if X_c2 is None or Y_c2 is None or Z_c2 is None:
                     self.get_logger().error(f"cannot transform to {target_frame} from {camera_frame} with lookup time: {time_request}")
@@ -303,8 +304,8 @@ class YoloDetector(Node):
             cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
             
 
-            if camera_info['frame'] == "arm_camera": 
-                cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
+            # if camera_info['frame'] == "arm_camera": 
+            #     cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
             debug_time=time.time()
             r = self.model(cv_image,
                            device=0,
@@ -350,11 +351,11 @@ class YoloDetector(Node):
         self.get_logger().info("Processing image message...")
         if camera_name=="arm_camera":
             camera_frame = "arm_camera"     
-            camera_info={'focal':540,'c_x':320,'c_y':240, 'frame': 'arm_camera'}######this should be tested
+            camera_info={'focal':540,'c_x':320,'c_y':240, 'frame': 'arm_camera'}
             detected_objects, classname_list = yolo_image_detect(self.latest_arm_image, camera_info, hardcode_depth=230)
         elif camera_name=="rgbd_camera":
             camera_frame = "camera_depth_optical_frame"
-            camera_info={'focal':606.22,'c_x':330.02,'c_y':247.6, 'frame': 'camera_depth_optical_frame'}
+            camera_info={'focal':606.22,'c_x':424,'c_y':240, 'frame': 'camera_depth_optical_frame'}
             detected_objects, classname_list = yolo_image_detect(self.latest_rgbd_image,camera_info,hardcode_depth=-1)
         else:
             self.get_logger().error("yolo detection error, camera name doesn't match")

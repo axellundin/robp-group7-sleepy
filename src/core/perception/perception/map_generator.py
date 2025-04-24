@@ -76,9 +76,6 @@ class MapGenerator(Node):
         assert request.target_frame == "map", "target_frame must be map"
 
         process_result = self.process_once_s()
-        for index, i in enumerate(process_result):
-            name = (f"{i.category}_num{index}")
-            publish_transform(name, i.center_point)
 
         response.objects = process_result
         response.category_list = "aha look at my face"

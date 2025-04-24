@@ -48,6 +48,8 @@ class SimpleMove(Node):
         )
         self.max_joint_diff = 800
         self.joint_movement_time = 1000
+        self.joint_velocity = 10
+        self.min_joint_movement_time = 500
         
         self.get_logger().info('SimpleMove node initialized')
 
@@ -55,9 +57,23 @@ class SimpleMove(Node):
     def joint_angles_callback(self, msg):
         self.latest_joint_angles = msg.position
 
+    def compute_joint_transition_time(self, desired_joint_values):
+        if self.latest_joint_angles is None:
+            return desired_joint_values
+        current_joint_values = self.latest_joint_angles
+        speeds = []
+        for i in range(6):
+            if desired_joint_values[i] == -1:
+                speeds.append(self.joint_movement_time)
+                continue
+            abs_diff = abs(current_joint_values[i] - desired_joint_values[i]) 
+            speeds.append(max(int(abs_diff / self.joint_velocity), self.min_joint_movement_time))
+
+        return desired_joint_values[:6] + speeds
+
     def send_and_make_sure_moves_correctly(self, encoder_values):
         msg = Int16MultiArray()
-        msg.data = encoder_values
+        msg.data = self.compute_joint_transition_time(encoder_values)
         self.publisher.publish(msg)
 
         latest_command = self.get_clock().now()
@@ -65,6 +81,7 @@ class SimpleMove(Node):
         while not self.check_joints(encoder_values):
             if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=0.25):
                 # Send again 
+                msg.data = self.compute_joint_transition_time(encoder_values)
                 self.publisher.publish(msg)
                 latest_command = self.get_clock().now()
             time.sleep(0.01)

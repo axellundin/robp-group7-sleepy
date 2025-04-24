@@ -45,7 +45,11 @@ class Move_to(Node):
         self.last_id = 0
 
         self.marker_pub = self.create_publisher(Marker, '/visualization_marker', 10)
+        self.velocity_pub = self.create_publisher(Twist, '/current_velocity', 10)
         self.next_waypoint_pub = self.create_publisher(PoseStamped, '/next_waypoint', 10)
+
+        self.velocity_last_update = self.get_clock().now() 
+        self.velocity_update_interval = 0.1
 
         start_new_thread(self.spin_thread, ())
 
@@ -54,7 +58,7 @@ class Move_to(Node):
             rclpy.spin_once(self, timeout_sec=0.001)
 
     def move_callback(self, request, response):
-        self.get_logger().debug(f"Move to callback with {request.path.poses=}")
+        self.get_logger().debug(f"Move to callback with poses {[(pose.pose.position.x, pose.pose.position.y) for pose in request.path.poses]}")
         self.should_continue = False
         self.last_id += 1 
         my_id = self.last_id
@@ -65,6 +69,7 @@ class Move_to(Node):
             self.get_logger().info(f"{"----"*100}Move to {my_id} cancelled{"----"*100}")
             return response
         self.all_done = False
+        self.should_continue = True
         #Fetching request
         pose_list = request.path.poses
         point_only_request = request.enforce_orientation
@@ -78,6 +83,8 @@ class Move_to(Node):
         # determines whether reverse driving should be allowed
 
         for goal_pose_index in range(len(pose_list)):
+            if not self.should_continue:
+                break
             goal_pose = pose_list[goal_pose_index] 
             self.get_logger().debug(f"Using waypoint {goal_pose_index} at {goal_pose}")
             goal_pose.header.stamp = self.get_clock().now().to_msg()
@@ -155,7 +162,6 @@ class Move_to(Node):
             #     self.all_done = True
             #     return response
 
-            self.should_continue = True
             while self.should_continue:
                 #Transforming goal pose
                 #frames = self.tf_buffer.all_frames_as_yaml()
@@ -168,6 +174,15 @@ class Move_to(Node):
 
                 #Publishing velocity command 
                 self._pub_vel.publish(vel)
+
+                current_time_in_seconds = self.get_clock().now().to_msg().sec
+                last_time_in_seconds = self.velocity_last_update.to_msg().sec
+                if current_time_in_seconds - last_time_in_seconds > self.velocity_update_interval:
+                    msg = Twist()
+                    msg.linear.x = self.movement_computation._current_vel_x
+                    msg.angular.z = self.movement_computation._current_vel_w
+                    self.velocity_pub.publish(msg)
+                    self.velocity_last_update = self.get_clock().now()
 
         if not self.should_continue: 
             self.get_logger().debug("Move to cancelled")

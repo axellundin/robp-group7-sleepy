@@ -75,12 +75,16 @@ class ArmCVTesting(Node):
             # Select an object with category "1.0"
             object_to_grip = None
             prohited = ["box"]
+            upper_left_x = None 
+            upper_left_y = None 
             for obj in response.objects:
                 if not obj.category in prohited:
                     if obj.image == Image():
                         continue
                     object_to_grip = obj
                     category = obj.category
+                    upper_left_x = obj.topleft_point.pose.position.x
+                    upper_left_y = obj.topleft_point.pose.position.y
                     break
             # If no object with category "1.0" is detected, then we skip gripping position detection
             if object_to_grip is None:
@@ -91,14 +95,28 @@ class ArmCVTesting(Node):
             image = object_to_grip.image
             cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
 
+            threshold = min(cv_image.shape[1], 420 - upper_left_y)
+            # Separate the image into the color channels: 
+            b, g, r = cv2.split(cv_image)
 
-            thresh = cv2.Canny(cv_image, 100, 200)
-            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            thresh_g = cv2.Canny(g, 120, 200)
+            thresh_b = cv2.Canny(b, 120, 200)
+            thresh_r = cv2.Canny(r, 120, 200)
+
+            contours_g, hierarchy_g = cv2.findContours(thresh_g, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours_b, hierarchy_b = cv2.findContours(thresh_b, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours_r, hierarchy_r = cv2.findContours(thresh_r, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            # thresh = cv2.Canny(cv_image, 150, 200)
+            # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            contours = contours_g + contours_b + contours_r
+            contours = [contour for contour in contours if contour[:,0,1].max() < threshold]
 
             # Get the minimum area rectangle   
-            contours = [contour for contour in contours if len(contour) > 80]
+            contours = [contour for contour in contours if len(contour) > 100]
             cv2.drawContours(cv_image, contours, -1, (0, 255, 0), 2)
-
+            contours_before_convex_hull = contours
             # Convert all contours to convex hull of the union of all contours 
             contours = [cv2.convexHull(np.concatenate(contours)) for contour in contours]
 
@@ -137,6 +155,14 @@ class ArmCVTesting(Node):
             max_angle = - ((max_angle + np.pi/2) % np.pi - np.pi/2)
             phi = 0
 
+            com = self.compute_center_of_mass_from_contours(contours_before_convex_hull, cv_image)
+
+            # Draw circle at the center of mass
+            cv2.circle(cv_image, com, 5, (0, 0, 255), -1)
+
+            if com is None:
+                self.get_logger().info('No center of mass detected, skipping gripping position detection') 
+                return
             if category == "cube":
                 phi = min(min_angle, max_angle, key=lambda x: abs(x))
             elif category == "toy":
@@ -148,12 +174,26 @@ class ArmCVTesting(Node):
 
             # Convert back to ROS Image message and publish
             ros_image = self.bridge.cv2_to_imgmsg(cv_image, encoding='bgr8')
-            #ros_image = self.bridge.cv2_to_imgmsg(thresh, encoding='8UC1')
+            # ros_image = self.bridge.cv2_to_imgmsg(thresh, encoding='8UC1')
             self.grip_publisher.publish(ros_image)
             
         except Exception as e:
             raise e
             self.get_logger().error(f'Error processing image: {str(e)}')
+
+    def compute_center_of_mass_from_contours(self, contours, cv_image): 
+
+        # 1. Overlay all contours 
+        overlay = np.zeros((cv_image.shape[0], cv_image.shape[1]), dtype=np.uint8) 
+        cv2.drawContours(overlay, contours, -1, (255, 255, 255), 1)
+        # 2. Compute the center of mass of the overlayed contours 
+        M = cv2.moments(overlay)
+        if M['m00'] == 0:
+            return None
+        cx = int(M['m10'] / M['m00'])
+        cy = int(M['m01'] / M['m00'])
+        # 3. Return the center of mass 
+        return cx, cy
 
 def main(args=None):
     rclpy.init(args=args)

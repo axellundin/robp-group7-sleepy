@@ -34,7 +34,7 @@ class PickUp(Node):
 
         self.resolution = 5 #cm / cell
         self.padding = 25 #cm
-        self.radius = 50 #cm
+        self.radius = 70 #cm
         self.distance_to_object_during_pickup = 10 #cm
         self.distance_to_object_during_place = 20 #cm
         self.distance_to_object = None #cm
@@ -89,6 +89,10 @@ class PickUp(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=False)
         
         self.executor = None
+
+
+        # DEBUG -----
+        self.collistion_check_counter = 0
 
     def set_executor(self, executor):
         self.executor = executor
@@ -185,7 +189,8 @@ class PickUp(Node):
                 return response
 
     def next_waypoint_callback(self, msg):
-        self.get_logger().debug(f'Next waypoint received: x = {msg.pose.position.x}, y = {msg.pose.position.y}')
+        self.get_logger().debug(f'Next waypoint received: x = {msg.pose.position.x}, y = {msg.pose.position.y}') 
+        self.get_logger().debug(f"States are: \033[93m {self.should_move=} \033[0m, \033[94m {self.collistion_check_counter=} \033[0m")
         pose = PoseStamped() 
         pose.header.frame_id = msg.header.frame_id 
         pose.header.stamp = msg.header.stamp  
@@ -225,6 +230,7 @@ class PickUp(Node):
         return np.min(values) < 0 
     
     def local_occupancy_callback(self, msg):
+        self.collistion_check_counter += 1
         self.local_occupancy_map = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
         self.local_occupancy_update_time = msg.header.stamp
         
@@ -421,6 +427,8 @@ class PickUp(Node):
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
         test_radius = 2*self.resolution
         test_points = [[current_x, current_y]]
+        self.care_about_collisions = False
+        self.should_move = True 
         while not(unoccupied_found):
             latest_path_planner_grid = self.grid.copy() 
             self.insert_objects_in_map_file(latest_path_planner_grid) 
@@ -434,8 +442,9 @@ class PickUp(Node):
                     move_command.enforce_orientation = False 
                     success = self.move_along_path(move_command)
                     self.get_logger().debug(f'Move out from occupied done, with result: {success}')
+                    self.care_about_collisions = True
                     return
-                    
+            
             test_radius += self.resolution
 
     # generates a path between the start and goal based on the grid map
@@ -498,8 +507,8 @@ class PickUp(Node):
         goal_list.poses[-1].pose.orientation.z = float(qz)
         goal_list.poses[-1].pose.orientation.w = float(qw)
         request_msg.path = goal_list
-        request_msg.max_speed = 0.2#0.4
-        request_msg.max_turn_speed = 0.15#0.25
+        request_msg.max_speed = 0.4
+        request_msg.max_turn_speed = 0.25
         request_msg.enforce_orientation = True
         request_msg.allow_reverse = False
         request_msg.stop_at_goal = True
@@ -677,14 +686,14 @@ class PickUp(Node):
         grid2 = grid.copy()
         for object in self.objects:
             x, y = self.convert_to_grid_coordinates(object[0],object[1])
-            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,self.padding+3,False,False, False,True,None,None,False)
+            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,self.padding+7,False,False, False,True,None,None,False)
             for cell in fill_in_cells:
                 grid[cell[1],cell[0]] = -1
             grid[y,x] = 90
         half_diagonal_box = np.sqrt((24.5/2)**2+(15.5/2)**2)
         for box in self.boxes:
             x, y = self.convert_to_grid_coordinates(box[0],box[1])
-            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,half_diagonal_box+self.padding+3,False,False, False,True,None,None,False)
+            fill_in_cells = self.circle_creator.circle_filler_angle_dependent(x,y,None,grid2,half_diagonal_box+self.padding+7,False,False, False,True,None,None,False)
             for cell in fill_in_cells:
                 grid[cell[1],cell[0]] = -1
             grid[y,x] = 90

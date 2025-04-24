@@ -70,7 +70,7 @@ class BoxDetectionPublisher(Node):
         try:
             # Convert ROS Image message to OpenCV image
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            
+            cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
             # Process the image to detect boxes
             center_point = self.box_detection.get_contour_from_image(cv_image)
             self.center_points.append(center_point)

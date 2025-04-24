@@ -59,7 +59,7 @@ class Detection(Node):
 
         print("started")
 
-        self.detection_max_distance = 0.9
+        self.detection_max_distance = 1.0
         self.pointcloud =None
 
         # Initialize the transform broadcaster
@@ -301,8 +301,8 @@ class Detection(Node):
         cluster = self.cluster_points(points_upground, colors_upground)
         self.deal_with_clustered_objs(cluster)
 
-        # pointcloud2obj = create_pointcloud2(points_upground, colors_upground, "camera_depth_optical_frame", self.stamp)
-        # self.pointcloud_pub1.publish(pointcloud2obj)
+        pointcloud2obj = create_pointcloud2(points_upground, colors_upground, "camera_depth_optical_frame", self.stamp)
+        self.pointcloud_pub1.publish(pointcloud2obj)
 
         print("g1 time consumption:")
         print(time.time() - start_time)  
@@ -312,8 +312,8 @@ class Detection(Node):
         cluster = self.cluster_points(points_likelidar, colors_likelidar)
         self.deal_with_clustered_box(cluster)
 
-        # pointcloud2box = create_pointcloud2(points_likelidar, colors_likelidar, "camera_depth_optical_frame", self.stamp)
-        # self.pointcloud_pub2.publish(pointcloud2box)
+        pointcloud2box = create_pointcloud2(points_likelidar, colors_likelidar, "camera_depth_optical_frame", self.stamp)
+        self.pointcloud_pub2.publish(pointcloud2box)
 
         print("g2 time consumption:")
         print(time.time() - start_time)  
@@ -513,12 +513,12 @@ class Detection(Node):
                         normal_list.append(normal)
                         # self.publish_transform(f"box_face_{i}", pose)
                     pose = calc_plane_center(center_list[0],normal_list[0],center_list[1],normal_list[1])
-                    self.publish_transform(f"box_center",pose)
+                    # self.publish_transform(f"box_center",pose)
                     self.boxes.append(pose)
                 else:
                     for i, plane in enumerate(planes):
                         pose, center, normal = plane_to_pose(plane)
-                        self.publish_transform(f"box_{i}",pose)
+                        # self.publish_transform(f"box_{i}",pose)
                         self.boxes.append(pose)                   
 
             else:                
@@ -528,7 +528,7 @@ class Detection(Node):
                 pose.pose.position.x = avg_position[0]
                 pose.pose.position.y = avg_position[1]
                 pose.pose.position.z = avg_position[2]
-                self.publish_transform(f"obj_{cluster_id}", pose)
+                # self.publish_transform(f"obj_{cluster_id}", pose)
                 self.objects.append(pose)
 
     @time_it
@@ -588,7 +588,7 @@ class Detection(Node):
                     if len(inliers) > max_inliers:
                         max_inliers = len(inliers)
                         best_line = line
-                        best_inliers = inliers
+                        best_inliers = inliers # find line with most inliers
                 
             
                 p1, p2 = best_line  # line parameters are two points (p1, p2)
@@ -627,7 +627,7 @@ class Detection(Node):
                 if 0.1 <= line_length <= 0.3:
                     if 0.1 <= line_length <= 0.2: # box line 16
                         box_center = center_point + 0.12 * perpendicular_vector  
-                        box_orientation = direction_vector_normalized  
+                        box_orientation = perpendicular_vector  
                         self.get_logger().info(f"Box center: {box_center}")
                         self.get_logger().info(f"Box orientation: {box_orientation}")
                     
@@ -661,7 +661,7 @@ class Detection(Node):
                     self.get_logger().info("find one box")
                     # self.publish_transform("box", pose)
                     # self.boxes.append(pose)
-                    self.objects.append({'ps': pose, 'points': points, 'colors': colors})
+                    self.boxes.append({'ps': pose, 'points': points, 'colors': colors})
 
                 else:
                     self.get_logger().warning(f"Error: Detected line length {line_length} does not match expected box dimensions (10-30).")
@@ -689,27 +689,6 @@ class Detection(Node):
         downsampled_colors = sum_colors / voxel_counts[:, None]
         
         return downsampled_points, downsampled_colors
-
-    def publish_transform(self, child_frame_id, pose, father_frame_id = 'camera_depth_optical_frame'):
-            transform = TransformStamped()
-
-            transform.header.stamp = self.stamp
-
-            transform.header.frame_id = father_frame_id
-            transform.child_frame_id = child_frame_id
-
-            transform.transform.translation.x = pose.pose.position.x
-            transform.transform.translation.y = pose.pose.position.y
-            transform.transform.translation.z = pose.pose.position.z
-
-            transform.transform.rotation.x = pose.pose.orientation.x
-            transform.transform.rotation.y = pose.pose.orientation.y
-            transform.transform.rotation.z = pose.pose.orientation.z
-            transform.transform.rotation.w = pose.pose.orientation.w
-
-            # 发布变换
-            self.tf_broadcaster.sendTransform(transform)
-            self.get_logger().info(f"Dynamic transform published: {child_frame_id}")
 
     def transform_list(self, list: list[PoseStamped], transform_time, to_frame, from_frame="camera_depth_optical_frame"):
         new_list=[]
@@ -757,7 +736,6 @@ class Detection(Node):
 
         return transformed_points, colors
 
-
 @time_it
 def create_pointcloud2(points, colors, frame_id= None, stamp = None):
     assert points.shape[0] == colors.shape[0], "Points and colors must have the same number of elements."
@@ -780,7 +758,7 @@ def create_pointcloud2(points, colors, frame_id= None, stamp = None):
     header = std_msgs.msg.Header()
     header.stamp = stamp  
     header.frame_id = frame_id
-    pointcloud_msg = pc2.create_cloud_xyz32(header, points)
+    pointcloud_msg =pc2.create_cloud_xyz32(header, points) 
     pointcloud_msg.header = header
     pointcloud_msg.height = 1
     pointcloud_msg.width = num_points

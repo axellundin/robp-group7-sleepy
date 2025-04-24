@@ -8,6 +8,8 @@ from geometry_msgs.msg import PoseStamped
 from tf2_ros import TransformBroadcaster
 from nav_msgs.msg import Path
 from tf2_ros import TransformStamped
+from std_msgs.msg import Float32
+
 
 class Odometry(Node):
     def __init__(self):
@@ -27,6 +29,8 @@ class Odometry(Node):
 
         # Initialize the path publisher
         self.path_pub = self.create_publisher(Path, 'path', 10)
+        self.omega_pub = self.create_publisher(Float32, '/angular_velocity', 10)
+
 
     def ticks_callback(self, msg):
         """Compute odometry from accumulated ticks."""
@@ -41,7 +45,8 @@ class Odometry(Node):
         # Store current timestamp for next iteration
         self.last_stamp = msg.header.stamp
 
-        delta_x, delta_y, delta_theta = self.compute_pose_delta(delta_ticks_left, delta_ticks_right, delta_t)
+        delta_x, delta_y, delta_theta, omega = self.compute_pose_delta(delta_ticks_left, delta_ticks_right, delta_t)
+        self.omega_pub.publish(Float32(data=omega))
         mid_theta = self.theta + delta_theta / 2
 
         self.x += delta_x * math.cos(mid_theta)
@@ -110,7 +115,7 @@ class Odometry(Node):
         delta_theta = omega * dt 
         delta_x = vel * dt 
         delta_y = vel * dt 
-        return delta_x, delta_y, delta_theta 
+        return delta_x, delta_y, delta_theta, omega 
 
 def quaternion_from_euler(roll, pitch, yaw):
     """Convert Euler angles to quaternion."""
