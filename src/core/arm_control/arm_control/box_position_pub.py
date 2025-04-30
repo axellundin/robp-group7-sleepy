@@ -114,7 +114,7 @@ class BoxPositionPublisher(Node):
         transform_matrix[1, 3] = translation.y
         transform_matrix[2, 3] = translation.z
 
-        world_position = self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.075)
+        world_position = self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.065)
         print(f"World position: {world_position}")
         pose = PoseStamped()
         pose.header.stamp = self.get_clock().now().to_msg()

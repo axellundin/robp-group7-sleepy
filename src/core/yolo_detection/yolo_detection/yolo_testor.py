@@ -21,11 +21,14 @@ class YoloImageDetectClient(Node):
 
     def send_request(self):
         request = YoloImageDetect.Request()
-        request.camera_name = "rgbd_camera"
-        # request.camera_name = "arm_camera"
-        request.target_frame = "camera_link"
-        # request.target_frame = "arm_base_link"
+        ## RGBD CAMERA
+        # request.camera_name = "rgbd_camera"
+        # request.target_frame = "camera_link"
         # request.target_frame = "camera_depth_optical_frame"
+
+        ## ARM CAMERA
+        request.camera_name = "arm_camera"
+        request.target_frame = "arm_base_link"
 
         future = self.client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
@@ -37,6 +40,8 @@ class YoloImageDetectClient(Node):
             for i, obj in enumerate(response.objects):
                 pose = obj.center_point
                 category = obj.category
+                if category == "box":
+                    continue
                 print(f"Object {i + 1}:")
                 print(f"  Category: {category}")
                 x_m = (pose.pose.position.x)
@@ -198,7 +203,7 @@ class YoloImageSaverClient(Node):
 def main():
     rclpy.init()
 
-    client = FinalDetectClient()
+    client = YoloImageDetectClient()
 
     try:
         while rclpy.ok():

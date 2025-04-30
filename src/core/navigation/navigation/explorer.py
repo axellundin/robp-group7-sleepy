@@ -95,7 +95,7 @@ class Explorer_node(Node):
         self.nr_to_high_claim_threshold = 3 # itterations before reduce accepted exploration ratio
         self.nr_to_high_claim_rejected = 0
         self.tot_nr_to_high_claim_rejected = 0
-        self.reduction_accepted_exploration_ratio  = 0.8 # cells
+        self.reduction_accepted_exploration_ratio  = 0.7
         
         approximate_circular_area_covering_entire_area = ((np.sqrt(2)*self.approximate_area_size/2)**2)*np.pi
         circular_area_covered_by_camera = np.pi*self.max_detection_range**2
@@ -119,8 +119,8 @@ class Explorer_node(Node):
         self.care_about_collisions = True 
         self.local_occupancy_update_time = None
         self.should_move = True 
-        self.get_logger().debug(f"\033[93m {self.should_move=} \033[0m")
-        # DEBUG -----
+        self.get_logger().info(f"\033[93m {self.should_move=} \033[0m")
+        # info -----
         self.collistion_check_counter = 0
         
         group2 = ReentrantCallbackGroup()
@@ -308,8 +308,8 @@ class Explorer_node(Node):
         return "Not done", x, y, yaw, full_turn
     
     def next_waypoint_callback(self, msg):
-        self.get_logger().debug(f'Next waypoint received: x = {msg.pose.position.x}, y = {msg.pose.position.y}') 
-        self.get_logger().debug(f"States are: \033[93m {self.should_move=} \033[0m, \033[94m {self.collistion_check_counter=} \033[0m")
+        self.get_logger().info(f'Next waypoint received: x = {msg.pose.position.x}, y = {msg.pose.position.y}') 
+        self.get_logger().info(f"States are: \033[93m {self.should_move=} \033[0m, \033[94m {self.collistion_check_counter=} \033[0m")
         pose = PoseStamped() 
         pose.header.frame_id = msg.header.frame_id 
         pose.header.stamp = msg.header.stamp  
@@ -366,12 +366,12 @@ class Explorer_node(Node):
         collision = self.check_if_path_hits_obstacles(start_x, start_y, end_x, end_y, self.local_occupancy_map) 
 
         if collision:
-            self.get_logger().debug(f'Collision detected, path hits obstacles')
-            self.get_logger().debug(f'Current waypoint: x = {self.current_waypoint.pose.position.x}, y = {self.current_waypoint.pose.position.y}')
-            self.get_logger().debug(f'Current pose: x = {current_pose.position.x}, y = {current_pose.position.y}')
-            self.get_logger().debug(f'Start x: {start_x}, Start y: {start_y}, End x: {end_x}, End y: {end_y}')
+            self.get_logger().info(f'Collision detected, path hits obstacles')
+            self.get_logger().info(f'Current waypoint: x = {self.current_waypoint.pose.position.x}, y = {self.current_waypoint.pose.position.y}')
+            self.get_logger().info(f'Current pose: x = {current_pose.position.x}, y = {current_pose.position.y}')
+            self.get_logger().info(f'Start x: {start_x}, Start y: {start_y}, End x: {end_x}, End y: {end_y}')
             self.should_move = False
-            self.get_logger().debug(f"\033[93m {self.should_move=} \033[0m")
+            self.get_logger().info(f"\033[93m {self.should_move=} \033[0m")
     
     #Generates points until a sufficiently good one is found
     def generate_next_point(self,area,unexplored_nr):
@@ -701,7 +701,7 @@ class Explorer_node(Node):
             time,
             )
         except TransformException as ex:
-            self.get_logger().debug(
+            self.get_logger().info(
                 f'Could not transform {"map"} to {"base_link"}: {ex}')
             return
         transformed_pose= tf2_geometry_msgs.do_transform_pose(goal_pose, t)
@@ -739,8 +739,8 @@ class Explorer_node(Node):
             goal_msg.pose = self.transform_to_map(goal_msg.pose)
             goal_list.poses.append(goal_msg)
             request_msg.path = goal_list
-            request_msg.max_speed = 0.3
-            request_msg.max_turn_speed = 0.2
+            request_msg.max_speed = 0.35
+            request_msg.max_turn_speed = 0.25
             request_msg.enforce_orientation = True
             request_msg.stop_at_goal = True
             self.get_logger().info(f'Giving the camra time to detect objects, tick nr: {tick}')
@@ -791,8 +791,8 @@ class Explorer_node(Node):
         goal_msg.pose.orientation.w = float(qw)
         goal_list.poses.append(goal_msg)
         request_msg.path = goal_list
-        request_msg.max_speed = 0.3
-        request_msg.max_turn_speed = 0.2
+        request_msg.max_speed = 0.35
+        request_msg.max_turn_speed = 0.25
         request_msg.enforce_orientation = True
         request_msg.stop_at_goal = True
         self.get_logger().info(f'goal orientation in map coordinates: qz = {goal_msg.pose.orientation.z}, qw = {goal_msg.pose.orientation.w}')
@@ -1032,7 +1032,7 @@ class Explorer_node(Node):
             self.executor.spin_once(timeout_sec=0.1)
         # future.add_done_callback(self.move_callback) 
         if not self.should_move:
-            self.get_logger().debug(f'Move goal cancelled due to collision detection, \033[93m {self.should_move=} \033[0m')
+            self.get_logger().info(f'Move goal cancelled due to collision detection, \033[93m {self.should_move=} \033[0m')
             # Send stop to move to
             self.send_stop_to_move_client()
             return False
@@ -1070,8 +1070,8 @@ class Explorer_node(Node):
             goal_msg.pose.orientation.w = 1.0
             goal_list.poses.append(goal_msg)
         request_msg.path = goal_list
-        request_msg.max_speed = 0.4
-        request_msg.max_turn_speed = 0.25
+        request_msg.max_speed = 0.45
+        request_msg.max_turn_speed = 0.3
         request_msg.enforce_orientation = False
         request_msg.stop_at_goal = True
         request_msg.allow_reverse = True

@@ -38,16 +38,16 @@ class PickupService(Node):
         self.min_joint_movement_time = 500
         self.joint_velocity = 10
         self.gripper_open_position = [3500, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
-        self.gripper_close_position = [11500, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
+        self.gripper_close_position = [11000, -1, -1, -1, -1, -1, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.up_position = [-1, 12000, 12000, 12000, 12000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.viewing_position = [-1, 12000, 3500, 21000, 12000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.first_backup_viewing_position = [-1, 12000, 5000, 21000, 14000, 12000, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         self.second_backup_viewing_position = [-1, 12000, 5000, 21000, 14000, 7500, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
+        self.third_backup_viewing_position = [-1, 12000, 5000, 21000, 14000, 16500, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time, self.joint_movement_time]
         
-
         self.current_target = self.up_position
         self.max_joint_diff = 800
-        self.max_joint_diff_gripper = 2000
+        self.max_joint_diff_gripper = 1200
         self.bridge = CvBridge()
 
         self.box_position_converter = BoxPositionConverter()
@@ -185,7 +185,7 @@ class PickupService(Node):
 
         angle_between_current_pose_and_object = np.arctan2(object_in_odom.pose.position.y - odom_transform.transform.translation.y, object_in_odom.pose.position.x - odom_transform.transform.translation.x)
 
-        pickup_distance = 0.16 
+        pickup_distance = 0.15
         arm_base_link_y_shift = -0.0475  
         base_link_to_pickup_radius = (pickup_distance**2 + arm_base_link_y_shift**2)**0.5
         base_link_pickup_angle = np.arctan2(arm_base_link_y_shift, pickup_distance) 
@@ -209,6 +209,7 @@ class PickupService(Node):
         req_msg = MoveTo.Request()
         req_msg.path.poses = [target_pose]
         req_msg.max_speed = 0.2
+        req_msg.threshold = 0.01
         req_msg.allow_reverse = allow_reverse
         req_msg.max_turn_speed = 0.15
         req_msg.enforce_orientation = True 
@@ -431,7 +432,7 @@ class PickupService(Node):
             for detection in filtered_detections: 
                 if detection.category == expected_category:
                     self.get_logger().info(f'Object is still there. upper left x = {detection.topleft_point.pose.position.x}, upper left y = {detection.topleft_point.pose.position.y}')
-                    time.sleep(10)
+                    # time.sleep(10)
                     max_deviation = max(abs(detection.topleft_point.pose.position.x - expected_upper_left_x), abs(detection.topleft_point.pose.position.y - expected_upper_left_y))
                     if max_deviation < pos_tol:
                         return True
@@ -456,7 +457,7 @@ class PickupService(Node):
             adjusted_viewing_position = False
             # Move the arm to viewing position  
             # msg.data = self.viewing_position
-            viewing_positions = [self.viewing_position, self.first_backup_viewing_position, self.second_backup_viewing_position]
+            viewing_positions = [self.viewing_position, self.first_backup_viewing_position, self.second_backup_viewing_position, self.third_backup_viewing_position]
             category = None
             image = None
             top_x, top_y = None, None

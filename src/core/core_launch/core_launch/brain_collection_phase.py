@@ -47,6 +47,7 @@ class BrainCollectionPhase(Node):
 
     def move_to_object(self):
         # Call the MoveToObject service to move to next object
+        self.get_logger().info('Moving to object')
         request = MoveToObject.Request()
         request.target = "OBJECT"
         future = self.move_client.call_async(request)
@@ -74,6 +75,7 @@ class BrainCollectionPhase(Node):
     def move_back_from_pickup(self, future):
         if not future.result().success:
             self.get_logger().error('Failed to pickup object')
+            self.move_to_object()
             return
         
         self.move_back(future, self.move_to_box)

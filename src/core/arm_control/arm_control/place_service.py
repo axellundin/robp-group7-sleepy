@@ -120,7 +120,7 @@ class PlaceService(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(joint_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=5):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=1):
                 msg.data = self.compute_joint_transition_time(joint_values)
                 self.joint_angles_publisher.publish(msg)
                 latest_command = self.get_clock().now()

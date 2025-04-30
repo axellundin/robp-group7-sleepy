@@ -272,7 +272,7 @@ class YoloDetector(Node):
                     transform_matrix[1, 3] = translation.y
                     transform_matrix[2, 3] = translation.z
 
-                    X_c, Y_c, Z_c = self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.16)
+                    X_c, Y_c, Z_c = self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.16, logger=self.get_logger())
                     # X_topleft,Y_topleft,Z_topleft=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_topleft, y_topleft, z)
                     # X_bottomright,Y_bottomright,Z_bottomright=self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x_bottomright, y_bottomright, z)
 
@@ -301,11 +301,12 @@ class YoloDetector(Node):
                 detected_object = response_send(X_c2,Y_c2,Z_c2,X_topleft2,Y_topleft2,Z_topleft2,X_bottomright2,Y_bottomright2,Z_bottomright2,stamp,cls, cls_num,padded_image,)
                 return detected_object
 
-            cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
-            
 
-            # if camera_info['frame'] == "arm_camera": 
-            #     cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
+            cv_image = self.bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
+            self.get_logger().info(f"image size before undistort: {cv_image.shape[1]} x {cv_image.shape[0]}")
+            if camera_info['frame'] == "arm_camera": 
+                cv_image = cv2.undistort(cv_image, np.array([[438.783367, 0.000000, 305.593336], [0.000000, 437.302876, 243.738352], [0.000000, 0.000000, 1.000000]]),  np.array([-0.361976, 0.110510, 0.001014, 0.000505, 0.000000]))
+            self.get_logger().info(f"image size after undistort: {cv_image.shape[1]} x {cv_image.shape[0]}")
             debug_time=time.time()
             r = self.model(cv_image,
                            device=0,

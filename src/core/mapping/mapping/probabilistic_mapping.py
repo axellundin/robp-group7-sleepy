@@ -32,7 +32,7 @@ class ProbabilisticMapping(Node):
 
         self.exploration_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"        
         self.resolution = 5 #cm / cell
-        self.padding = 28 #cm 
+        self.padding = 35 #cm 
         self.prob_mapper = None
         self.is_fetching_map = False 
 

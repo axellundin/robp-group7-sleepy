@@ -49,6 +49,7 @@ class PickUp(Node):
         self.go_back_oriorientation_w = None
         self.latest_object_index = None
         self.planner = path_planner()
+        self.doing_turn = False
 
         self.start_obs_grid = None
         self.local_occupancy_map = None
@@ -169,6 +170,7 @@ class PickUp(Node):
                 turn_command = self.create_turn_command(turn)
                 #self.get_logger().info(f'Turn command: {turn_command}')
                 self.should_move = True
+                self.doing_turn = True
                 self.get_logger().debug(f'Command to face the object created, \033[94m {should_try_again=} \033[0m, \033[93m {self.should_move=} \033[0m')
                 success = self.move_along_path(turn_command)
                 if not self.should_move:
@@ -176,7 +178,7 @@ class PickUp(Node):
                     self.get_logger().debug(f'Collision detected, trying new path!, \033[94m {should_try_again=} \033[0m, \033[93m {self.should_move=} \033[0m')
                     continue
                 self.get_logger().debug(f'Move done, with result: {success}')
-
+                self.doing_turn = False
                 if not success:
                     response.success = False
                     response.finished = False
@@ -457,7 +459,7 @@ class PickUp(Node):
         grid1, path_result = self.planner.A_star(grid, [start_x, start_y], [goal_x,goal_y], 1, False, 1, True)
         self.get_logger().debug(f"Path planner done, with result: {path_result}, length of path: {len(self.planner.x_values)}")
         
-        if path_result == False:
+        if path_result == False and not self.doing_turn:
             self.move_out_from_occupied()
             return None
 
@@ -560,7 +562,7 @@ class PickUp(Node):
         #self.get_logger().info(f"current_pose_odom = {current_pose_odom.pose}")
         angle_between_current_pose_and_object = np.arctan2(goal_pose_odom.pose.position.y - current_pose_odom.pose.position.y, goal_pose_odom.pose.position.x - current_pose_odom.pose.position.x)
 
-        pickup_distance = 0.16 
+        pickup_distance = 0.14
         arm_base_link_y_shift = 0.0475  
         base_link_to_pickup_radius = (pickup_distance**2 + arm_base_link_y_shift**2)**0.5
         base_link_pickup_angle = np.arctan2(arm_base_link_y_shift, pickup_distance) 

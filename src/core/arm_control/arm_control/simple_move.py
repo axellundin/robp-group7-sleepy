@@ -22,6 +22,7 @@ class SimpleMove(Node):
         self.kinematics = Kinematics(self.joint_limits)  
         
         group = ReentrantCallbackGroup()
+        self.error_weight = [1/2, 1, 1, 1, 1, 1]
 
         # Replace subscriber with service
         self.service = self.create_service(
@@ -96,9 +97,10 @@ class SimpleMove(Node):
                 indices.append(i)
         
         if self.latest_joint_angles is not None:
-            joint_diff = [abs(self.latest_joint_angles[i] - desired_joint_values[i]) for i in indices]
+            joint_diff = [abs(self.latest_joint_angles[i] - desired_joint_values[i]) * self.error_weight[i] for i in indices]
+                
             if max(joint_diff) < self.max_joint_diff:
-               return True 
+               return True  
         return False
 
     def move_arm_callback(self, request, response):

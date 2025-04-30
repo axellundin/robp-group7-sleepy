@@ -237,7 +237,6 @@ class circle_creator:
                 end_angles_obs4.append(-np.pi/2)
                 obs4 = False
         if outside_area:
-            print("\n\n\n\noutside_area\n\n\n\n")
             filtered_points = []
             for x, y in point_on_circle:
                 if area.x_start <= x <= area.x_end and area.y_start <= y <= area.y_end:

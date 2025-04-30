@@ -716,10 +716,10 @@ class BoxPositionConverter:
     def __init__(self):
         self.fx = 540.0
         self.fy = 540.0
-        self.cx = 320.0
-        self.cy = 240.0
+        self.cx = 305.0
+        self.cy = 243.0
 
-    def convert_image_to_world_coordinates(self, transform_arm_base_link_to_arm_camera, x, y, plane_z_coordinate):
+    def convert_image_to_world_coordinates(self, transform_arm_base_link_to_arm_camera, x, y, plane_z_coordinate, logger = None):
         # Compute the unit vector for the point in the image 
 
         u = (x - self.cx) / self.fx
@@ -729,8 +729,16 @@ class BoxPositionConverter:
         t = transform_arm_base_link_to_arm_camera[:3, 3] 
 
         t_z = t[2] 
-        scaling = (plane_z_coordinate - t_z )/ (R[2,2]) 
-        X = u * scaling 
+        alpha = - (np.arccos(R[2,2]) - np.pi / 2)
+        phi = np.arctan2(np.sqrt(u**2 + v**2), 1) * np.sign(v)
+        beta = alpha - phi
+        angle_scaling = 1 / np.sin(beta) * np.cos(phi)
+        # if logger is not None:
+        #     logger.info(f"R[2,2]: {R[2,2]}, arccos(R[2,2]) - pi/2: {alpha}")
+        #     logger.info(f"phi: {phi}")
+        #     logger.info(f"u: {u}, v: {v}")
+        scaling = (plane_z_coordinate - t_z ) * angle_scaling
+        X = u * scaling     
         Y = v * scaling 
         Z = scaling 
 

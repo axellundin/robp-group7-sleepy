@@ -48,7 +48,7 @@ def convert_scan_to_open3d(scan_msg):
     filtered_points = points[mask]
 
     # KDTree-based neighbor filtering
-    radius = 0.01  # 20 cm neighborhood radius
+    radius = 0.01  # 1 cm neighborhood radius
     kdtree = cKDTree(filtered_points)
     to_keep = np.ones(filtered_points.shape[0], dtype=bool)
 
@@ -187,6 +187,13 @@ class IcpMappingNode(Node):
         """Transforms new scan to map frame, performs ICP, and updates transform."""
         self.scan_counter += 1.0
 
+        if self.tf_buffer.can_transform("odom", "base_link", rclpy.time.Time(seconds=0)):
+            self.get_logger().info("odom ready, icp intiated")
+
+        else:
+            self.get_logger().warn("TF odom-base_link lookup failed for first scan; skipping scan, if you see this at the start=ok, otherwise problem")
+            return
+
         if self.latest_correction is None:
             self.latest_correction = np.eye(4)
             self.publish_icp_transform(self.latest_correction, msg)
@@ -212,8 +219,8 @@ class IcpMappingNode(Node):
 
         new_scan = convert_scan_to_open3d(msg)
 
-        if self.tf_buffer.can_transform("odom", "base_link", rclpy.time.Time(seconds=0)):
-            transform = self.tf_buffer.lookup_transform("odom", "base_link", rclpy.time.Time(seconds=0))
+        if self.tf_buffer.can_transform("map", "base_link", rclpy.time.Time(seconds=0)):
+            transform = self.tf_buffer.lookup_transform("map", "base_link", rclpy.time.Time(seconds=0))
             current_x = transform.transform.translation.x
             current_y = transform.transform.translation.y
         else:
@@ -453,7 +460,7 @@ class IcpMappingNode(Node):
     def publish_reference_zones(self, active_index):
         for i, (_, ref_pos) in enumerate(self.reference_scans):
             marker = Marker()
-            marker.header.frame_id = "odom"
+            marker.header.frame_id = "map"
             marker.header.stamp = self.get_clock().now().to_msg()
             marker.ns = "reference_zones"
             marker.id = i
@@ -489,8 +496,9 @@ class IcpMappingNode(Node):
     def publish_icp_transform(self, transform, msg):
         """Publishes ICP correction directly to /tf."""
         # get latest odom transform
-        odom_transform = self.tf_buffer.lookup_transform("odom", "base_link", rclpy.time.Time(seconds=0))
 
+        odom_transform = self.tf_buffer.lookup_transform("odom", "base_link", rclpy.time.Time(seconds=0))
+    
         t = TransformStamped()
         t.header.stamp = odom_transform.header.stamp
         t.header.frame_id = 'map'
