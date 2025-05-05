@@ -404,42 +404,10 @@ class PickupService(Node):
 
         return self.box_position_converter.convert_image_to_world_coordinates(transform_matrix, x, y, -0.16) 
     
-    def check_if_object_is_still_there(self, expected_category, expected_upper_left_x, expected_upper_left_y, pos_tol=10): 
-        result = False
-        for i in range(3):
-            self.get_logger().info(f'Checking if object is still there (attempt {i+1})')
-            request = YoloImageDetect.Request()
-            request.camera_name = "arm_camera"
-            request.target_frame = "arm_base_link"
-
-            self.get_logger().info(f'Sending YOLO request to {request.target_frame}')
-            future = self.yolo_client.call_async(request)
-
-            self.get_logger().info('Waiting for YOLO response...')
-            while not future.done():
-                time.sleep(0.1)
-
-            if future.result() is None: 
-                self.get_logger().error('Failed to receive response.')
-                result = False
-                continue
-            
-            response = future.result()
-            self.get_logger().info(f"Received response: {len(response.objects)} objects detected.")
-
-            filtered_detections = self.filter_detections(response.objects)
-            
-            for detection in filtered_detections: 
-                if detection.category == expected_category:
-                    self.get_logger().info(f'Object is still there. upper left x = {detection.topleft_point.pose.position.x}, upper left y = {detection.topleft_point.pose.position.y}')
-                    # time.sleep(10)
-                    max_deviation = max(abs(detection.topleft_point.pose.position.x - expected_upper_left_x), abs(detection.topleft_point.pose.position.y - expected_upper_left_y))
-                    if max_deviation < pos_tol:
-                        return True
-                    self.get_logger().info(f'Object is still there but too far away from expected position. max deviation = {max_deviation}')
-            result = False 
-        
-        return result
+    def check_if_object_is_still_there(self): 
+        if self.latest_joint_angles is None:
+            return False
+        return self.latest_joint_angles[0] > self.gripper_open_position[0] + 500
     
     def pickup_callback(self, request, response):
         self.get_logger().info('Starting pickup callback')
@@ -484,7 +452,7 @@ class PickupService(Node):
                             self.move_arm_to_joint_values(self.viewing_position)
 
                             time.sleep(2)
-                        
+                        time.sleep(2)
                         detected, x_yolo, y_yolo, _, category, image, top_x, top_y = self.send_yolo_request()
                         if not detected:
                             self.get_logger().error('Failed to detect object.')
@@ -600,13 +568,19 @@ class PickupService(Node):
                 self.get_logger().info('Waiting for move arm response...')
                 time.sleep(0.1)
 
+            # # Check if the object is still there 
+            # time.sleep(2)
+            # if not self.check_if_object_is_still_there(): 
+            #     self.get_logger().error('I think I have dropped the object.')
+            #     continue
+            
             # Move the arm up fully 
             self.get_logger().info('Moving arm up fully...')
             self.move_arm_to_joint_values(self.up_position)
 
             # # Check if the object is still there 
             # time.sleep(2)
-            # if not self.check_if_object_is_still_there(category, 111, 260, pos_tol=200): 
+            # if not self.check_if_object_is_still_there(): 
             #     self.get_logger().error('I think I have dropped the object.')
             #     continue
 

@@ -223,7 +223,7 @@ class ProbabilisticMapping(Node):
         msg.data = grid.flatten().tolist()
         
         self.grid_pub.publish(msg)
-        self.get_logger().info("path grid published")
+        # self.get_logger().info("path grid published")
 
 def main():
     rclpy.init()

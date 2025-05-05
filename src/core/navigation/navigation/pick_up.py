@@ -5,7 +5,7 @@ from nav_msgs.msg import OccupancyGrid
 from core_interfaces.srv import GridCreator
 from geometry_msgs.msg import PoseStamped, Point
 import tf2_geometry_msgs
-from core_interfaces.srv import MoveToObject, MoveTo
+from core_interfaces.srv import MoveToObject, MoveTo, YoloImageDetect
 
 from navigation.path_planner import path_planner
 
@@ -22,7 +22,8 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from visualization_msgs.msg import Marker 
 from builtin_interfaces.msg import Duration
 from std_msgs.msg import String
-
+import time
+import math
 
 class PickUp(Node):
     def __init__(self):
@@ -30,7 +31,8 @@ class PickUp(Node):
         #self.get_logger().info('Pick up node started 1')
 
         self.collection_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"
-        self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_3.tsv"
+        # self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_3.tsv"
+        self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_hard_collection.tsv"
 
         self.resolution = 5 #cm / cell
         self.padding = 25 #cm
@@ -63,6 +65,8 @@ class PickUp(Node):
         group2 = ReentrantCallbackGroup()
 
         self.grid_fill_cli = self.create_client(GridCreator,"fill_in_workspace")
+
+        self.camera_client = self.create_client(YoloImageDetect, 'final_detect', callback_group=group2)
 
         self.pickup_grid_pub = self.create_publisher(OccupancyGrid, '/pick_up_grid_map', 10)
         
@@ -130,10 +134,10 @@ class PickUp(Node):
                 self.get_logger().debug(f"Start of try again loop, \033[94m {should_try_again=} \033[0m, \033[93m {self.should_move=} \033[0m")
                 should_try_again = False
                 self.get_logger().info(f'Object position: x = {x} y = {y}')
-                x_goal, y_goal = self.retrieve_pick_up_position(x,y)
+                x_goal, y_goal = self.retrieve_pick_up_position(x,y) # Grid coordinates 
                 self.get_logger().info(f'Pick up position: x = {x_goal} y = {y_goal}')
                 angle_between_object_and_pickup = np.arctan2(y - y_goal, x - x_goal)
-                start_x, start_y = self.retrieve_robot_position()
+                start_x, start_y = self.retrieve_robot_position() # In cm 
                 self.get_logger().info(f'Robot position: x = {start_x} y = {start_y}')
                 start_x, start_y = self.convert_to_grid_coordinates(start_x, start_y)
                 self.get_logger().info(f'Robot position (after conversion): x = {start_x} y = {start_y}')
@@ -164,7 +168,18 @@ class PickUp(Node):
                     response.message = "Failed to move to object"
                     return response
 
-                turn = self.generate_turn()
+                # We have success, we are in the circle around the object / box.  
+                # 1. Turn to face the object / box.  
+                robot_x, robot_y = self.retrieve_robot_position()
+                x_g, y_g = self.convert_to_real_world_coordinates(x,y) # in CM 
+                request_msg = self.create_command_to_face_object(robot_x/100, robot_y/100, x_g/100, y_g/100)
+                success = self.move_along_path(request_msg)
+                # 2. Get a YOLO response from the RGBD camera to get a better estimate of the object / box position.  
+                expected_category = self.next_object[3]
+                # 3. Change the goal position to the new YOLO estimated position.   
+                better_x, better_y = self.send_camera_request_and_return_closest_objxy_with_class(x_g/100,y_g/100,expected_category) # m 
+                # 4. Move to the new goal position.  
+                turn = self.generate_turn(better_x, better_y)
 
                 #self.get_logger().info(f'Turn: {turn}')
                 turn_command = self.create_turn_command(turn)
@@ -367,6 +382,7 @@ class PickUp(Node):
             "3": "toy",
             "1": "cube"
         }
+       
 
         for id, object in enumerate(self.objects): 
             x_center, y_center, angle, category = object 
@@ -516,9 +532,12 @@ class PickUp(Node):
         request_msg.stop_at_goal = True
         return(request_msg)
 
-     # generates a turn to face the object and a forward movement to approach it closely
-    def generate_turn(self):
-        goal_x, goal_y, goal_angle, _ = self.next_object
+    # generates a turn to face the object and a forward movement to approach it closely
+    def generate_turn(self, goal_x=None, goal_y=None):
+        if goal_x is None:
+            goal_x, goal_y, goal_angle, _ = self.next_object
+        else: 
+            goal_x, goal_y = goal_x*100, goal_y*100
         goal_pose_base_link = PoseStamped()
         
         goal_pose_base_link.header.frame_id = "map"
@@ -529,6 +548,36 @@ class PickUp(Node):
         self.current_pickup_pose_pub.publish(goal_pose_base_link)
         goal_pose_base_link.pose = self.transform_to_base_link(goal_pose_base_link.pose)
         return goal_pose_base_link
+
+    def create_command_to_face_object(self, robot_x, robot_y, goal_x, goal_y): 
+        dx = goal_x - robot_x
+        dy = goal_y - robot_y
+        target_angle = np.arctan2(dy, dx)
+        self.get_logger().warning(f"robot_x: {robot_x}, robot_y: {robot_y}, goal_x: {goal_x}, goal_y: {goal_y}")
+        self.get_logger().warning(f"dx: {dx}, dy: {dy}, target_angle: {target_angle}")
+        request_msg = MoveTo.Request()
+        goal_list = Path()
+        goal_list.header.frame_id = "map"
+        goal_list.header.stamp = self.get_clock().now().to_msg()
+        goal_msg = PoseStamped()
+        goal_msg.header.frame_id = "map"
+        goal_msg.header.stamp = self.get_clock().now().to_msg()
+        goal_msg.pose.position.x = 0
+        goal_msg.pose.position.y = 0
+        qw = np.cos(target_angle/2) 
+        qz = np.sin(target_angle/2)
+        goal_msg.pose = self.transform_to_map(goal_msg.pose)
+        goal_msg.pose.orientation.z = float(qz)
+        goal_msg.pose.orientation.w = float(qw)
+        goal_list.poses.append(goal_msg) 
+        request_msg.path = goal_list
+        request_msg.max_speed = 0.2
+        request_msg.max_turn_speed = 0.15
+        request_msg.enforce_orientation = True
+        request_msg.allow_reverse = False
+        request_msg.stop_at_goal = True
+        request_msg.threshold = 0.03
+        return request_msg
 
     # creates commands to do the turn
     def create_turn_command(self, goal_pose_base_link):
@@ -779,6 +828,58 @@ class PickUp(Node):
         #self.get_logger().info('map fetched')
         self.circle_creator = circle_creator(self.resolution)
 
+    # call camera and find obj x y 
+    def send_camera_request_and_return_closest_objxy_with_class(self, x, y, obj_class):
+        label_category_dict = { 
+            "B": "box",
+            "2": "ball",
+            "3": "toy",
+            "1": "cube"
+        }
+        obj_class = label_category_dict[obj_class]
+
+        request = YoloImageDetect.Request()
+        request.camera_name = "rgbd_camera"
+        request.target_frame = "map"
+
+        future = self.camera_client.call_async(request)
+        # rclpy.spin_until_future_complete(self, future)
+        while not future.done():
+            self.executor.spin_once(timeout_sec=0.1) 
+
+        if future.result() is not None:
+            response = future.result()
+            closest_distance = 1
+            find_aligned_obj = False
+            rx, ry = -1, -1
+            self.get_logger().warning(f"x: {x}, y: {y}, class: {obj_class}")
+            for i, obj in enumerate(response.objects):
+                pose = obj.center_point
+                x_real = (pose.pose.position.x)
+                y_real = (pose.pose.position.y)
+                category = obj.category
+                self.get_logger().warning(f"real x: {x_real}, real y: {y_real}, category: {category}")
+                if category != "no_detection":
+                    self.get_logger().warning("trying to make sure accurate obj position, but no obj detected")
+                    return None, None
+                print(f"Object {i + 1}:")
+                if category == obj_class:
+                    distance = math.sqrt((x_real - x)**2 + (y_real - y)**2)
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        find_aligned_obj = True
+                        rx, ry = x_real, y_real
+
+            if find_aligned_obj == True:
+                self.get_logger().info("successfully find predicted obj")
+                return rx, ry
+            else:
+                self.get_logger().warning('Failed to find obj with predicted class.')
+                return None, None
+                
+        else:
+            self.get_logger().error('Failed to receive response from camera.')
+            return None, None
 
 def main():
     rclpy.init()

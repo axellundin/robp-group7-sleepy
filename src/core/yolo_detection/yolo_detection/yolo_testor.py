@@ -178,47 +178,47 @@ class YoloImageSaverClient(Node):
 #     rclpy.shutdown()
 
 
-# # this is used to save images from arm camera, in order to generate dataset 
-# def main():
-#     rclpy.init()
-
-#     client = YoloImageSaverClient()
-
-#     try:
-#         while rclpy.ok():
-#             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
-#             rclpy.spin_once(client)
-#             if user_input == '':
-#                 client.saveimage()
-#             # rclpy.spin_once(client)  # Ensure the node remains active
-
-#     except KeyboardInterrupt:
-#         pass  # Handle the interrupt from user (Ctrl+C)
-
-#     client.destroy_node()
-#     rclpy.shutdown()
-
-
-# this is used to test final detector, node perception mapg
+# this is used to save images from arm camera, in order to generate dataset 
 def main():
     rclpy.init()
 
-    client = YoloImageDetectClient()
+    client = YoloImageSaverClient()
 
     try:
         while rclpy.ok():
             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
+            rclpy.spin_once(client)
             if user_input == '':
-                debug_time = time.time()
-                client.send_request()
-                print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
-            rclpy.spin_once(client)  # Ensure the node remains active
+                client.saveimage()
+            # rclpy.spin_once(client)  # Ensure the node remains active
 
     except KeyboardInterrupt:
         pass  # Handle the interrupt from user (Ctrl+C)
 
     client.destroy_node()
     rclpy.shutdown()
+
+
+# # this is used to test final detector, node perception mapg
+# def main():
+#     rclpy.init()
+
+#     client = YoloImageDetectClient()
+
+#     try:
+#         while rclpy.ok():
+#             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
+#             if user_input == '':
+#                 debug_time = time.time()
+#                 client.send_request()
+#                 print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
+#             rclpy.spin_once(client)  # Ensure the node remains active
+
+#     except KeyboardInterrupt:
+#         pass  # Handle the interrupt from user (Ctrl+C)
+
+#     client.destroy_node()
+#     rclpy.shutdown()
 
 
 

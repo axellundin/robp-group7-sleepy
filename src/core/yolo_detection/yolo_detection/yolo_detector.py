@@ -48,7 +48,7 @@ class YoloDetector(Node):
 
         # self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_170jpg.pt")
         self.get_logger().info("using 3h trained yolo large model, dataset: 270images from rgbd and arm raw")
-        self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_3h_270arm&rgbd.pt")
+        self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_130refined_markersandleaning.pt")
 
         self.bridge = CvBridge()
 
@@ -237,6 +237,8 @@ class YoloDetector(Node):
                 y_topleft=box.xyxy[0,1]
                 x_bottomright=box.xyxy[0,2]
                 y_bottomright=box.xyxy[0,3]
+                yn = box.xywhn[0,1]
+                self.get_logger().warning(f"detected y normal = {yn}")
 
                 if hardcode_depth==-1:
                     z=get_depth_value(self.latest_depthimage,x,y)
@@ -310,6 +312,7 @@ class YoloDetector(Node):
             debug_time=time.time()
             r = self.model(cv_image,
                            device=0,
+                           conf=0.50,
                            )  
             print(f"yolo calculation took {time.time()-debug_time} seconds")
 
@@ -332,9 +335,15 @@ class YoloDetector(Node):
             for i, box in enumerate(r.boxes):
                 self.get_logger().info(f"detected object {i}")
                 detected_object = deal_with_one_obj(box)
-                detected_objects.append(detected_object)
-
-            return detected_objects, classname_list
+                if detected_object != None:
+                    detected_objects.append(detected_object)
+            
+            if detected_objects == []:
+                self.get_logger().info("nothing here")
+                failed_result= response_send(0,0,0,0,0,0,0,0,0,stamp,"no_detection",0,None)
+                return [failed_result], ["no_category_list"]
+            else:
+                return detected_objects, classname_list
 
         def yolo_result_pub(cv_image_result):
             ros_image = self.bridge.cv2_to_imgmsg(cv_image_result, encoding="bgr8")
@@ -360,6 +369,7 @@ class YoloDetector(Node):
             detected_objects, classname_list = yolo_image_detect(self.latest_rgbd_image,camera_info,hardcode_depth=-1)
         else:
             self.get_logger().error("yolo detection error, camera name doesn't match")
+
 
         response.objects = detected_objects
         response.category_list = classname_list

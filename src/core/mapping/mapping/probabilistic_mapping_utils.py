@@ -6,7 +6,7 @@ class ProbabilisticMapper:
     def __init__(self, map_size: np.ndarray, resolution: float, origin: np.ndarray):
         self.L_0 = 0  
         self.L_OCC = 30
-        self.L_FREE = -0.1
+        self.L_FREE = -0.5 # -2
 
         self.alpha = 0.1
         self.beta = 0.3
@@ -212,7 +212,7 @@ class ProbabilisticMapper:
         """ Inflate the map by 1 cell """
         thresholded_map = np.array(map > 50, dtype=np.float32) * 100
         blurred_map = cv2.GaussianBlur(thresholded_map, (21,21), 0)
-        return np.array(blurred_map > 2, dtype=np.int8) * 100
+        return np.array(blurred_map > 10, dtype=np.int8) * 100
 
     def recover_probabilities(self, log_odds: np.ndarray):
         """ Recover probabilities from log odds """
