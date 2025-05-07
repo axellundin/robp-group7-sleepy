@@ -288,10 +288,10 @@ class PickupService(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(joint_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=1):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=5):
                 # Send again 
                 msg.data = self.compute_joint_transition_time(joint_values)
-                self.get_logger().info(f'Moving arm to joint values: {msg.data}')
+                # self.get_logger().info(f'Moving arm to joint values: {msg.data}')
                 self.joint_angles_publisher.publish(msg)
                 latest_command = self.get_clock().now()
             time.sleep(0.01)
@@ -407,7 +407,7 @@ class PickupService(Node):
     def check_if_object_is_still_there(self): 
         if self.latest_joint_angles is None:
             return False
-        return self.latest_joint_angles[0] > self.gripper_open_position[0] + 500
+        return self.latest_joint_angles[0] <= self.gripper_close_position[0] - 200
     
     def pickup_callback(self, request, response):
         self.get_logger().info('Starting pickup callback')
@@ -489,7 +489,7 @@ class PickupService(Node):
                     if reachable: 
                         break
             
-                z_m = -0.15
+                z_m = -0.16
                 # ----------------------------------------------------------------------------------
                 
                 x_m, y_m = x_yolo, y_yolo
@@ -545,8 +545,8 @@ class PickupService(Node):
             time.sleep(2)
             future = self.move_arm_client.call_async(request)
             self.get_logger().info('Moving arm to target pose...')
+            self.get_logger().info('Waiting for move arm response...')
             while not future.done():
-                self.get_logger().info('Waiting for move arm response...')
                 time.sleep(0.1)
             
             time.sleep(1)
@@ -564,25 +564,27 @@ class PickupService(Node):
             time.sleep(2)
             future = self.move_arm_client.call_async(request)
             self.get_logger().info('Moving arm up slightly...')
+            self.get_logger().info('Waiting for move arm response...')
             while not future.done():
-                self.get_logger().info('Waiting for move arm response...')
                 time.sleep(0.1)
 
             # # Check if the object is still there 
             # time.sleep(2)
             # if not self.check_if_object_is_still_there(): 
             #     self.get_logger().error('I think I have dropped the object.')
+            # Check if the object is still there 
+
+            time.sleep(2)
+            if not self.check_if_object_is_still_there(): 
+                self.get_logger().error('I think I have dropped the object.')
+                continue
+            else: 
+                self.get_logger().info('After checking the joint angles, the object is still there.')
             #     continue
             
             # Move the arm up fully 
             self.get_logger().info('Moving arm up fully...')
             self.move_arm_to_joint_values(self.up_position)
-
-            # # Check if the object is still there 
-            # time.sleep(2)
-            # if not self.check_if_object_is_still_there(): 
-            #     self.get_logger().error('I think I have dropped the object.')
-            #     continue
 
             response.success = True
             return response

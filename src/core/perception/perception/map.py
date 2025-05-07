@@ -662,7 +662,8 @@ class MapNode(Node):
             self.pointcloud_visualizer.publish(whole_pointcloud)
             self.get_logger().info("final pointcloud published")
         else:
-            self.get_logger().info("there is no pointcloud to visualize")
+            pass
+            # self.get_logger().info("there is no pointcloud to visualize")
 
         # whole_points = np.array([])
         # whole_colors = np.array([])

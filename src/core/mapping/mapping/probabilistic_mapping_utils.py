@@ -6,7 +6,7 @@ class ProbabilisticMapper:
     def __init__(self, map_size: np.ndarray, resolution: float, origin: np.ndarray):
         self.L_0 = 0  
         self.L_OCC = 30
-        self.L_FREE = -0.5 # -2
+        self.L_FREE = -2 # -0.5 # -2
 
         self.alpha = 0.1
         self.beta = 0.3

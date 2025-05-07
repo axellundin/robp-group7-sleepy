@@ -7,9 +7,21 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
-    icp_node = Node( 
-        package='mapping', 
-        executable='icp_to_tf_only'
+    # icp_node = Node( 
+    #     package='mapping', 
+    #     executable='icp_to_tf_only'
+    # )
+
+    # icp_node = Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     output='screen',
+    #     arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
+    # )
+
+    probabilistic_mapping = Node(
+        package='mapping',
+        executable='probabilistic_mapping'
     )
 
     local_occupancy = Node(
@@ -95,7 +107,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        icp_node, 
+        # icp_node, 
+        probabilistic_mapping,
         local_occupancy,
         odometry_node,
         path_publisher_node,

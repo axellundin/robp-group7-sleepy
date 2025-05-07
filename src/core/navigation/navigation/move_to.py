@@ -53,6 +53,7 @@ class Move_to(Node):
         self.velocity_last_update = self.get_clock().now() 
         self.velocity_update_interval = 0.1
         self.should_stop = False
+        self.has_stopped = False
 
         start_new_thread(self.spin_thread, ())
 
@@ -172,12 +173,13 @@ class Move_to(Node):
                 if self.should_stop: 
                     if not self.has_stopped: 
                         self.ICP_calibration_sequence()
-                    self.has_stopped = True 
+                        self.has_stopped = True 
+                    time.sleep(0.01)
                     continue
                 self.has_stopped = False 
                 #Transforming goal pose
-                frames = self.tf_buffer.all_frames_as_yaml()
-                self.get_logger().info(f'Available TF frames:\n{frames}')
+                # frames = self.tf_buffer.all_frames_as_yaml()
+                # self.get_logger().info(f'Available TF frames:\n{frames}')
                 transformed_goal_pose = self.transform(goal_pose)
                 success, vel = self.movement_computation.compute_vel_from_transform(transformed_goal_pose, point_only, stop_at_goal)
 
@@ -223,52 +225,52 @@ class Move_to(Node):
         return self.transform(current_pose)
 
     def ICP_calibration_sequence(self):
-        max_speed = max(self.movement_computation._current_vel_x, 0.15)
-        max_turn_speed = max(self.movement_computation._current_vel_w, 0.15)
-        allow_reverse = False
-        dist_to_last_pose = 100000
-        dist_threshold = 0.03
-        temp_movement_computation = MovementComputation(max_speed, max_turn_speed, allow_reverse, dist_to_last_pose, dist_threshold, self)
-        temp_movement_computation.start_yaw_ajustment = False
-        temp_movement_computation._move_state = "forward" 
-        current_pose = self.get_current_pose() # This is an inverted transform
-        goal_pose = PoseStamped() 
-        goal_pose.header.frame_id = "map"
-        dist_to_move = self.movement_computation._current_vel_x / 3 
-        current_heading = np.arctan2(2 * (current_pose.orientation.w * current_pose.orientation.z + current_pose.orientation.x * current_pose.orientation.y), 1 - 2 * (current_pose.orientation.y**2 + current_pose.orientation.z**2))
-        goal_pose.pose.position.x = -current_pose.position.x + dist_to_move * np.cos(current_heading)
-        goal_pose.pose.position.y = -current_pose.position.y + dist_to_move * np.sin(current_heading)
-        goal_pose.pose.orientation.x = 0.0
-        goal_pose.pose.orientation.y = 0.0
-        goal_pose.pose.orientation.z = 0.0
-        goal_pose.pose.orientation.w = 1.0
-        point_only = False
-        stop_at_goal = True
-        while True: 
-            transformed_goal_pose = self.transform(goal_pose)
-            success, vel = temp_movement_computation.compute_vel_from_transform(transformed_goal_pose, point_only, stop_at_goal)
+        # max_speed = max(self.movement_computation._current_vel_x, 0.15)
+        # max_turn_speed = max(self.movement_computation._current_vel_w, 0.15)
+        # allow_reverse = False
+        # dist_to_last_pose = 100000
+        # dist_threshold = 0.03
+        # temp_movement_computation = MovementComputation(max_speed, max_turn_speed, allow_reverse, dist_to_last_pose, dist_threshold, self)
+        # temp_movement_computation.start_yaw_ajustment = False
+        # temp_movement_computation._move_state = "forward" 
+        # current_pose = self.get_current_pose() # This is an inverted transform
+        # goal_pose = PoseStamped() 
+        # goal_pose.header.frame_id = "map"
+        # dist_to_move = self.movement_computation._current_vel_x / 3 
+        # current_heading = np.arctan2(2 * (current_pose.orientation.w * current_pose.orientation.z + current_pose.orientation.x * current_pose.orientation.y), 1 - 2 * (current_pose.orientation.y**2 + current_pose.orientation.z**2))
+        # goal_pose.pose.position.x = -current_pose.position.x + dist_to_move * np.cos(current_heading)
+        # goal_pose.pose.position.y = -current_pose.position.y + dist_to_move * np.sin(current_heading)
+        # goal_pose.pose.orientation.x = 0.0
+        # goal_pose.pose.orientation.y = 0.0
+        # goal_pose.pose.orientation.z = 0.0
+        # goal_pose.pose.orientation.w = 1.0
+        # point_only = False
+        # stop_at_goal = True
+        # while True: 
+        #     transformed_goal_pose = self.transform(goal_pose)
+        #     success, vel = temp_movement_computation.compute_vel_from_transform(transformed_goal_pose, point_only, stop_at_goal)
 
-            if success:
-                break
+        #     if success:
+        #         break
 
-            #Publishing velocity command 
-            self._pub_vel.publish(vel)
+        #     #Publishing velocity command 
+        #     self._pub_vel.publish(vel)
 
-            current_time_in_seconds = self.get_clock().now().to_msg().sec
-            last_time_in_seconds = self.velocity_last_update.to_msg().sec
-            if current_time_in_seconds - last_time_in_seconds > self.velocity_update_interval:
-                msg = Twist()
-                msg.linear.x = temp_movement_computation._current_vel_x
-                msg.angular.z = temp_movement_computation._current_vel_w
-                self.velocity_pub.publish(msg)
-                self.velocity_last_update = self.get_clock().now()
+        #     current_time_in_seconds = self.get_clock().now().to_msg().sec
+        #     last_time_in_seconds = self.velocity_last_update.to_msg().sec
+        #     if current_time_in_seconds - last_time_in_seconds > self.velocity_update_interval:
+        #         msg = Twist()
+        #         msg.linear.x = temp_movement_computation._current_vel_x
+        #         msg.angular.z = temp_movement_computation._current_vel_w
+        #         self.velocity_pub.publish(msg)
+        #         self.velocity_last_update = self.get_clock().now()
 
-        if stop_at_goal:
-            vel = Twist()
-            vel.linear.x = 0.0
-            vel.angular.z = 0.0
-            self._pub_vel.publish(vel)
-        time.sleep(1)
+        # if stop_at_goal:
+        vel = Twist()
+        vel.linear.x = 0.0
+        vel.angular.z = 0.0
+        self._pub_vel.publish(vel)
+        time.sleep(.5)
         
     def transform(self,goal_pose):
         #self.get_logger().info("transforming")

@@ -174,10 +174,12 @@ class PickUp(Node):
                 x_g, y_g = self.convert_to_real_world_coordinates(x,y) # in CM 
                 request_msg = self.create_command_to_face_object(robot_x/100, robot_y/100, x_g/100, y_g/100)
                 success = self.move_along_path(request_msg)
-                # 2. Get a YOLO response from the RGBD camera to get a better estimate of the object / box position.  
+                # 2. Get a YOLO response from the RGBD camera to get 77a better estimate of the object / box position.  
                 expected_category = self.next_object[3]
                 # 3. Change the goal position to the new YOLO estimated position.   
+                self.get_logger().warning("now calibrating the position----------------------------------------------------")
                 better_x, better_y = self.send_camera_request_and_return_closest_objxy_with_class(x_g/100,y_g/100,expected_category) # m 
+                self.get_logger().warning("now end of the calibration  ----------------------------------------------------")
                 # 4. Move to the new goal position.  
                 turn = self.generate_turn(better_x, better_y)
 

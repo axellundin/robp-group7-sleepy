@@ -80,7 +80,7 @@ class SimpleMove(Node):
         latest_command = self.get_clock().now()
 
         while not self.check_joints(encoder_values):
-            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=0.25):
+            if self.get_clock().now() - latest_command > rclpy.duration.Duration(seconds=2):
                 # Send again 
                 msg.data = self.compute_joint_transition_time(encoder_values)
                 self.publisher.publish(msg)
@@ -113,7 +113,7 @@ class SimpleMove(Node):
         z = pose.position.z
 
         # Check that the pose is reachable and does not cause self-collisions
-        if max(x,-y) < 0.14 or z < -0.15 or x > 0.35 or z > 0 or (x**2 + y**2)**(1/2) > 0.35:
+        if max(x,-y) < 0.14 or z < -0.18 or x > 0.35 or z > 0 or (x**2 + y**2)**(1/2) > 0.35:
             self.get_logger().info('Target pose not safe, aborting')
             response.success = False
             response.message = "Target pose not safe"
@@ -149,13 +149,14 @@ class SimpleMove(Node):
         ]
 
         try:
+            self.get_logger().info('Sending and making sure moves correctly...')
             success = self.send_and_make_sure_moves_correctly(data)
             response.success = success
             response.message = "Movement completed successfully" if success else "Movement failed"
         except Exception as e:
             response.success = False
             response.message = f"Error during movement: {str(e)}"
-        
+        self.get_logger().info('Movement completed successfully')
         return response
 
 def main(args=None):
