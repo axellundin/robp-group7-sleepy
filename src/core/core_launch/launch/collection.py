@@ -12,17 +12,17 @@ def generate_launch_description():
     #     executable='icp_to_tf_only'
     # )
 
-    # icp_node = Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     output='screen',
-    #     arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
-    # )
-
-    probabilistic_mapping = Node(
-        package='mapping',
-        executable='probabilistic_mapping'
+    icp_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        output='screen',
+        arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
     )
+
+    # probabilistic_mapping = Node(
+    #     package='mapping',
+    #     executable='probabilistic_mapping'
+    # )
 
     local_occupancy = Node(
         package='mapping',
@@ -107,9 +107,9 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        # icp_node, 
-        probabilistic_mapping,
-        local_occupancy,
+        icp_node, 
+        # probabilistic_mapping,
+        # local_occupancy,
         odometry_node,
         path_publisher_node,
         arm_simple_move,

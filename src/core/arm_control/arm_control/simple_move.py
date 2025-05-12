@@ -22,7 +22,7 @@ class SimpleMove(Node):
         self.kinematics = Kinematics(self.joint_limits)  
         
         group = ReentrantCallbackGroup()
-        self.error_weight = [1/2, 1, 1, 1, 1, 1]
+        self.error_weight = [1/3, 1, 1, 1, 1, 1]
 
         # Replace subscriber with service
         self.service = self.create_service(
@@ -47,7 +47,7 @@ class SimpleMove(Node):
             1, 
             callback_group=group
         )
-        self.max_joint_diff = 800
+        self.max_joint_diff = 1000
         self.joint_movement_time = 1000
         self.joint_velocity = 10
         self.min_joint_movement_time = 500

@@ -20,19 +20,20 @@ class YoloImageDetectClient(Node):
             self.get_logger().info('Service not available, waiting again...')
 
     def send_request(self):
+        print("3")
         request = YoloImageDetect.Request()
-        ## RGBD CAMERA
-        # request.camera_name = "rgbd_camera"
-        # request.target_frame = "camera_link"
-        # request.target_frame = "camera_depth_optical_frame"
+        # RGBD CAMERA
+        request.camera_name = "rgbd_camera"
+        request.target_frame = "camera_link"
+        # # request.target_frame = "camera_depth_optical_frame"
 
-        ## ARM CAMERA
-        request.camera_name = "arm_camera"
-        request.target_frame = "arm_base_link"
+        # ## ARM CAMERA
+        # request.camera_name = "arm_camera"
+        # request.target_frame = "arm_base_link"
 
         future = self.client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
-
+        print("4")
         if future.result() is not None:
             response = future.result()
             self.get_logger().info(f"Received response: {len(response.objects)} objects detected.")
@@ -156,47 +157,49 @@ class YoloImageSaverClient(Node):
 
 
 
-# # this is used to test yolo, and also showing how to use yolo detector node 
-# def main():
-#     rclpy.init()
-
-#     client = YoloImageDetectClient()
-
-#     try:
-#         while rclpy.ok():
-#             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
-#             if user_input == '':
-#                 debug_time = time.time()
-#                 client.send_request()
-#                 print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
-#             rclpy.spin_once(client)  # Ensure the node remains active
-
-#     except KeyboardInterrupt:
-#         pass  # Handle the interrupt from user (Ctrl+C)
-
-#     client.destroy_node()
-#     rclpy.shutdown()
-
-
-# this is used to save images from arm camera, in order to generate dataset 
+# this is used to test yolo, and also showing how to use yolo detector node 
 def main():
     rclpy.init()
 
-    client = YoloImageSaverClient()
+    client = YoloImageDetectClient()
 
     try:
         while rclpy.ok():
             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
-            rclpy.spin_once(client)
+            print("1")
             if user_input == '':
-                client.saveimage()
-            # rclpy.spin_once(client)  # Ensure the node remains active
+                print("2")
+                debug_time = time.time()
+                client.send_request()
+                print(f"Request sent. Time taken: {time.time() - debug_time} seconds.")
+            rclpy.spin_once(client)  # Ensure the node remains active
 
     except KeyboardInterrupt:
         pass  # Handle the interrupt from user (Ctrl+C)
 
     client.destroy_node()
     rclpy.shutdown()
+
+
+# # this is used to save images from arm camera, in order to generate dataset 
+# def main():
+#     rclpy.init()
+
+#     client = YoloImageSaverClient()
+
+#     try:
+#         while rclpy.ok():
+#             user_input = input("Press Enter to send a request (Ctrl+C to quit): ")
+#             rclpy.spin_once(client)
+#             if user_input == '':
+#                 client.saveimage()
+#             # rclpy.spin_once(client)  # Ensure the node remains active
+
+#     except KeyboardInterrupt:
+#         pass  # Handle the interrupt from user (Ctrl+C)
+
+#     client.destroy_node()
+#     rclpy.shutdown()
 
 
 # # this is used to test final detector, node perception mapg

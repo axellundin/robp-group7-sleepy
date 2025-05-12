@@ -47,7 +47,7 @@ class PickupService(Node):
         
         self.current_target = self.up_position
         self.max_joint_diff = 800
-        self.max_joint_diff_gripper = 1200
+        self.max_joint_diff_gripper = 3000
         self.bridge = CvBridge()
 
         self.box_position_converter = BoxPositionConverter()
@@ -514,6 +514,11 @@ class PickupService(Node):
             if not self.check_if_object_is_reachable(x_m, y_m): 
                 x_m, y_m = x_yolo, y_yolo
             
+            # Hardcoded corretion 
+
+            x_m += 0.01 
+            y_m += 0.01
+
             # Get the first gripping
             time.sleep(1)
             # 4. Move the arm to above the object 

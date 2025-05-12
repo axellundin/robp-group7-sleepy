@@ -32,7 +32,8 @@ class PickUp(Node):
 
         self.collection_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"
         # self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_3.tsv"
-        self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_hard_collection.tsv"
+        # self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_hard_collection.tsv"
+        self.objects_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/map_collection2.tsv"
 
         self.resolution = 5 #cm / cell
         self.padding = 25 #cm
@@ -95,7 +96,6 @@ class PickUp(Node):
         
         self.executor = None
 
-
         # DEBUG -----
         self.collistion_check_counter = 0
 
@@ -112,11 +112,20 @@ class PickUp(Node):
             #self.get_logger().info(f'Objects left before pickup: {len(self.objects)}')
             if self.latest_object_index != None:
                 self.objects.pop(self.latest_object_index)
-                self.latest_object_index = None
+                
             self.publish_object_and_box_markers()
+            obs_grid = self.start_obs_grid.copy()
+            self.insert_objects_in_map_file(obs_grid)
+            self.insert_local_objects_in_map_file(obs_grid)
+
+            rob_pos_x, rob_pos_y = self.retrieve_robot_position() # In cm 
+            rob_pos_x, rob_pos_y = self.convert_to_grid_coordinates(rob_pos_x, rob_pos_y)
             #self.get_logger().info(f'Objects left after pickup: {len(self.objects)}')
-            go_back_command = self.create_go_back_command()
-            success = self.move_along_path(go_back_command)
+
+            if self.latest_object_index != None or obs_grid[rob_pos_y, rob_pos_x] == -1:
+                go_back_command = self.create_go_back_command()
+                success = self.move_along_path(go_back_command)
+            self.latest_object_index = None
             self.get_logger().debug(f'Move back done with result: {success}')
             response.success = success
             response.message = "Done"

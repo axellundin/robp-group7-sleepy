@@ -56,6 +56,8 @@ class ProbabilisticMapping(Node):
         self.lidar_sub = self.create_subscription(LaserScan, '/scan', self.lidar_callback, callback_group=group2, qos_profile=qos)
         self.point_cloud_publisher = self.create_publisher(PointCloud2, '/filtered_lidar_scan', 10)
         self.grid_pub = self.create_publisher(OccupancyGrid, '/local_occupancy_map', 10) 
+        self.grid_pub_planning = self.create_publisher(OccupancyGrid, '/local_occupancy_map_planning', 10) 
+        self.grid_pub_not_inflated = self.create_publisher(OccupancyGrid, '/local_occupancy_map_not_inflated', 10) 
         self.velocity_sub = self.create_subscription(Twist, '/current_velocity', self.velocity_callback, callback_group=group2, qos_profile=qos)
 
         self.curr_v = 0
@@ -142,7 +144,8 @@ class ProbabilisticMapping(Node):
         return ranges
 
     def lidar_callback(self, msg):
-        if self.curr_w > 0.1 or self.curr_v > 0.3:
+        if self.curr_w > 0.02 or self.curr_v > 0.05:
+            self.get_logger().info("Failing due to fast movement")
             return 
         
         filtered_ranges = self.filter_points(msg)
@@ -193,17 +196,15 @@ class ProbabilisticMapping(Node):
         last_update_in_seconds = self.last_update.to_msg().sec 
         if current_time_in_seconds - last_update_in_seconds >= self.update_interval:
             self.prob_mapper.compute_inflated_occupancy()
-            self.publish_grid_map()
+            if self.prob_mapper is None: 
+                return
+            self.publish_grid_map(self.grid_pub, self.prob_mapper.inflated_map)
+            self.publish_grid_map(self.grid_pub_planning, self.prob_mapper.inflated_map_planning)
+            self.publish_grid_map(self.grid_pub_not_inflated, self.prob_mapper.map_binary)
             self.last_update = self.get_clock().now()
 
-    def publish_grid_map(self):
-        if self.prob_mapper is None:
-            return
-        # thresholded_grid = self.prob_mapper.map
-        # thresholded_grid[thresholded_grid < -0.5] = 0 
-        # thresholded_grid[thresholded_grid >= -0.5] = 100
-        
-        grid = self.prob_mapper.inflated_map.astype(np.int8)
+    def publish_grid_map(self, publisher, map):        
+        grid = map.astype(np.int8)
 
         msg = OccupancyGrid()
 
@@ -221,9 +222,36 @@ class ProbabilisticMapping(Node):
         grid = np.round(grid,0).astype(np.int8)
         grid[grid == 100] = -1
         msg.data = grid.flatten().tolist()
-        
-        self.grid_pub.publish(msg)
+        publisher.publish(msg)
         # self.get_logger().info("path grid published")
+    # def publish_grid_map(self, publisher, map):
+    #     if self.prob_mapper is None:
+    #         return
+    #     # thresholded_grid = self.prob_mapper.map
+    #     # thresholded_grid[thresholded_grid < -0.5] = 0 
+    #     # thresholded_grid[thresholded_grid >= -0.5] = 100
+        
+    #     grid = self.prob_mapper.inflated_map.astype(np.int8)
+
+    #     msg = OccupancyGrid()
+
+    #     msg.header.stamp = self.get_clock().now().to_msg()
+    #     msg.header.frame_id = self.map_frame
+
+    #     msg.info.resolution = float(self.resolution/100)
+    #     msg.info.width = grid.shape[1]
+    #     msg.info.height = grid.shape[0]
+
+    #     msg.info.origin.position.x = - float(self.origin[0]/100)*self.resolution
+    #     msg.info.origin.position.y = - float(self.origin[1]/100)*self.resolution
+    #     msg.info.origin.position.z = 0.0
+    #     msg.info.origin.orientation.w = 1.0  
+    #     grid = np.round(grid,0).astype(np.int8)
+    #     grid[grid == 100] = -1
+    #     msg.data = grid.flatten().tolist()
+        
+    #     self.grid_pub.publish(msg)
+    #     # self.get_logger().info("path grid published")
 
 def main():
     rclpy.init()

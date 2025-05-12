@@ -456,7 +456,8 @@ class YoloDetector(Node):
 
         # self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_170jpg.pt")
         self.get_logger().info("using 3h trained yolo large model, dataset: 270images from rgbd and arm raw")
-        self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_130refined_markersandleaning.pt")
+        #self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_130refined_markersandleaning.pt")
+        self.model = YOLO("/home/sleepy/robp-group7-sleepy/yolo/models/l_300e_3h_270arm&rgbd.pt")
 
         self.bridge = CvBridge()
 
@@ -722,7 +723,8 @@ class YoloDetector(Node):
             self.get_logger().info(f"image size after undistort: {cv_image.shape[1]} x {cv_image.shape[0]}")
             debug_time=time.time()
             r = self.model(cv_image,
-                           device="cpu",
+                        #    device="cpu",
+                            device = 0,
                            conf=0.50,
                            )  
             print(f"yolo calculation took {time.time()-debug_time} seconds")

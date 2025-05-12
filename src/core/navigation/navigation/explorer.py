@@ -30,9 +30,9 @@ class Explorer_node(Node):
         self.exploration_workspace_file = "~/robp-group7-sleepy/src/core/navigation/navigation/maps/workspace_3.tsv"
         self.resolution = 5 #cm / cell
         self.padding = 28 #cm
-        self.max_detection_range = 100 #cm
+        self.max_detection_range = 90 # 100 #cm
         self.max_detection_range_grid_coordinates = np.round((self.max_detection_range)/self.resolution, 0)
-        self.optimal_detection_distance = 70 #cm
+        self.optimal_detection_distance = 60 # 70 #cm
         self.camera_angle = np.pi/3
         self.approximate_area_size = 130 #cm
         self.accepted_exploration_ratio_per_area = 0.9
@@ -115,6 +115,8 @@ class Explorer_node(Node):
 
         # obstacle avoidance
         self.local_occupancy_map = None
+        self.local_occupancy_map_planning = None
+        self.local_occupancy_map_not_inflated = None
         self.current_waypoint = None
         self.care_about_collisions = True 
         self.local_occupancy_update_time = None
@@ -140,6 +142,8 @@ class Explorer_node(Node):
         self.explore_grid_pub = self.create_publisher(OccupancyGrid, '/explore_grid_map', 10, callback_group=group3)
         self.area_grid_pub = self.create_publisher(OccupancyGrid, '/area_grid_map', 10, callback_group=group4)
         self.local_occupancy_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map', self.local_occupancy_callback, 10, callback_group=group2)
+        self.local_occupancy_planning_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map_planning', self.local_occupancy_callback_planning, 10, callback_group=group2)
+        self.local_occupancy_not_inflated_sub = self.create_subscription(OccupancyGrid, '/local_occupancy_map_not_inflated', self.local_occupancy_callback_not_inflated, 10, callback_group=group2)
         self.next_waypoint_sub = self.create_subscription(PoseStamped, '/next_waypoint', self.next_waypoint_callback, 10, callback_group=group2)        # creating grid map client
         self.grid_fill_cli = self.create_client(GridCreator,"fill_in_workspace")
         while not self.grid_fill_cli.wait_for_service(timeout_sec=1.0):
@@ -233,7 +237,7 @@ class Explorer_node(Node):
         best_area = None
         for area in self.areas:
             if area.explored_once == False:
-                dist_to_start = np.sqrt((current_x-area.midpoint_x)**2+ (current_y-area.midpoint_y)**2)
+                dist_to_start = np.sqrt((current_x-area.midpoint_x)**2+ (current_y-area.midpoint_y)**2) + area.midpoint_x
                 if dist_to_start < best_dist:
                     best_area = area
                     best_dist = dist_to_start
@@ -250,7 +254,7 @@ class Explorer_node(Node):
         else:
             area = self.current_exploring_area
         self.explorer_grid_with_obs = self.explorer_grid.copy()
-        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
         for row in range(area.y_start,area.y_end+1):
             for column in range(area.x_start,area.x_end+1):
                 if self.explorer_grid_with_obs[row,column] < 0.1 and self.explorer_grid_with_obs[row,column] > - 0.1:
@@ -269,9 +273,9 @@ class Explorer_node(Node):
         
         # inserting obstacles
         self.explorer_grid_with_obs = self.explorer_grid.copy()
-        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
         self.path_planner_grid_with_obs = self.path_planner_grid.copy()
-        self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
+        self.insert_local_objects_in_map_file_planning(self.path_planner_grid_with_obs)
 
         if unexplored_nr > area.tot_nr_cells*self.full_rotation_limit:
             full_turn = True
@@ -286,9 +290,9 @@ class Explorer_node(Node):
 
                 # inserting obstacles
                 self.explorer_grid_with_obs = self.explorer_grid.copy()
-                self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+                self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
                 self.path_planner_grid_with_obs = self.path_planner_grid.copy()
-                self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
+                self.insert_local_objects_in_map_file_planning(self.path_planner_grid_with_obs)
 
                 result, x, y, yaw = self.generate_next_point(area,unexplored_nr)
         else:
@@ -327,6 +331,30 @@ class Explorer_node(Node):
     
         if self.local_occupancy_map is not None:
             grid[self.local_occupancy_map == -1] = -1
+
+    def insert_local_objects_in_map_file_not_inflated(self, grid):
+        if self.local_occupancy_update_time is None: 
+            return
+        
+        current_time = self.get_clock().now().to_msg() 
+        time_since_last_update = current_time.sec + current_time.nanosec * 1e-9 - self.local_occupancy_update_time.sec - self.local_occupancy_update_time.nanosec * 1e-9
+        if time_since_last_update > 10:
+            return
+    
+        if self.local_occupancy_map_not_inflated is not None:
+            grid[self.local_occupancy_map_not_inflated == -1] = -1
+
+    def insert_local_objects_in_map_file_planning(self, grid):
+        if self.local_occupancy_update_time is None: 
+            return
+        
+        current_time = self.get_clock().now().to_msg() 
+        time_since_last_update = current_time.sec + current_time.nanosec * 1e-9 - self.local_occupancy_update_time.sec - self.local_occupancy_update_time.nanosec * 1e-9
+        if time_since_last_update > 10:
+            return
+    
+        if self.local_occupancy_map_planning is not None:
+            grid[self.local_occupancy_map_planning == -1] = -1
         
     def check_if_path_hits_obstacles(self, start_x, start_y, end_x, end_y, obstacles_grid): 
         x_min, x_max = min(start_x, end_x), max(start_x, end_x)
@@ -348,6 +376,12 @@ class Explorer_node(Node):
         
         return np.min(values) < 0 
     
+    def local_occupancy_callback_not_inflated(self, msg):
+        self.local_occupancy_map_not_inflated = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
+
+    def local_occupancy_callback_planning(self, msg):
+        self.local_occupancy_map_planning = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
+
     def local_occupancy_callback(self, msg):
         self.collistion_check_counter += 1
         self.local_occupancy_map = np.array(msg.data, dtype=np.float64).reshape((msg.info.height, msg.info.width))
@@ -746,6 +780,9 @@ class Explorer_node(Node):
             self.get_logger().info(f'Giving the camra time to detect objects, tick nr: {tick}')
             _ = self.send_move_goal(request_msg)
             start_time = self.get_clock().now()
+            while self.get_clock().now() - start_time < rclpy.duration.Duration(seconds=0.1):
+                self.executor.spin_once(timeout_sec=0.01)
+            start_time = self.get_clock().now()
             self.send_camera_request()
             #print(f"Camera request sent. Time taken: {self.get_clock().now() - start_time} seconds.")
             while self.get_clock().now() - start_time < rclpy.duration.Duration(seconds=0.1):
@@ -755,9 +792,9 @@ class Explorer_node(Node):
         self.care_about_collisions = True
         # inserting obstacles
         self.explorer_grid_with_obs = self.explorer_grid.copy()
-        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
         self.safe_space_grid_with_obs = self.safe_space_grid.copy()
-        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.safe_space_grid_with_obs)
 
         current_x, current_y = self.convert_to_grid_coordinates(current_x, current_y)
         detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True,None,None,True)
@@ -814,9 +851,9 @@ class Explorer_node(Node):
 
         # inserting obstacles
         self.explorer_grid_with_obs = self.explorer_grid.copy()
-        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
         self.safe_space_grid_with_obs = self.safe_space_grid.copy()
-        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.safe_space_grid_with_obs)
 
         detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True, v1, v2,True)
         for detected_cell in detection_edge:
@@ -835,9 +872,9 @@ class Explorer_node(Node):
 
         # inserting obstacles
         self.explorer_grid_with_obs = self.explorer_grid.copy()
-        self.insert_local_objects_in_map_file(self.explorer_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.explorer_grid_with_obs)
         self.safe_space_grid_with_obs = self.safe_space_grid.copy()
-        self.insert_local_objects_in_map_file(self.safe_space_grid_with_obs)
+        self.insert_local_objects_in_map_file_not_inflated(self.safe_space_grid_with_obs)
 
         detection_edge = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.explorer_grid_with_obs,self.max_detection_range, False, False, False,True,v1,v2,True)
         for detected_cell in detection_edge:
@@ -1004,7 +1041,7 @@ class Explorer_node(Node):
         test_radius = 2*self.resolution
 
         self.path_planner_grid_with_obs = self.path_planner_grid.copy()
-        self.insert_local_objects_in_map_file(self.path_planner_grid_with_obs)
+        self.insert_local_objects_in_map_file_planning(self.path_planner_grid_with_obs)
 
         while not(unoccupied_found):
             test_points = self.circle_creator.circle_filler_angle_dependent(current_x,current_y,None,self.path_planner_grid_with_obs.copy(),test_radius, False, True, False,False,None,None,True)
@@ -1088,7 +1125,7 @@ class Explorer_node(Node):
         self.get_logger().info(f'current position in grid coordinates: x = {start_x} y = {start_y}')
         self.get_logger().info(f'goal position in grid coordinates: x = {goal_x} y = {goal_y}')
 
-        self.insert_local_objects_in_map_file(obs_grid)
+        self.insert_local_objects_in_map_file_planning(obs_grid)
         grid1, path_result = self.planner.A_star(obs_grid, [start_x, start_y], [goal_x,goal_y], 1, False, 1, True)
         #input(f"innan test move_out_from_occupied, path result: {path_result}")
         if path_result == False:
@@ -1096,7 +1133,7 @@ class Explorer_node(Node):
             return
         #input("Efter test move_out_from_occupied")
         safe_space_grid_with_obstacles = self.safe_space_grid.copy()
-        self.insert_local_objects_in_map_file(safe_space_grid_with_obstacles)
+        self.insert_local_objects_in_map_file_planning(safe_space_grid_with_obstacles)
         safe_space_grid_with_obstacles[grid1 == -1] = -1
         waypoints, made_it_all_the_way = self.planner.waypoint_creator(True, safe_space_grid_with_obstacles)
         for point in waypoints:
@@ -1123,7 +1160,7 @@ class Explorer_node(Node):
     def run_explorer(self):
         self.explorer_grid = self.fetch_map(0)
         self.divide_grid_areas()
-        self.path_planner_grid = self.fetch_map(self.padding)
+        self.path_planner_grid = self.fetch_map(self.padding-5)
         self.safe_space_grid = self.path_planner_grid.copy()
         self.current_exploring_area_index = 0
         self.current_exploring_area = self.select_next_area()

@@ -716,8 +716,11 @@ class BoxPositionConverter:
     def __init__(self):
         self.fx = 540.0
         self.fy = 540.0
-        self.cx = 305.0
-        self.cy = 243.0
+        # self.cx = 305.0
+        # self.cy = 243.0
+
+        self.cx = 320.0
+        self.cy = 240.0
 
     def convert_image_to_world_coordinates(self, transform_arm_base_link_to_arm_camera, x, y, plane_z_coordinate, logger = None):
         # Compute the unit vector for the point in the image 

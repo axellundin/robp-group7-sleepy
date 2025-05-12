@@ -6,7 +6,7 @@ class ProbabilisticMapper:
     def __init__(self, map_size: np.ndarray, resolution: float, origin: np.ndarray):
         self.L_0 = 0  
         self.L_OCC = 30
-        self.L_FREE = -2 # -0.5 # -2
+        self.L_FREE = -0.5 # -2
 
         self.alpha = 0.1
         self.beta = 0.3
@@ -23,6 +23,9 @@ class ProbabilisticMapper:
         self.downsampled_origin = np.array([int(x * self.resolution / self.downsampled_resolution) for x in self.origin])
         self.log_odds = self.L_0 * np.ones((self.downsampled_width, self.downsampled_height)) if self.should_downsample else self.L_0 * np.ones((self.map_width, self.map_height))
         self.map = self.recover_probabilities(self.upsample_map(self.log_odds))
+        self.inflated_map = self.map 
+        self.inflated_map_planning = self.map 
+        self.map_binary = self.map > 30
 
     def from_pos_to_idx(self, x: np.ndarray, resolution=None, origin=None): 
         """ Convert position to index, from center of the cell to the center of the cell"""
@@ -208,11 +211,11 @@ class ProbabilisticMapper:
         print(f"Time taken: {end_time - start_time} seconds")
         return final_delta_log_odds
 
-    def inflate_map(self, map: np.ndarray):
+    def inflate_map(self, map: np.ndarray, kernel_size: int, cutoff: int):
         """ Inflate the map by 1 cell """
         thresholded_map = np.array(map > 50, dtype=np.float32) * 100
-        blurred_map = cv2.GaussianBlur(thresholded_map, (21,21), 0)
-        return np.array(blurred_map > 10, dtype=np.int8) * 100
+        blurred_map = cv2.GaussianBlur(thresholded_map, (kernel_size,kernel_size), 0)
+        return np.array(blurred_map > cutoff, dtype=np.int8) * 100
 
     def recover_probabilities(self, log_odds: np.ndarray):
         """ Recover probabilities from log odds """
@@ -223,7 +226,9 @@ class ProbabilisticMapper:
         log_odds = self.log_odds if not self.should_downsample else self.upsample_map(self.log_odds)
         self.map = self.recover_probabilities(log_odds)
         # self.inflated_map = self.map
-        self.inflated_map = self.inflate_map(self.map)
+        self.map_binary = np.array(self.map >=99, dtype=np.int8) * 100
+        self.inflated_map = self.inflate_map(self.map, 27, 8)
+        self.inflated_map_planning = self.inflate_map(self.map, 29, 3)
 
     def upsample_map(self, map: np.ndarray):
         """ Upsample the map to the original resolution """
